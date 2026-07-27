@@ -1,0 +1,56 @@
+
+:root{
+  --verde:     #1F2D2A;
+  --verde-deep:#141F1C;
+  --verde2:    #2B3F3B;
+  --terracota: #7A5D3A;
+  --terracota2:#9A7A52;
+  --crema:     #FAF7F0;
+  --oliva:     #6B7A4A;
+  --salvia:    #A7B89A;
+  --mostaza:   #C49A3A;
+  --tx-muted:  #6E7A72;
+  --t: .2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:var(--verde);color:var(--crema);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+a{color:inherit;text-decoration:none;}
+
+.cover-wrap{max-width:760px;width:100%;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--salvia);margin-bottom:18px;cursor:pointer;}
+.back-link:hover{color:var(--mostaza);}
+
+.cover{
+  background:linear-gradient(160deg, var(--verde2), var(--verde-deep));
+  border:1px solid rgba(250,247,240,.1);
+  border-radius:24px; padding:56px 44px; text-align:center;
+  position:relative; overflow:hidden;
+}
+@media(max-width:480px){
+  .cover{ padding:36px 22px; border-radius:18px; }
+  .cover-meta{ flex-direction:column; gap:10px; }
+}
+.cover::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(circle at 30% 20%, rgba(196,154,58,.14), transparent 55%);
+}
+.cover-icon{font-size:64px; margin-bottom:18px; position:relative;}
+.cover-eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--mostaza);margin-bottom:8px;position:relative;}
+.cover h1{font-size:clamp(30px,5vw,44px);font-weight:800;letter-spacing:-.01em;margin-bottom:14px;position:relative;}
+.cover p{font-size:15px;color:var(--salvia);max-width:480px;margin:0 auto 26px;line-height:1.6;position:relative;}
+.cover-meta{display:flex;justify-content:center;gap:22px;font-size:12.5px;color:var(--tx-muted);margin-bottom:30px;position:relative;}
+
+.btn-start{
+  position:relative;
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--mostaza); color:var(--verde-deep);
+  border:none; padding:14px 32px; border-radius:30px;
+  font-size:14.5px; font-weight:700; cursor:pointer; transition:var(--t);
+}
+.btn-start:hover{background:var(--terracota2); color:var(--crema); transform:translateY(-2px);}
+
+.soon-box{
+  position:relative; background:rgba(250,247,240,.05); border:1.5px dashed rgba(250,247,240,.2);
+  border-radius:16px; padding:20px; margin-top:8px; font-size:13px; color:var(--salvia); line-height:1.6;
+}
+.soon-box strong{color:var(--crema);}

@@ -1,0 +1,13 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+
+# Por si en el futuro se suma alguna config local o dependencias
+node_modules/
+.env
+.env.*

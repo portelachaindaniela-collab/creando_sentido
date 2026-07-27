@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mezclas y Sistemas — Fisicoquímica — ORIGEN</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#1F2D2A; --verde-deep:#141F1C; --verde2:#2B3F3B;
+  --terracota:#7A5D3A; --terracota2:#9A7A52; --crema:#FAF7F0;
+  --oliva:#6B7A4A; --salvia:#A7B89A; --mostaza:#C49A3A; --tx-muted:#6E7A72;
+  --ok:#5A8A5A; --err:#B5533C;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:var(--verde);color:var(--crema);min-height:100vh;}
+a{color:inherit;}
+
+#welcome-overlay{
+  position:fixed; inset:0; z-index:9999;
+  background:linear-gradient(rgba(10,6,3,.72),rgba(10,6,3,.85)), linear-gradient(160deg, var(--verde2), var(--verde-deep));
+  display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem;
+}
+.login-field{max-width:320px;margin:0 auto 1.2rem;}
+.login-field label{display:block;font-size:.8rem;color:var(--salvia);margin-bottom:.4rem;}
+.login-field input{width:100%;padding:.7rem 1rem;border-radius:10px;border:1px solid rgba(250,247,240,.2);background:rgba(250,247,240,.06);color:var(--crema);font-family:inherit;}
+.btn-enter{background:var(--mostaza);color:var(--verde-deep);border:none;padding:.9rem 2rem;border-radius:30px;font-weight:700;cursor:pointer;}
+.btn-enter:disabled{opacity:.4;cursor:not-allowed;}
+
+#reader{display:none; max-width:1200px; margin:0 auto; padding:2.5rem 2.5rem 5rem;}
+.back-link{display:inline-flex;gap:6px;font-size:13px;color:var(--salvia);margin-bottom:18px;}
+.back-link:hover{color:var(--mostaza);}
+
+.materia-titulo{font-size:clamp(28px,4.5vw,42px);font-weight:800;margin-bottom:1.4rem;}
+
+.indice-modulos{display:flex;gap:8px;margin-bottom:2rem;flex-wrap:wrap;}
+.indice-item{flex:1;min-width:110px;background:rgba(250,247,240,.05);border:1px solid rgba(250,247,240,.12);border-radius:10px;padding:.6rem .8rem;text-align:center;font-size:.72rem;}
+.indice-item.activo{border-color:var(--mostaza);background:rgba(196,154,58,.12);}
+.indice-item.hecho{border-color:var(--ok);}
+.indice-item .num{font-weight:700;color:var(--mostaza);display:block;margin-bottom:2px;}
+.indice-item.hecho .num{color:var(--ok);}
+.indice-item.clickeable{cursor:pointer;}
+.indice-item.clickeable:hover{border-color:var(--mostaza);background:rgba(196,154,58,.08);}
+
+.capitulo{display:none;}
+.capitulo.activo{display:block;}
+.origen-modulo-titulo{font-size:clamp(24px,4vw,34px);font-weight:800;margin-bottom:1rem;}
+.origen-modulo-seccion{background:rgba(250,247,240,.05);border:1px solid rgba(250,247,240,.1);border-radius:16px;padding:1.4rem 1.6rem;margin-bottom:1.2rem;line-height:1.65;font-size:.95rem;}
+.origen-modulo-seccion-titulo{color:var(--mostaza);font-size:1rem;margin-bottom:.6rem;}
+.origen-modulo-error-frecuente{border-left:3px solid var(--err);}
+.origen-modulo-curiosidad{border-left:3px solid var(--mostaza);}
+
+#btn-pedro{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--mostaza);color:var(--verde-deep);border:none;padding:.9rem 1.4rem;border-radius:30px;font-weight:700;cursor:pointer;z-index:700;box-shadow:0 4px 14px rgba(0,0,0,.3);}
+#pedro-panel{display:none;position:fixed;top:0;right:0;width:min(360px,90vw);height:100%;background:var(--verde2);border-left:1px solid rgba(250,247,240,.15);z-index:600;overflow-y:auto;padding:1.2rem;}
+.pedro-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;font-size:1.1rem;}
+.pedro-header strong{flex:1;}
+.pedro-close{background:transparent;border:1px solid rgba(250,247,240,.2);color:var(--crema);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.85rem;line-height:1;flex-shrink:0;}
+.pedro-close:hover{border-color:var(--mostaza);color:var(--mostaza);}
+.pedro-opciones{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem;}
+.pedro-opcion{background:rgba(250,247,240,.08);border:1px solid rgba(250,247,240,.15);color:var(--crema);padding:.6rem .8rem;border-radius:10px;text-align:left;cursor:pointer;font-size:.85rem;}
+.pedro-opcion.activa,.pedro-opcion:hover{background:var(--mostaza);color:var(--verde-deep);}
+.pedro-respuesta{background:rgba(250,247,240,.06);border-radius:10px;padding:1rem;font-size:.88rem;line-height:1.6;}
+.pedro-respuesta h4{color:var(--mostaza);margin-bottom:.5rem;}
+.pedro-intro{font-size:.88rem;color:var(--salvia);}
+
+.quiz-wrap{margin-top:2rem;}
+.q-block{background:rgba(250,247,240,.05);border-radius:14px;padding:1.2rem;margin-bottom:1rem;}
+.q-text{font-weight:600;margin-bottom:.7rem;}
+.q-opts{display:flex;flex-direction:column;gap:.5rem;}
+.q-opt{background:rgba(250,247,240,.08);border:1px solid rgba(250,247,240,.15);color:var(--crema);padding:.6rem .8rem;border-radius:8px;text-align:left;cursor:pointer;font-size:.88rem;}
+.q-opt.correct{border-color:var(--ok);background:rgba(90,138,90,.25);}
+.q-opt.wrong{border-color:var(--err);background:rgba(181,83,60,.25);}
+.q-written{width:100%;min-height:80px;background:rgba(250,247,240,.06);border:1px solid rgba(250,247,240,.15);border-radius:8px;color:var(--crema);padding:.7rem;font-family:inherit;}
+.q-fb{margin-top:.5rem;font-size:.85rem;min-height:1.2em;}
+.q-fb.ok{color:var(--ok);} .q-fb.err{color:var(--err);}
+.btn-accion{background:var(--mostaza);color:var(--verde-deep);border:none;padding:.8rem 1.6rem;border-radius:30px;font-weight:700;cursor:pointer;margin-top:.5rem;}
+.btn-accion:disabled{opacity:.4;cursor:not-allowed;}
+#quiz-result{display:none;background:rgba(250,247,240,.08);border-radius:14px;padding:1.4rem;margin-top:1rem;}
+.exam-q-label{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mostaza);margin-bottom:.4rem;}
+
+/* ══ acciones tras el examen final: enviar por correo + finalizar ══ */
+.acciones-finales{margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid rgba(250,247,240,.15);}
+.acciones-finales h4{font-size:.9rem;color:var(--mostaza);margin-bottom:.7rem;}
+.correo-envio{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem;}
+.correo-envio input{flex:1;min-width:220px;padding:.7rem 1rem;border-radius:10px;border:1px solid rgba(250,247,240,.2);background:rgba(250,247,240,.06);color:var(--crema);font-family:inherit;}
+.correo-envio button{background:var(--mostaza);color:var(--verde-deep);border:none;padding:.7rem 1.3rem;border-radius:10px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.correo-envio button:disabled{opacity:.5;cursor:not-allowed;}
+.correo-msg{font-size:.82rem;margin-bottom:1rem;min-height:1.1em;}
+.correo-msg.ok{color:var(--ok);} .correo-msg.err{color:var(--err);}
+.btn-finalizar{background:transparent;color:var(--crema);border:1.5px solid var(--salvia);padding:.75rem 1.5rem;border-radius:30px;font-weight:700;cursor:pointer;}
+.btn-finalizar:hover{border-color:var(--mostaza);color:var(--mostaza);}
+
+/* ══ aviso explícito: nunca se salta solo a la evaluación ══ */
+.aviso-examen{background:rgba(196,154,58,.1);border:1px solid rgba(196,154,58,.35);border-radius:16px;padding:1.4rem 1.6rem;margin:1.5rem 0;text-align:center;}
+.aviso-examen p{font-size:.95rem;margin-bottom:1rem;}
+.aviso-examen .btn-accion{margin-top:0;}
+
+/* ══ botón "← Volver" entre módulos (punto 6) ══ */
+.quiz-nav-inferior{display:flex;justify-content:flex-start;margin-top:1.2rem;}
+.btn-volver-modulo{background:transparent;border:1.5px solid var(--salvia);color:var(--crema);padding:.65rem 1.3rem;border-radius:30px;font-weight:700;cursor:pointer;font-family:inherit;font-size:.85rem;}
+.btn-volver-modulo:hover{border-color:var(--mostaza);color:var(--mostaza);}
+</style>
+</head>
+<body>
+
+<div id="welcome-overlay">
+  <p style="font-size:.85rem;color:var(--salvia);margin-bottom:.5rem;">¡Hacé click en la carita!</p>
+  <img src="../../assets/img/pedro.png" alt="Pedro" style="width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:.8rem;border:2px solid var(--mostaza);" onerror="this.outerHTML='<h1 style=&quot;font-size:2.2rem;color:var(--mostaza);margin-bottom:.5rem;&quot;>🧑‍🔬</h1>'">
+  <p style="max-width:420px;margin-bottom:1.5rem;">Pedro te acompaña en Fisicoquímica: Mezclas y Sistemas.</p>
+  <div class="login-field">
+    <label>¿Cómo te llamamos?</label>
+    <input type="text" id="login-alias" placeholder="Tu alias" oninput="checkEnterReady()" onkeydown="if(event.key==='Enter') enterApp()">
+  </div>
+  <button class="btn-enter" id="btn-enter-app" onclick="enterApp()" disabled>¡Empezar! →</button>
+</div>
+
+<div id="reader">
+  <a class="back-link" id="link-volver-materia" href="fisicoquimica-index.html" onclick="return handleVolverMateria(event)">← Volver a Fisicoquímica</a>
+  <h1 class="materia-titulo">Mezclas y Sistemas</h1>
+
+  <div class="indice-modulos" id="indice-modulos"><!-- generado por JS --></div>
+
+  <div id="capitulos-wrap"><!-- generado por JS --></div>
+
+  <div id="aviso-examen-disponible"></div>
+
+  <div id="examen-final-wrap" style="display:none;">
+    <h2 class="materia-titulo" style="font-size:1.8rem;">📝 Examen Final</h2>
+    <p style="font-size:.9rem;color:var(--salvia);margin-bottom:1.4rem;">8 objetivas + 4 de desarrollo, cruzando los 4 módulos. Nota máxima: 10.</p>
+    <div class="quiz-nav-inferior"><button class="btn-volver-modulo" onclick="volverDesdeExamenFinal()">← Volver</button></div>
+    <div id="examen-body"></div>
+    <button class="btn-accion" id="btn-submit-examen" onclick="submitExamen()" disabled>Enviar examen final</button>
+    <div id="examen-result"></div>
+    <div id="examen-acciones-finales"></div>
+  </div>
+</div>
+
+<button id="btn-pedro">Preguntale a Pedro</button>
+<div id="pedro-panel"></div>
+
+<!-- ══════ CORE de ORIGEN — compartido por todas las materias ══════ -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="../../core/js/storage.js"></script>
+<script src="../../core/js/corrector-heuristico.js"></script>
+<script src="../../core/js/evaluacion-motor.js"></script>
+<script src="../../core/js/devolucion-pedagogica.js"></script>
+<script src="../../core/js/navegacion-estado.js"></script>
+<script src="../../core/js/resultados.js"></script>
+<script src="../../core/js/email-resultados.js"></script>
+<script src="../../core/js/modulo-template.js"></script>
+<script src="../../core/js/pedro.js"></script>
+
+<script>
+const MODULOS = [
+{
+  titulo: 'Sistemas Homogéneos',
+  definicion: 'Un sistema homogéneo es una mezcla donde todos los componentes están distribuidos de manera uniforme en todo el espacio. No podés ver las partes separadas, ni con la vista ni con una lupa. La característica principal: tiene una sola fase — mirés donde mirés, la composición es la misma.',
+  desarrollo: 'Cuando algo se disuelve, tenemos tres conceptos clave: el SOLUTO es lo que se disuelve, el SOLVENTE es lo que disuelve, y la SOLUCIÓN es la mezcla final. Regla fácil: el solvente siempre está en mayor cantidad. En agua con azúcar, el agua es el solvente (hay mucha) y el azúcar es el soluto (hay poco). Una solución siempre es un sistema homogéneo.',
+  ejemplos: [
+    'Agua con sal (NaCl) — la sal es el soluto, el agua el solvente.',
+    'Jugo de naranja filtrado — vitaminas y azúcares disueltos en agua.',
+    'Aire — CO₂ y otros gases disueltos en nitrógeno (78%).',
+    'Alcohol en gel — alcohol disuelto en gel (agua + polímero).',
+    'Vinagre — ácido acético disuelto en agua.',
+  ],
+  aplicaciones: 'Saber si algo es homogéneo importa en la vida real: los medicamentos son soluciones homogéneas para que cada gota tenga la misma dosis, el agua potable se trata para ser homogénea y segura, y en la cocina controlamos mezclas homogéneas todo el tiempo (salsas, jarabes).',
+  curiosidad: 'El aire que respirás es un sistema homogéneo: es una mezcla de gases (78% nitrógeno, 21% oxígeno y otros) tan uniformemente distribuidos que no podés distinguir sus partes en ningún punto de la habitación.',
+  errorFrecuente: 'Homogéneo NO es sinónimo de "transparente". El café con leche bien mezclado no es transparente, pero sigue siendo homogéneo si no podés distinguir sus partes a simple vista. La clave no es el color, es la uniformidad.',
+  conceptosImportantes: ['Fase única', 'Soluto', 'Solvente', 'Solución'],
+  resumen: 'Un sistema homogéneo tiene una sola fase visible, con sus componentes distribuidos de manera uniforme — no se pueden distinguir las partes a simple vista. El que se disuelve es el soluto, el que disuelve es el solvente, y la mezcla resultante es la solución.',
+},
+{
+  titulo: 'Sistemas Heterogéneos',
+  definicion: 'Un sistema heterogéneo es una mezcla donde los componentes NO están distribuidos uniformemente. Se pueden distinguir dos o más partes o fases diferentes, ya sea a simple vista o con instrumentos simples. Diferencia clave: homogéneo = 1 sola fase visible; heterogéneo = 2 o más fases visibles.',
+  desarrollo: 'Hay tres tipos principales: la SUSPENSIÓN (sólido en líquido, sedimenta con el tiempo, ej. agua con harina), la EMULSIÓN (líquido en líquido, a veces sedimenta, ej. mayonesa) y el COLOIDE (partículas medianas, no sedimenta, ej. leche o gelatina). Truco para identificarlos: si agitás y después de un rato se separa, es heterogéneo; si agitás y queda igual, es homogéneo.',
+  ejemplos: [
+    'Agua con harina — suspensión, sedimenta con el tiempo.',
+    'Mayonesa — emulsión de aceite en agua/huevo.',
+    'Leche — coloide, no sedimenta por sí sola.',
+    'Agua con aceite — dos fases líquidas bien visibles.',
+  ],
+  aplicaciones: 'Para identificar un sistema heterogéneo: se ven capas distintas, los sólidos se depositan, el color no es uniforme, o se separan al reposar. Es la base para elegir después el método de separación correcto (Módulo 5).',
+  curiosidad: 'La leche parece homogénea a simple vista, pero es un coloide: tiene gotitas de grasa tan pequeñas que no sedimentan solas. Por eso se la "homogeneíza" industrialmente para que quede estable.',
+  errorFrecuente: 'Confundir "no sedimenta" con "es homogéneo". Un coloide (como la leche) no sedimenta, pero sigue siendo heterogéneo porque tiene más de una fase — solo que las partículas son demasiado chicas para verse separarse.',
+  conceptosImportantes: ['Suspensión', 'Emulsión', 'Coloide', 'Fase visible'],
+  resumen: 'Un sistema heterogéneo tiene dos o más fases distinguibles. Se clasifica en suspensión (sedimenta), emulsión (líquido en líquido) o coloide (no sedimenta pero sigue siendo heterogéneo). La clave para reconocerlo: agitar y ver si con el tiempo se vuelve a separar.',
+},
+{
+  titulo: 'Fases y Componentes',
+  definicion: 'Componente y fase son dos conceptos que se confunden mucho. COMPONENTE es cada sustancia química diferente que hay en la mezcla (ej. agua + sal = 2 componentes). FASE es cada porción homogénea de materia que está separada del resto por una superficie visible (ej. agua + aceite = 2 fases: la capa de agua y la capa de aceite).',
+  desarrollo: 'Truco para no confundirse: contás COMPONENTES contando cuántas sustancias distintas hay (aunque no se vean separadas), y contás FASES contando cuántas regiones o capas visibles hay en la mezcla. Para separar una mezcla se usan las diferencias en propiedades físicas entre sus componentes: densidad, punto de ebullición, tamaño de partícula o solubilidad.',
+  ejemplos: [
+    'Agua con sal — 2 componentes (agua y sal), 1 fase (solución) → homogéneo.',
+    'Agua con aceite — 2 componentes, 2 fases (capa acuosa y capa oleosa) → heterogéneo.',
+    'Agua + aceite + arena — 3 componentes, 3 fases → heterogéneo.',
+    'Aire — varios componentes (N₂, O₂, CO₂...), 1 fase gaseosa uniforme → homogéneo.',
+  ],
+  aplicaciones: 'Conocer las fases de una mezcla es el primer paso para elegir el método de separación correcto: densidad (agua 1g/ml vs aceite 0,9g/ml) para decantar, punto de ebullición (agua 100°C vs alcohol 78°C) para destilar, tamaño de partícula para filtrar, o solubilidad para cristalizar.',
+  curiosidad: 'Una mezcla puede tener más componentes que fases: el aire tiene decenas de gases distintos (componentes), pero todos forman una única fase gaseosa uniforme, porque están mezclados a nivel molecular.',
+  errorFrecuente: 'Pensar que "más componentes" siempre significa "más fases". No es así: agua con sal tiene 2 componentes pero solo 1 fase, porque la sal está disuelta y no forma una región separada visible.',
+  conceptosImportantes: ['Componente', 'Fase', 'Densidad', 'Punto de ebullición'],
+  resumen: 'Componente es cada sustancia química presente; fase es cada región homogénea separada por una superficie visible. Una mezcla homogénea siempre tiene 1 sola fase (aunque tenga varios componentes); una heterogénea tiene 2 o más. Las propiedades físicas que las distinguen son la base de los métodos de separación.',
+},
+{
+  titulo: 'Métodos de Separación',
+  definicion: 'En química, industria y vida cotidiana necesitamos obtener sustancias puras de las mezclas. Cada método de separación usa una propiedad física diferente para lograrlo. Regla de oro: el método que elegís depende del tipo de mezcla y de las propiedades de sus componentes.',
+  desarrollo: 'Filtración separa sólidos de líquidos por tamaño de partícula (el líquido pasa, el sólido queda retenido). Decantación separa fases de diferente densidad por gravedad. Destilación calienta la mezcla y aprovecha que cada componente hierve a distinta temperatura. Cristalización evapora el solvente lentamente dejando el soluto como cristales. Centrifugación usa rotación a alta velocidad para separar por densidad muy rápido. Cromatografía separa según la afinidad química de cada componente con una fase estacionaria.',
+  ejemplos: [
+    'Filtración — café, purificación de agua (propiedad: tamaño de partícula).',
+    'Decantación — agua + aceite, arena del agua (propiedad: densidad).',
+    'Destilación — alcohol + agua, agua de mar (propiedad: punto de ebullición).',
+    'Cristalización — sal del mar, azúcar (propiedad: solubilidad).',
+    'Centrifugación — análisis de sangre, leche (propiedad: densidad, a alta velocidad).',
+    'Cromatografía — tintas, pigmentos, drogas (propiedad: afinidad química).',
+  ],
+  aplicaciones: 'Elegir el método correcto depende de qué mezcla tenés: si es sólido en líquido, filtrás o centrifugás; si son dos líquidos con densidades distintas, decantás; si tienen puntos de ebullición distintos, destilás; si el soluto es un sólido disuelto, cristalizás.',
+  curiosidad: 'La cromatografía, hoy una técnica de laboratorio de precisión, se descubrió observando cómo los pigmentos de una tinta se separaban en distintas franjas de color al viajar por un papel húmedo — el mismo principio que separa mezclas complejas de drogas o proteínas hoy.',
+  errorFrecuente: 'Pensar que un solo método sirve para todo. Cada método aprovecha una propiedad física específica: usar filtración para separar dos líquidos mezclados (como alcohol y agua) no funciona, porque ahí la propiedad relevante es el punto de ebullición, no el tamaño de partícula.',
+  conceptosImportantes: ['Filtración', 'Decantación', 'Destilación', 'Cristalización'],
+  resumen: 'Cada método de separación aprovecha una propiedad física distinta: tamaño de partícula (filtración), densidad (decantación, centrifugación), punto de ebullición (destilación), solubilidad (cristalización) o afinidad química (cromatografía). Elegir bien el método empieza por identificar correctamente las fases y componentes de la mezcla (Módulo 4).',
+}
+];
+
+const BANCO = [
+  {
+  nombre: 'Sistemas Homogéneos',
+  mc: [
+    {q:'¿Cuál de estos es un ejemplo de sistema homogéneo?', opts:['Agua con aceite','Ensalada de frutas','Agua con sal disuelta','Arena en agua'], ans:2, concept:'Identificar sistemas homogéneos', dificultad:'facil'},
+    {q:'En una solución de agua con azúcar, ¿qué es el solvente?', opts:['El azúcar','El agua','Los dos','Ninguno'], ans:1, concept:'Soluto y solvente', dificultad:'facil'},
+    {q:'¿Cuál de estos NO es un sistema homogéneo?', opts:['Aire','Agua con alcohol','Agua con aceite','Agua con sal'], ans:2, concept:'Identificar sistemas homogéneos', dificultad:'medio'},
+    {q:'¿Qué nombre recibe la mezcla homogénea donde hay un soluto y un solvente?', opts:['Suspensión','Emulsión','Solución','Coloide'], ans:2, concept:'Definición de solución', dificultad:'facil'},
+    {q:'El aire es un sistema homogéneo porque...', opts:['Es un gas y los gases siempre son homogéneos','Sus componentes están mezclados uniformemente','Tiene un solo componente','Es transparente'], ans:1, concept:'Por qué el aire es homogéneo', dificultad:'medio'},
+  ],
+  desarrollo: [
+    {q:'¿Qué es un sistema homogéneo? Explicá con tus palabras.', keywords:['uniforme','mezcla','igual','distribuido','ver','distinguir','simple','vista'], concept:'Definición de sistema homogéneo', hint:'Pensá en si se puede ver diferencia entre las partes.', dificultad:'facil'},
+    {q:'¿Qué es el soluto y qué es el solvente en una solución?', keywords:['disuelve','disolvente','soluto','solvente','mayor','menor','cantidad'], concept:'Soluto y solvente', hint:'¿Cuál es el que se disuelve y cuál el que disuelve?', dificultad:'facil'},
+    {q:'¿Por qué en un sistema homogéneo no podés ver las partículas del soluto?', keywords:['pequeña','tamaño','partícula','microscópico','disuelto','ojo','visible'], concept:'Tamaño de partícula', hint:'Pensá en el tamaño de las partículas.', dificultad:'medio'},
+    {q:'¿Cuántas fases tiene un sistema homogéneo? Justificá tu respuesta.', keywords:['una','1','fase','sola','único','solo'], concept:'Fase única', hint:'Contá cuántas partes diferentes se pueden distinguir.', dificultad:'facil'},
+    {q:'Mencioná dos ejemplos de sistemas homogéneos y explicá por qué los elegiste.', keywords:['ejemplo','mezcla','uniforme','solución','disuelto'], concept:'Ejemplos de sistemas homogéneos', hint:'Pensá en líquidos de uso cotidiano donde no se ven las partes.', dificultad:'facil'},
+  ],
+  },
+  {
+  nombre: 'Sistemas Heterogéneos',
+  mc: [
+    {q:'¿Cuál de estos es un sistema heterogéneo?', opts:['Agua con sal','Agua con aceite','Vinagre','Alcohol con agua'], ans:1, concept:'Identificar sistemas heterogéneos', dificultad:'facil'},
+    {q:'¿Qué pasa con las partículas de una suspensión si la dejás en reposo?', opts:['Se disuelven','Suben a la superficie','Sedimentan en el fondo','No cambian'], ans:2, concept:'Suspensión', dificultad:'facil'},
+    {q:'La mayonesa es un ejemplo de...', opts:['Solución','Suspensión','Emulsión','Sistema homogéneo'], ans:2, concept:'Emulsión', dificultad:'medio'},
+    {q:'¿Cuál de estos es un coloide?', opts:['Agua con sal','Agua con arena','Leche','Agua con aceite sin agitar'], ans:2, concept:'Coloide', dificultad:'medio'},
+    {q:'¿Cómo podés distinguir un sistema heterogéneo a simple vista?', opts:['No se puede distinguir','Se ven las distintas partes o fases','Cambia de color','Se vuelve transparente'], ans:1, concept:'Distinguir sistemas heterogéneos', dificultad:'facil'},
+  ],
+  desarrollo: [
+    {q:'¿Qué diferencia hay entre un sistema homogéneo y uno heterogéneo? Usá tus propias palabras.', keywords:['distinguir','ver','fase','diferente','uniforme','partes','mezcla'], concept:'Homogéneo vs. heterogéneo', hint:'Pensá en qué pasa cuando mirás la mezcla.', dificultad:'facil'},
+    {q:'¿Qué es una suspensión? Dá un ejemplo.', keywords:['partícula','grande','sedimenta','fondo','deposita','agua','sólido'], concept:'Suspensión', hint:'Pensá en qué pasa si dejás reposar la mezcla.', dificultad:'facil'},
+    {q:'¿Qué es una emulsión? ¿En qué se diferencia de una suspensión?', keywords:['líquido','gotas','emulsión','suspensión','sólido','aceite','agua','mezcla'], concept:'Emulsión', hint:'Pensá en que en una emulsión ambas partes son líquidas.', dificultad:'medio'},
+    {q:'¿Cuántas fases puede tener un sistema heterogéneo? Dá un ejemplo con dos fases.', keywords:['dos','2','más','fase','aceite','agua','capas','separadas'], concept:'Fases de un sistema heterogéneo', hint:'Pensá en el agua con aceite.', dificultad:'medio'},
+    {q:'¿Por qué la leche parece homogénea a simple vista pero no lo es?', keywords:['coloide','grasa','partícula','microscópico','tamaño','vista','lupa','apariencia'], concept:'La leche como coloide', hint:'Pensá en el tamaño de las partículas de grasa.', dificultad:'dificil'},
+  ],
+  },
+  {
+  nombre: 'Fases y Componentes',
+  mc: [
+    {q:'¿Cuántas fases tiene una mezcla de agua y aceite?', opts:['Una','Dos','Tres','Depende de la temperatura'], ans:1, concept:'Fases de una mezcla', dificultad:'facil'},
+    {q:'¿Qué propiedad física se usa para separar dos líquidos de diferente densidad?', opts:['Punto de fusión','Densidad','Color','Masa molar'], ans:1, concept:'Densidad', dificultad:'facil'},
+    {q:'¿Cuál propiedad se usa en la destilación para separar componentes?', opts:['Densidad','Tamaño de partícula','Punto de ebullición','Solubilidad en agua'], ans:2, concept:'Punto de ebullición', dificultad:'medio'},
+    {q:'¿Cuántos componentes tiene el agua pura (H₂O)?', opts:['Uno (agua)','Dos (hidrógeno y oxígeno)','Tres','Ninguno, no es una mezcla'], ans:0, concept:'Componentes de una sustancia pura', dificultad:'dificil'},
+    {q:'Una mezcla tiene 1 fase y 2 componentes. Eso significa que es...', opts:['Heterogénea','Homogénea (los componentes están disueltos)','Imposible','Una suspensión'], ans:1, concept:'Relación entre fases y componentes', dificultad:'dificil'},
+  ],
+  desarrollo: [
+    {q:'¿Qué es una FASE en una mezcla? Diferenciala de un COMPONENTE.', keywords:['fase','componente','homogénea','porción','sustancia','química','separada','superficie'], concept:'Fase vs. componente', hint:'Una fase es una región homogénea; un componente es cada sustancia.', dificultad:'facil'},
+    {q:'¿Cuántos componentes y cuántas fases tiene agua con sal disuelta? Justificá.', keywords:['dos','2','componente','fase','una','1','sal','agua','disuelto','homogéneo'], concept:'Componentes y fases del agua con sal', hint:'Contá sustancias diferentes vs. regiones visibles.', dificultad:'medio'},
+    {q:'Si tenés agua + aceite + arena, ¿cuántas fases y cuántos componentes hay? Explicá.', keywords:['tres','3','dos','fase','componente','aceite','agua','arena','sólido','líquido'], concept:'Fases y componentes de una mezcla compleja', hint:'Contá cada región separada y cada sustancia química.', dificultad:'dificil'},
+    {q:'¿Por qué es importante conocer las fases de una mezcla para separarla?', keywords:['propiedad','separar','método','diferente','densidad','ebullición','tamaño','fase'], concept:'Importancia de las fases para separar', hint:'Cada tipo de separación usa una propiedad diferente.', dificultad:'medio'},
+    {q:'Describí con tus palabras cómo identificarías las fases de una mezcla desconocida en el laboratorio.', keywords:['observar','ver','color','límite','separación','capa','fase','diferente'], concept:'Identificar fases en el laboratorio', hint:'Pensá en qué harías para verlas: agitar, dejar reposar, iluminar...', dificultad:'medio'},
+  ],
+  },
+  {
+  nombre: 'Métodos de Separación',
+  mc: [
+    {q:'¿Qué método usarías para separar arena del agua?', opts:['Destilación','Cristalización','Filtración','Decantación'], ans:2, concept:'Filtración', dificultad:'facil'},
+    {q:'¿Qué método se usa para separar alcohol del agua?', opts:['Filtración','Decantación','Destilación','Cristalización'], ans:2, concept:'Destilación', dificultad:'facil'},
+    {q:'La cristalización se usa para recuperar...', opts:['Un gas disuelto en agua','Un sólido disuelto en un líquido','Dos líquidos mezclados','Un sólido del aceite'], ans:1, concept:'Cristalización', dificultad:'medio'},
+    {q:'La cromatografía separa los componentes de una mezcla según...', opts:['Su densidad','Su punto de ebullición','Su afinidad con una fase móvil','Su tamaño de partícula'], ans:2, concept:'Cromatografía', dificultad:'medio'},
+    {q:'¿Qué método usaría un cocinero para separar el jugo de limón de las semillas y la pulpa?', opts:['Destilación','Filtración/colado','Cristalización','Centrifugación'], ans:1, concept:'Aplicar filtración', dificultad:'facil'},
+  ],
+  desarrollo: [
+    {q:'¿Qué es la filtración y para qué tipo de mezcla se usa? Dá un ejemplo.', keywords:['filtro','sólido','líquido','papel','separar','tamaño','partícula','arena','agua'], concept:'Filtración', hint:'Pensá en qué mezclas tiene sólido + líquido.', dificultad:'facil'},
+    {q:'Explicá cómo funciona la decantación. ¿Cuándo la usarías?', keywords:['densidad','gravedad','capa','líquido','separar','diferente','reposo','aceite','agua'], concept:'Decantación', hint:'Pensá en dos líquidos que no se mezclan o un sólido pesado.', dificultad:'facil'},
+    {q:'¿Cómo funciona la destilación? ¿Qué propiedad aprovecha para separar?', keywords:['ebullición','temperatura','vapor','condensar','calentar','punto','diferente','separar'], concept:'Destilación', hint:'Pensá en calentar y en el punto de ebullición de cada líquido.', dificultad:'medio'},
+    {q:'¿Para qué sirve la centrifugación y en qué situaciones se usa?', keywords:['centrífuga','fuerza','densidad','separar','sangre','célula','sedimento','velocidad'], concept:'Centrifugación', hint:'Pensá en laboratorios de análisis de sangre.', dificultad:'medio'},
+    {q:'Elegí DOS métodos de separación y compará: ¿en qué se parecen y en qué se diferencian?', keywords:['método','separar','diferencia','similar','propiedad','mezcla','comparar'], concept:'Comparación de métodos de separación', hint:'Pensá en qué propiedad usa cada uno y qué tipo de mezcla separa.', dificultad:'dificil'},
+  ],
+  }
+];
+
+// Etiquetado de módulo/tema (punto 10 de la revisión funcional): se
+// completa automáticamente a partir del nombre de cada sección, para
+// no repetir el mismo string a mano en las 40 preguntas. "concept" y
+// "dificultad" sí varían por pregunta y están escritos arriba, uno
+// por uno. Para esta materia, módulo y tema coinciden (cada uno de
+// los 4 módulos es, en esta granularidad, un único tema) — el campo
+// "tema" queda listo para materias futuras donde un módulo tenga
+// varios temas distintos adentro.
+BANCO.forEach(seccion=>{
+  [...seccion.mc, ...seccion.desarrollo].forEach(q=>{
+    q.modulo = seccion.nombre;
+    q.tema = seccion.nombre;
+  });
+});
+
+// ══════════════════════════════════════════
+//  IDENTIDAD (Pedro ya es el guía asignado de Exactas)
+// ══════════════════════════════════════════
+let { alias: studentAlias } = getIdentity();
+function getAlias(){ return studentAlias || 'estudiante'; }
+
+function checkEnterReady(){
+  const aliasInput = document.getElementById('login-alias');
+  const aliasVal = aliasInput ? aliasInput.value.trim() : studentAlias;
+  document.getElementById('btn-enter-app').disabled = !aliasVal;
+}
+
+function enterApp(){
+  const aliasInput = document.getElementById('login-alias');
+  const aliasVal = aliasInput ? aliasInput.value.trim() : '';
+  if(!aliasVal){ checkEnterReady(); return; }
+  studentAlias = aliasVal;
+  setIdentity(studentAlias, 'pedro');
+  document.getElementById('welcome-overlay').style.display = 'none';
+  mostrarReader();
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+  const aliasInput = document.getElementById('login-alias');
+  if(aliasInput && studentAlias) aliasInput.value = studentAlias;
+  checkEnterReady();
+  if(studentAlias){
+    document.getElementById('welcome-overlay').style.display = 'none';
+    mostrarReader();
+  } else {
+    document.getElementById('welcome-overlay').style.display = 'flex';
+  }
+});
+
+// ══════════════════════════════════════════
+//  ESTADO DE LOS 5 CAPÍTULOS (secuencial, dentro de ESTE tema)
+// ══════════════════════════════════════════
+let capituloActivo = 0;
+let capituloPasado = [false,false,false,false];
+let quizItemsPorCap = [null,null,null,null,null];
+let quizAnswersPorCap = [null,null,null,null,null];
+
+function mostrarReader(){
+  document.getElementById('reader').style.display = 'block';
+  NavegacionEstado.iniciarAutoguardadoScroll('fisicoquimica', 'mezclas-y-sistemas', 'capitulo-'+capituloActivo);
+
+  // Restaurar progreso de capítulos ya aprobados
+  for(let i=0;i<capituloPasado.length;i++){
+    const p = NavegacionEstado.obtenerProgresoModulo('fisicoquimica', 'mezclas-y-sistemas-cap-'+i);
+    if(p>=100) capituloPasado[i]=true;
+  }
+  // arrancar en el primer capítulo no aprobado
+  capituloActivo = capituloPasado.findIndex(p=>!p);
+  if(capituloActivo === -1) capituloActivo = MODULOS.length - 1; // ya están todos hechos
+
+  renderIndice();
+  renderCapitulos();
+  mostrarCapitulo(capituloActivo);
+  actualizarPedro();
+
+  // Punto 3 de la revisión funcional: nunca saltar automáticamente a
+  // la evaluación. Aunque los 4 módulos ya estén completos, se queda
+  // mostrando el último capítulo (con su contenido) y ofrece un botón
+  // explícito para pasar al examen final — el alumno decide cuándo.
+  if(capituloPasado.every(p=>p)) mostrarAvisoExamenDisponible();
+  else document.getElementById('aviso-examen-disponible').innerHTML = '';
+}
+
+function renderIndice(){
+  const el = document.getElementById('indice-modulos');
+  el.innerHTML = MODULOS.map((m,i)=>{
+    const clase = capituloPasado[i] ? 'hecho' : (i===capituloActivo ? 'activo' : '');
+    const alcanzable = i<=capituloFrontera;
+    const claseExtra = alcanzable ? ' clickeable' : '';
+    const click = alcanzable ? ` onclick="irACapituloDesdeIndice(${i})"` : '';
+    return `<div class="indice-item ${clase}${claseExtra}"${click}><span class="num">${capituloPasado[i]?'✓':(i+1)}</span>${m.titulo}</div>`;
+  }).join('');
+}
+
+function renderCapitulos(){
+  const wrap = document.getElementById('capitulos-wrap');
+  wrap.innerHTML = MODULOS.map((m,i)=>`
+    <div class="capitulo" id="cap-${i}">
+      <div id="cap-contenido-${i}"></div>
+      <div class="quiz-wrap">
+        <h3 style="color:var(--mostaza);margin-bottom:.8rem;">📝 Evaluación: ${m.titulo}</h3>
+        <p style="font-size:.85rem;color:var(--salvia);margin-bottom:1rem;">5 preguntas (3 objetivas + 2 de desarrollo). Necesitás 70% para avanzar.</p>
+        <div id="quiz-body-${i}"></div>
+        <button class="btn-accion" id="btn-submit-${i}" onclick="submitQuizCapitulo(${i})" disabled>Enviar evaluación</button>
+        <div id="quiz-result-${i}"></div>
+        ${i>0 ? `<div class="quiz-nav-inferior"><button class="btn-volver-modulo" onclick="volverModuloAnterior(${i})">← Volver</button></div>` : ''}
+      </div>
+    </div>
+  `).join('');
+  MODULOS.forEach((m,i)=> ModuloTemplate.montarEn(document.getElementById(`cap-contenido-${i}`), m));
+}
+
+function mostrarCapitulo(i){
+  document.querySelectorAll('.capitulo').forEach(c=>c.classList.remove('activo'));
+  const cap = document.getElementById('cap-'+i);
+  if(cap) cap.classList.add('activo');
+  capituloActivo = i;
+  capituloFrontera = Math.max(capituloFrontera, i);
+  renderIndice();
+  buildQuizCapitulo(i);
+  NavegacionEstado.iniciarAutoguardadoScroll('fisicoquimica', 'mezclas-y-sistemas', 'capitulo-'+i);
+  NavegacionEstado.restaurarScrollSiCorresponde('fisicoquimica', 'mezclas-y-sistemas', 'capitulo-'+i);
+  actualizarPedro();
+}
+
+function actualizarPedro(){
+  Pedro.configurarAvatar('../../assets/img/pedro.png');
+  Pedro.montarPanel(document.getElementById('pedro-panel'), document.getElementById('btn-pedro'), MODULOS[capituloActivo]);
+}
+
+// ══════════════════════════════════════════
+//  QUIZ DE CADA CAPÍTULO (Core: evaluacion-motor.js)
+// ══════════════════════════════════════════
+// Reconstruye en modo lectura la corrección de un capítulo ya
+// rendido: mismas preguntas, la respuesta que dio el alumno marcada
+// correcta/incorrecta, y la misma devolución que vio al enviar —
+// todo deshabilitado (no se puede modificar una evaluación ya
+// corregida). Se recalcula con el motor (determinístico a partir de
+// los mismos items+respuestas guardados), no se inventa nada nuevo.
+function renderQuizCompletado(i){
+  const items = quizItemsPorCap[i];
+  const respuestas = quizAnswersPorCap[i];
+  const resultado = EvaluacionMotor.corregirQuizSeccion(items, respuestas);
+
+  const body = document.getElementById(`quiz-body-${i}`);
+  body.innerHTML = '';
+  items.forEach((q,qi)=>{
+    const d = resultado.detalle[qi];
+    const block = document.createElement('div');
+    block.className = 'q-block';
+    let inner = `<p class="q-text">${qi+1}. ${q.q}</p>`;
+    if(q.type==='mc'){
+      inner += `<div class="q-opts">` + q.opts.map((o,oi)=>{
+        let cls = 'q-opt';
+        if(oi===d.correctIdx) cls += ' correct';
+        else if(oi===d.elegido && !d.correcto) cls += ' wrong';
+        return `<button class="${cls}" disabled>${o}</button>`;
+      }).join('') + `</div>`;
+      inner += `<p class="q-fb ${d.correcto?'ok':'err'}">${d.correcto ? '✅ Correcto' : '❌ Incorrecto'}</p>`;
+    } else {
+      inner += `<textarea class="q-written" id="qw-completo-${i}-${qi}" disabled placeholder="(sin responder)"></textarea>`;
+      let fbTxt, fbCls;
+      fbTxt = DevolucionPedagogica.orientacionItem(d);
+      fbCls = d.puntos>=1 ? 'ok' : (d.puntos>=0.5 ? '' : 'err');
+      inner += `<p class="q-fb ${fbCls}">${fbTxt}</p>`;
+    }
+    block.innerHTML = inner;
+    body.appendChild(block);
+    if(q.type!=='mc'){
+      document.getElementById(`qw-completo-${i}-${qi}`).value = (respuestas.desarrollo[qi] || '');
+    }
+  });
+  document.getElementById(`btn-submit-${i}`).style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+//  NAVEGACIÓN ENTRE MÓDULOS (punto 6 de la revisión funcional)
+//  El alumno puede volver a un módulo anterior para releer contenido,
+//  revisar sus respuestas y las devoluciones recibidas — pero nunca
+//  puede modificar una evaluación ya enviada (renderQuizCompletado
+//  arriba siempre deshabilita los controles).
+// ══════════════════════════════════════════
+let capituloFrontera = 0; // el capítulo más avanzado al que ya llegó (nunca retrocede)
+
+// Botón "← Volver" de cada cuestionario: retrocede un módulo.
+function volverModuloAnterior(i){
+  if(i<=0) return;
+  mostrarCapitulo(i-1);
+  document.getElementById('cap-'+(i-1)).scrollIntoView({behavior:'smooth'});
+}
+
+// Click en el índice de arriba: solo se puede saltar a un capítulo
+// ya alcanzado (el actual o uno anterior) — nunca a uno futuro que
+// todavía no se desbloqueó.
+function irACapituloDesdeIndice(i){
+  if(i>capituloFrontera) return;
+  mostrarCapitulo(i);
+  document.getElementById('cap-'+i).scrollIntoView({behavior:'smooth'});
+}
+
+// "← Volver" desde el examen final: el contenido y el cuestionario
+// del último capítulo ya están en esta misma página (arriba del
+// examen), así que alcanza con desplazarse — no hace falta cambiar
+// de vista ni se toca el estado del examen en curso.
+function volverDesdeExamenFinal(){
+  document.getElementById('cap-4').scrollIntoView({behavior:'smooth'});
+}
+
+function buildQuizCapitulo(i){
+  const clave = `fisicoquimica:mezclas-y-sistemas:${i}`;
+  const guardado = NavegacionEstado.obtenerIntentoEvaluacion(clave);
+
+  if (guardado && !guardado.submitted && guardado.items && guardado.items.length){
+    quizItemsPorCap[i] = guardado.items;
+    quizAnswersPorCap[i] = {mc: guardado.mcAnswers, desarrollo: guardado.writtenAnswers};
+  } else if (guardado && guardado.submitted && capituloPasado[i]) {
+    // Ya rendido: se muestra la corrección completa, en modo lectura
+    // (no se puede volver a responder), para que el alumno pueda
+    // revisar sus respuestas y las devoluciones recibidas (punto 6).
+    quizItemsPorCap[i] = guardado.items;
+    quizAnswersPorCap[i] = {mc: guardado.mcAnswers, desarrollo: guardado.writtenAnswers};
+    renderQuizCompletado(i);
+    return;
+  } else {
+    const armado = EvaluacionMotor.armarQuizSeccion(BANCO, i);
+    quizItemsPorCap[i] = armado.items;
+    quizAnswersPorCap[i] = {mc:{}, desarrollo:{}};
+    NavegacionEstado.guardarIntentoEvaluacion(clave, {items:quizItemsPorCap[i], mcAnswers:{}, writtenAnswers:{}, submitted:false});
+  }
+
+  const body = document.getElementById(`quiz-body-${i}`);
+  body.innerHTML = '';
+  quizItemsPorCap[i].forEach((q,qi)=>{
+    const block = document.createElement('div');
+    block.className = 'q-block';
+    let inner = `<p class="q-text">${qi+1}. ${q.q}</p>`;
+    if(q.type==='mc'){
+      inner += `<div class="q-opts" id="qopts-${i}-${qi}">` + q.opts.map((o,oi)=>`<button class="q-opt" onclick="selectMC(${i},${qi},${oi})">${o}</button>`).join('') + `</div>`;
+    } else {
+      inner += `<textarea class="q-written" id="qw-${i}-${qi}" oninput="onWrittenInput(${i},${qi})" placeholder="Escribí tu respuesta acá..."></textarea>`;
+      if(q.hint) inner += `<p style="font-size:.78rem;color:var(--salvia);margin-top:.4rem;">💡 ${q.hint}</p>`;
+    }
+    inner += `<p class="q-fb" id="qfb-${i}-${qi}"></p>`;
+    block.innerHTML = inner;
+    body.appendChild(block);
+
+    if(q.type==='mc' && quizAnswersPorCap[i].mc[qi]!==undefined){
+      const btn = document.getElementById(`qopts-${i}-${qi}`).querySelectorAll('.q-opt')[quizAnswersPorCap[i].mc[qi]];
+      if(btn){ btn.style.borderColor='var(--mostaza)'; btn.style.background='rgba(196,154,58,.2)'; }
+    } else if(q.type!=='mc' && quizAnswersPorCap[i].desarrollo[qi]){
+      document.getElementById(`qw-${i}-${qi}`).value = quizAnswersPorCap[i].desarrollo[qi];
+    }
+  });
+  actualizarBotonEnvio(i);
+}
+
+function selectMC(i, qi, optIdx){
+  const optsDiv = document.getElementById(`qopts-${i}-${qi}`);
+  optsDiv.querySelectorAll('.q-opt').forEach(b=>{ b.style.borderColor=''; b.style.background=''; });
+  optsDiv.querySelectorAll('.q-opt')[optIdx].style.borderColor='var(--mostaza)';
+  optsDiv.querySelectorAll('.q-opt')[optIdx].style.background='rgba(196,154,58,.2)';
+  quizAnswersPorCap[i].mc[qi] = optIdx;
+  NavegacionEstado.guardarIntentoEvaluacion(`fisicoquimica:mezclas-y-sistemas:${i}`, {items:quizItemsPorCap[i], mcAnswers:quizAnswersPorCap[i].mc, writtenAnswers:quizAnswersPorCap[i].desarrollo, submitted:false});
+  actualizarBotonEnvio(i);
+}
+
+function onWrittenInput(i, qi){
+  quizAnswersPorCap[i].desarrollo[qi] = document.getElementById(`qw-${i}-${qi}`).value;
+  NavegacionEstado.guardarIntentoEvaluacion(`fisicoquimica:mezclas-y-sistemas:${i}`, {items:quizItemsPorCap[i], mcAnswers:quizAnswersPorCap[i].mc, writtenAnswers:quizAnswersPorCap[i].desarrollo, submitted:false});
+  actualizarBotonEnvio(i);
+}
+
+function actualizarBotonEnvio(i){
+  // Siempre habilitado: la corrección (no en el momento, recién al
+  // enviar) es la que informa qué quedó incompleto o mal. No se
+  // bloquea el envío por respuestas faltantes.
+  document.getElementById(`btn-submit-${i}`).disabled = false;
+}
+
+function submitQuizCapitulo(i){
+  document.getElementById(`btn-submit-${i}`).disabled = true;
+  const clave = `fisicoquimica:mezclas-y-sistemas:${i}`;
+  NavegacionEstado.guardarIntentoEvaluacion(clave, {items:quizItemsPorCap[i], mcAnswers:quizAnswersPorCap[i].mc, writtenAnswers:quizAnswersPorCap[i].desarrollo, submitted:true});
+
+  const resultado = EvaluacionMotor.corregirQuizSeccion(quizItemsPorCap[i], quizAnswersPorCap[i]);
+  resultado.detalle.forEach(d=>{
+    const q = quizItemsPorCap[i][d.idx];
+    const fb = document.getElementById(`qfb-${i}-${d.idx}`);
+    if(q.type==='mc'){
+      const optsDiv = document.getElementById(`qopts-${i}-${d.idx}`);
+      optsDiv.querySelectorAll('.q-opt').forEach((b,bi)=>{
+        b.disabled = true;
+        if(bi===d.correctIdx) b.classList.add('correct');
+        else if(bi===d.elegido && !d.correcto) b.classList.add('wrong');
+      });
+      fb.textContent = d.correcto ? '✅ Correcto' : '❌ Incorrecto';
+      fb.className = 'q-fb ' + (d.correcto?'ok':'err');
+    } else {
+      document.getElementById(`qw-${i}-${d.idx}`).disabled = true;
+      fb.textContent = DevolucionPedagogica.orientacionItem(d);
+      fb.className = 'q-fb ' + (d.puntos>=1 ? 'ok' : (d.puntos>=0.5 ? '' : 'err'));
+    }
+  });
+
+  // Se avanza al enviar (haber intentado el módulo), no al aprobar.
+  // La nota queda registrada igual, pero no bloquea el progreso —
+  // bloquear por nota no es un criterio de esta plataforma.
+  capituloPasado[i] = true;
+  NavegacionEstado.guardarProgresoModulo('fisicoquimica', 'mezclas-y-sistemas-cap-'+i, 100);
+  const pctGeneral = Math.round((capituloPasado.filter(p=>p).length/capituloPasado.length)*100);
+  NavegacionEstado.guardarProgresoModulo('fisicoquimica', 'mezclas-y-sistemas', pctGeneral);
+
+  Resultados.mostrarEn(document.getElementById(`quiz-result-${i}`), resultado, {alias:getAlias()});
+  document.getElementById(`quiz-result-${i}`).style.display = 'block';
+  renderIndice();
+
+  if (capituloPasado.every(p=>p)){
+    mostrarAvisoExamenDisponible();
+  } else {
+    const siguiente = capituloPasado.findIndex(p=>!p);
+    setTimeout(()=> mostrarCapitulo(siguiente), 1200);
+  }
+}
+
+// ══════════════════════════════════════════
+//  EXAMEN FINAL — solo se puede rendir con los 5 capítulos aprobados
+// ══════════════════════════════════════════
+let examenItems = [];
+let examenAnswers = {mc:{}, desarrollo:{}};
+const CLAVE_EXAMEN = 'fisicoquimica:mezclas-y-sistemas:final';
+
+// Punto 3 de la revisión funcional: en vez de saltar solo a la
+// evaluación, se muestra un aviso explícito con un botón — el alumno
+// tiene que elegir activamente pasar al examen final. Sirve tanto si
+// el examen todavía no se rindió (invita a rendirlo) como si ya se
+// rindió y solo falta revisarlo (mostrarExamenFinal→buildExamen ya
+// resuelve internamente cuál de los dos casos corresponde mostrar).
+function mostrarAvisoExamenDisponible(){
+  const cont = document.getElementById('aviso-examen-disponible');
+  if(!cont) return;
+  const yaRendido = !!(NavegacionEstado.obtenerIntentoEvaluacion(CLAVE_EXAMEN) || {}).submitted;
+  cont.innerHTML = `
+    <div class="aviso-examen">
+      <p>${yaRendido ? '✅ Ya completaste los 4 módulos y rendiste el examen final.' : '🎉 ¡Completaste los 4 módulos de este tema!'}</p>
+      <button class="btn-accion" onclick="mostrarExamenFinal()">${yaRendido ? 'Ver mi examen final →' : 'Rendir el examen final →'}</button>
+    </div>`;
+}
+
+function mostrarExamenFinal(){
+  document.getElementById('aviso-examen-disponible').innerHTML = '';
+  document.getElementById('examen-final-wrap').style.display = 'block';
+  buildExamen();
+  document.getElementById('examen-final-wrap').scrollIntoView({behavior:'smooth'});
+}
+
+function buildExamen(){
+  const guardado = NavegacionEstado.obtenerIntentoEvaluacion(CLAVE_EXAMEN);
+
+  if (guardado && guardado.submitted && guardado.items && guardado.items.length){
+    document.getElementById('examen-body').innerHTML = `
+      <div style="text-align:center;">
+        <p style="margin-bottom:1rem;">✅ Ya rendiste el examen final.</p>
+        <button class="btn-accion" style="margin:0 auto;" onclick="verResultadosExamen()">Ver mis resultados →</button>
+      </div>`;
+    document.getElementById('btn-submit-examen').style.display = 'none';
+    examenItems = guardado.items;
+    examenAnswers = {mc: guardado.mcAnswers, desarrollo: guardado.writtenAnswers};
+    return;
+  }
+
+  if (guardado && !guardado.submitted && guardado.items && guardado.items.length){
+    examenItems = guardado.items;
+    examenAnswers = {mc: guardado.mcAnswers, desarrollo: guardado.writtenAnswers};
+  } else {
+    examenItems = EvaluacionMotor.armarExamenFinal(BANCO, {mcPorSeccion:2, desarrolloPorSeccion:1, mcExtra:0, desarrolloExtra:0});
+    examenAnswers = {mc:{}, desarrollo:{}};
+    NavegacionEstado.guardarIntentoEvaluacion(CLAVE_EXAMEN, {items:examenItems, mcAnswers:{}, writtenAnswers:{}, submitted:false});
+  }
+
+  const body = document.getElementById('examen-body');
+  body.innerHTML = '';
+  examenItems.forEach((q,i)=>{
+    const block = document.createElement('div');
+    block.className = 'q-block';
+    const typeLabel = q.type==='mc' ? '🔘 Objetiva' : '✍️ Desarrollo';
+    let inner = `<div class="exam-q-label">${typeLabel} · ${q.nombreSeccion}</div><p class="q-text">${i+1}. ${q.q}</p>`;
+    if(q.type==='mc'){
+      inner += `<div class="q-opts" id="feopts-${i}">` + q.opts.map((o,oi)=>`<button class="q-opt" onclick="selectFinalMC(${i},${oi})">${o}</button>`).join('') + `</div>`;
+    } else {
+      inner += `<textarea class="q-written" id="fetext-${i}" oninput="onFinalWrittenInput(${i})" placeholder="Escribí tu respuesta acá..."></textarea>`;
+      if(q.hint) inner += `<p style="font-size:.78rem;color:var(--salvia);margin-top:.4rem;">💡 ${q.hint}</p>`;
+    }
+    inner += `<p class="q-fb" id="fefb-${i}"></p>`;
+    block.innerHTML = inner;
+    body.appendChild(block);
+
+    if(q.type==='mc' && examenAnswers.mc[i]!==undefined){
+      const btn = document.getElementById(`feopts-${i}`).querySelectorAll('.q-opt')[examenAnswers.mc[i]];
+      if(btn){ btn.style.borderColor='var(--mostaza)'; btn.style.background='rgba(196,154,58,.2)'; }
+    } else if(q.type!=='mc' && examenAnswers.desarrollo[i]){
+      document.getElementById(`fetext-${i}`).value = examenAnswers.desarrollo[i];
+    }
+  });
+  actualizarBotonExamen();
+}
+
+function selectFinalMC(i, optIdx){
+  const optsDiv = document.getElementById(`feopts-${i}`);
+  optsDiv.querySelectorAll('.q-opt').forEach(b=>{ b.style.borderColor=''; b.style.background=''; });
+  optsDiv.querySelectorAll('.q-opt')[optIdx].style.borderColor='var(--mostaza)';
+  optsDiv.querySelectorAll('.q-opt')[optIdx].style.background='rgba(196,154,58,.2)';
+  examenAnswers.mc[i] = optIdx;
+  NavegacionEstado.guardarIntentoEvaluacion(CLAVE_EXAMEN, {items:examenItems, mcAnswers:examenAnswers.mc, writtenAnswers:examenAnswers.desarrollo, submitted:false});
+  actualizarBotonExamen();
+}
+
+function onFinalWrittenInput(i){
+  examenAnswers.desarrollo[i] = document.getElementById(`fetext-${i}`).value;
+  NavegacionEstado.guardarIntentoEvaluacion(CLAVE_EXAMEN, {items:examenItems, mcAnswers:examenAnswers.mc, writtenAnswers:examenAnswers.desarrollo, submitted:false});
+  actualizarBotonExamen();
+}
+
+function actualizarBotonExamen(){
+  document.getElementById('btn-submit-examen').disabled = false;
+}
+
+let ultimoResultadoExamen = null; // para poder reenviar el correo sin recalcular
+
+function verResultadosExamen(){
+  const resultado = EvaluacionMotor.corregirExamenFinal(examenItems, examenAnswers);
+  const fortalezasPorTema = [], aRepasarPorTema = [];
+  resultado.detalle.forEach(d=>{
+    const q = examenItems[d.idx];
+    const ok = q.type==='mc' ? d.correcto : d.puntos>=1;
+    (ok ? fortalezasPorTema : aRepasarPorTema).push(q.nombreSeccion);
+  });
+  const resultadoCompleto = {...resultado, fortalezas:[...new Set(fortalezasPorTema)], aRepasar:[...new Set(aRepasarPorTema)]};
+  ultimoResultadoExamen = resultadoCompleto;
+  Resultados.mostrarEn(document.getElementById('examen-result'), resultadoCompleto, {alias:getAlias()});
+  document.getElementById('examen-result').style.display = 'block';
+  renderAccionesFinales();
+}
+
+function submitExamen(){
+  document.getElementById('btn-submit-examen').disabled = true;
+  NavegacionEstado.guardarIntentoEvaluacion(CLAVE_EXAMEN, {items:examenItems, mcAnswers:examenAnswers.mc, writtenAnswers:examenAnswers.desarrollo, submitted:true});
+
+  const resultado = EvaluacionMotor.corregirExamenFinal(examenItems, examenAnswers);
+  const fortalezasPorTema = [], aRepasarPorTema = [];
+  resultado.detalle.forEach(d=>{
+    const q = examenItems[d.idx];
+    const fb = document.getElementById(`fefb-${d.idx}`);
+    const ok = q.type==='mc' ? d.correcto : d.puntos>=1;
+    (ok ? fortalezasPorTema : aRepasarPorTema).push(q.nombreSeccion);
+    if(q.type==='mc'){
+      const optsDiv = document.getElementById(`feopts-${d.idx}`);
+      optsDiv.querySelectorAll('.q-opt').forEach((b,bi)=>{
+        b.disabled = true;
+        if(bi===d.correctIdx) b.classList.add('correct');
+        else if(bi===d.elegido && !d.correcto) b.classList.add('wrong');
+      });
+      fb.textContent = d.correcto ? '✅ Correcto' : '❌ Incorrecto';
+      fb.className = 'q-fb ' + (d.correcto?'ok':'err');
+    } else {
+      document.getElementById(`fetext-${d.idx}`).disabled = true;
+      fb.textContent = DevolucionPedagogica.orientacionItem(d);
+      fb.className = 'q-fb ' + (d.puntos>=1 ? 'ok' : (d.puntos>=0.5 ? '' : 'err'));
+    }
+  });
+  const resultadoCompleto = {...resultado, fortalezas:[...new Set(fortalezasPorTema)], aRepasar:[...new Set(aRepasarPorTema)]};
+  ultimoResultadoExamen = resultadoCompleto;
+
+  // Registro académico persistente — sobrevive al reinicio de sesión
+  // que puede venir después (ver finalizarYSalir). Se escribe UNA sola
+  // vez, acá, en el momento real del envío (no en verResultadosExamen,
+  // que se puede volver a llamar solo para revisar sin re-registrar).
+  registrarNotaFinal(resultadoCompleto);
+
+  Resultados.mostrarEn(document.getElementById('examen-result'), resultadoCompleto, {alias:getAlias()});
+  document.getElementById('examen-result').style.display = 'block';
+  document.getElementById('examen-result').scrollIntoView({behavior:'smooth'});
+  renderAccionesFinales();
+}
+
+// ══════════════════════════════════════════
+//  ACCIONES POST-EXAMEN: registro académico, correo, reinicio de sesión
+//  (punto 1 de la revisión funcional de Fisicoquímica)
+// ══════════════════════════════════════════
+
+// Guarda el resultado en el historial de notas (Core: storage.js),
+// que es independiente del progreso/sesión activa y NO se borra al
+// reiniciar la materia para el próximo alumno. Es el cimiento de la
+// futura sección "Notas" — mismo formato, ninguna pantalla lo muestra
+// todavía, pero los datos ya quedan bien guardados desde ahora.
+function registrarNotaFinal(resultado){
+  addGradeRecord('fisicoquimica', {
+    tema: 'mezclas-y-sistemas',
+    temaNombre: 'Mezclas y Sistemas',
+    alias: getAlias(),
+    puntos: resultado.puntos,
+    maxPuntos: resultado.maxPuntos,
+    pct: resultado.pct,
+    nota10: resultado.nota10,
+    aprobado: resultado.aprobado,
+    fortalezas: resultado.fortalezas,
+    aRepasar: resultado.aRepasar,
+    // Snapshot autocontenido (puntos 9 y 11): el "intento" en curso se
+    // borra al reiniciar la sesión de la materia, así que sin esto el
+    // detalle completo (preguntas, respuestas, orientaciones) se
+    // perdería para siempre en cuanto el próximo alumno entrara.
+    items: examenItems.map(q => ({
+      type: q.type, q: q.q, opts: q.opts, ans: q.ans,
+      concept: q.concept, modulo: q.modulo, tema: q.tema, dificultad: q.dificultad,
+    })),
+    respuestas: JSON.parse(JSON.stringify(examenAnswers)),
+    detalle: resultado.detalle,
+  });
+}
+
+// Pinta el bloque de "enviar por correo" + "finalizar y salir" en un
+// contenedor APARTE de #examen-result, porque Resultados.mostrarEn
+// reemplaza todo el innerHTML de ese contenedor cada vez que se llama
+// (si este bloque viviera adentro, desaparecería en cada re-render).
+// El campo de correo arranca siempre vacío: nunca se prellena con un
+// valor guardado de una vez anterior (punto 2 de la revisión).
+function renderAccionesFinales(){
+  const cont = document.getElementById('examen-acciones-finales');
+  if(!cont) return;
+  cont.innerHTML = `
+    <div class="acciones-finales">
+      <h4>📩 Enviar resultados por correo</h4>
+      <div class="correo-envio">
+        <input type="email" id="correo-envio-input" placeholder="tucorreo@ejemplo.com">
+        <button id="btn-enviar-correo" onclick="enviarPorCorreo()">Enviar</button>
+      </div>
+      <p class="correo-msg" id="correo-envio-msg"></p>
+      <button class="btn-finalizar" onclick="finalizarYSalir()">Finalizar y volver a Fisicoquímica</button>
+    </div>`;
+}
+
+function enviarPorCorreo(){
+  const input = document.getElementById('correo-envio-input');
+  const msg = document.getElementById('correo-envio-msg');
+  const btn = document.getElementById('btn-enviar-correo');
+  const valor = input ? input.value.trim() : '';
+
+  if(!EmailResultados.emailValido(valor)){
+    msg.textContent = 'Ingresá un correo válido.';
+    msg.className = 'correo-msg err';
+    return;
+  }
+
+  btn.disabled = true;
+  msg.textContent = 'Enviando...';
+  msg.className = 'correo-msg';
+
+  EmailResultados.enviar({
+    toEmail: valor,
+    alias: getAlias(),
+    materia: 'Fisicoquímica',
+    tema: 'Mezclas y Sistemas',
+    resultado: ultimoResultadoExamen,
+  }).then(()=>{
+    msg.textContent = '✅ Resultados enviados.';
+    msg.className = 'correo-msg ok';
+    btn.disabled = false;
+  }).catch(()=>{
+    msg.textContent = 'No se pudo enviar. Probá de nuevo.';
+    msg.className = 'correo-msg err';
+    btn.disabled = false;
+  });
+}
+
+// Reinicia por completo la sesión de ESTE tema (progreso de los 4
+// capítulos + examen final + identidad compartida de toda la
+// plataforma) para que el próximo alumno en este dispositivo empiece
+// desde cero. El registro académico ya fue guardado en
+// registrarNotaFinal y NO se toca acá — esa es justamente la
+// diferencia entre "reiniciar el recorrido" y "borrar el historial
+// de notas" que pide el punto 12 de la revisión.
+function reiniciarSesionMezclasYSistemas(){
+  const moduloSlugs = ['mezclas-y-sistemas'];
+  for(let i=0;i<capituloPasado.length;i++) moduloSlugs.push('mezclas-y-sistemas-cap-'+i);
+  const clavesEvaluacion = [CLAVE_EXAMEN];
+  for(let i=0;i<capituloPasado.length;i++) clavesEvaluacion.push(`fisicoquimica:mezclas-y-sistemas:${i}`);
+
+  NavegacionEstado.reiniciarSesionMateria({
+    materia: 'fisicoquimica',
+    moduloSlugs,
+    clavesEvaluacion,
+    reiniciarIdentidad: true,
+  });
+}
+
+function finalizarYSalir(){
+  reiniciarSesionMezclasYSistemas();
+  window.location.href = 'fisicoquimica-index.html';
+}
+
+// El link "← Volver a Fisicoquímica" de arriba de todo: si el examen
+// final YA fue rendido, salir de esta pantalla equivale a "abandonarla"
+// (punto 1 de la revisión) — dispara el mismo reinicio antes de
+// navegar. Si el alumno todavía está cursando (no rindió el final),
+// navega normal: no se pierde el progreso de quien solo fue a mirar
+// el índice de la materia y va a volver a seguir estudiando.
+function handleVolverMateria(event){
+  const guardado = NavegacionEstado.obtenerIntentoEvaluacion(CLAVE_EXAMEN);
+  if(guardado && guardado.submitted){
+    event.preventDefault();
+    reiniciarSesionMezclasYSistemas();
+    window.location.href = 'fisicoquimica-index.html';
+    return false;
+  }
+  return true; // navegación normal, no se tocó nada
+}
+
+</script>
+</body>
+</html>

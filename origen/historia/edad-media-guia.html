@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Edad Media — Guía Interactiva de ORIGEN</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root {
+  --parchment: #F5EDD6;
+  --ink: #2C1A0E;
+  --crimson: #8B1A1A;
+  --gold: #C9960C;
+  --gold-light: #F0C840;
+  --stone: #7A6A55;
+  --illuminated: #1A4A2E;
+  --warm-shadow: #E8D5A8;
+  --accent-soft: #FFF8E7;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#1C1008; font-family:'Nunito',sans-serif; color:var(--ink); min-height:100vh; }
+
+/* ══ LOGIN SCREEN ══ */
+#login-screen {
+  position:fixed; inset:0; z-index:99999;
+  background:radial-gradient(ellipse at 50% 40%, #2A1005 0%, #0E0804 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:2rem;
+}
+.login-box {
+  background:rgba(245,237,214,0.07); border:1.5px solid rgba(201,150,12,0.4);
+  border-radius:16px; padding:2.5rem 2rem; max-width:400px; width:100%;
+  backdrop-filter:blur(4px);
+}
+.login-logo { font-size:3.5rem; margin-bottom:0.5rem; }
+.login-title { font-family:'Cinzel',serif; font-size:1.6rem; font-weight:900; color:var(--gold-light); margin-bottom:0.3rem; }
+.login-sub { font-family:'Lora',serif; font-style:italic; color:var(--parchment); opacity:0.7; font-size:0.9rem; margin-bottom:1.8rem; }
+.login-field { margin-bottom:1rem; text-align:left; }
+.login-field label { display:block; font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.2em; color:var(--gold); margin-bottom:0.4rem; }
+.login-field input {
+  width:100%; padding:0.7rem 1rem; border-radius:8px;
+  border:1.5px solid rgba(201,150,12,0.3); background:rgba(255,248,231,0.08);
+  color:var(--parchment); font-family:'Nunito',sans-serif; font-size:0.95rem;
+  outline:none; transition:border 0.2s;
+}
+.login-field input:focus { border-color:var(--gold); }
+.login-field input::placeholder { color:rgba(245,237,214,0.3); }
+.btn-login {
+  width:100%; font-family:'Cinzel',serif; font-size:0.95rem; font-weight:700;
+  letter-spacing:0.1em; padding:0.85rem; border-radius:8px; border:none;
+  background:linear-gradient(135deg,var(--gold),#E8A800); color:var(--ink);
+  cursor:pointer; transition:all 0.2s; margin-top:0.5rem;
+  box-shadow:0 4px 16px rgba(201,150,12,0.35);
+}
+.btn-login:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(201,150,12,0.45); }
+.login-error { color:#FF6B6B; font-family:'Nunito',sans-serif; font-size:0.85rem; margin-top:0.8rem; min-height:1.2em; font-weight:700; }
+
+/* ══ WELCOME OVERLAY ══ */
+#welcome-overlay {
+  position:fixed; inset:0; z-index:9999;
+  background:
+    linear-gradient(rgba(10,6,3,0.72), rgba(10,6,3,0.85)),
+    url('../../assets/img/historia/edad-media.jpg') center/cover no-repeat;
+  background-color:#1C1008; /* fallback si la imagen no carga */
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:2rem;
+  transition: opacity 0.8s ease;
+}
+#welcome-overlay.fade-out { opacity:0; pointer-events:none; }
+
+.welcome-face {
+  font-size:5rem; cursor:pointer;
+  display:inline-block;
+  transition: transform 0.15s;
+  user-select:none;
+  filter: drop-shadow(0 0 20px rgba(240,200,64,0.4));
+  animation: float 3s ease-in-out infinite;
+}
+.welcome-face:hover { transform: scale(1.15) rotate(-5deg); }
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+.welcome-sparkles {
+  font-size:1.6rem; letter-spacing:0.5rem; margin-bottom:1.2rem;
+  animation: pulse-sparkle 2s ease-in-out infinite;
+}
+@keyframes pulse-sparkle {
+  0%,100% { opacity:0.6; } 50% { opacity:1; }
+}
+
+.welcome-title {
+  font-family:'Cinzel',serif; font-weight:900;
+  font-size:clamp(2rem,7vw,3.8rem);
+  color:var(--gold-light);
+  text-shadow:0 0 30px rgba(240,200,64,0.5), 2px 2px 0 #1C1008;
+  line-height:1.1; margin:0.8rem 0 0.4rem;
+  animation: glow-in 1s ease both;
+}
+@keyframes glow-in {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.welcome-sub {
+  font-family:'Lora',serif; font-style:italic;
+  color:var(--parchment); opacity:0.85; font-size:clamp(1rem,3vw,1.3rem);
+  margin-bottom:2.5rem;
+  animation: glow-in 1s 0.3s ease both;
+}
+
+.welcome-faces-row { font-size:1.4rem; margin-bottom:0.5rem; letter-spacing:0.3rem; }
+
+.btn-enter {
+  font-family:'Cinzel',serif; font-weight:700; font-size:1rem;
+  letter-spacing:0.15em;
+  background: linear-gradient(135deg, var(--gold) 0%, #E8A800 100%);
+  color: var(--ink); border:none; border-radius:8px;
+  padding:0.9rem 2.5rem; cursor:pointer;
+  box-shadow:0 4px 20px rgba(201,150,12,0.4);
+  transition:all 0.2s;
+  animation: glow-in 1s 0.6s ease both;
+}
+.btn-enter:hover { transform:translateY(-3px); box-shadow:0 8px 28px rgba(201,150,12,0.5); }
+
+.face-reactions {
+  margin-top:1.5rem; font-size:0.85rem;
+  color:var(--parchment); opacity:0.6;
+  font-family:'Nunito',sans-serif;
+  animation: glow-in 1s 0.9s ease both;
+}
+
+/* ══ SELECTOR DE GUÍA (welcome overlay) ══ */
+.guide-select { margin:1.6rem 0 1.8rem; animation: glow-in 1s 0.75s ease both; }
+.guide-select-label { font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); opacity:0.85; margin-bottom:0.8rem; }
+.guide-options { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+.guide-opt { background:rgba(255,248,231,0.05); border:1.5px solid rgba(201,150,12,0.35); border-radius:12px; padding:0.9rem 1.4rem; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:0.25rem; transition:all 0.2s; min-width:120px; }
+.guide-opt:hover { border-color:var(--gold); background:rgba(201,150,12,0.12); transform:translateY(-2px); }
+.guide-opt.selected { border-color:var(--gold-light); background:rgba(201,150,12,0.2); box-shadow:0 0 0 2px rgba(240,200,64,0.4); }
+.guide-opt-avatar { font-size:1.8rem; }
+.guide-opt-name { font-family:'Cinzel',serif; font-size:0.85rem; font-weight:700; color:var(--gold-light); }
+.guide-opt-tag { font-family:'Nunito',sans-serif; font-size:0.68rem; color:var(--parchment); opacity:0.6; }
+.btn-enter:disabled { opacity:0.35; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+
+/* ══ COVER ══ */
+#cover {
+  min-height:100vh;
+  background:radial-gradient(ellipse at 50% 30%, #3A1F08 0%, #1C1008 70%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:2rem; position:relative; overflow:hidden;
+}
+.cover-border { position:absolute; inset:20px; border:3px solid var(--gold); pointer-events:none; opacity:0.5; }
+.cover-border::before { content:''; position:absolute; inset:6px; border:1px solid var(--gold); opacity:0.4; }
+.corner-ornament { position:absolute; width:60px; height:60px; font-size:2rem; color:var(--gold); opacity:0.7; line-height:60px; text-align:center; }
+.corner-ornament.tl{top:26px;left:26px} .corner-ornament.tr{top:26px;right:26px}
+.corner-ornament.bl{bottom:26px;left:26px} .corner-ornament.br{bottom:26px;right:26px}
+.cover-eyebrow { font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.4em; color:var(--gold); opacity:0.8; text-transform:uppercase; margin-bottom:1.2rem; }
+.cover-title { font-family:'Cinzel',serif; font-size:clamp(2.8rem,8vw,5.5rem); font-weight:900; color:var(--gold-light); text-shadow:0 0 40px rgba(201,150,12,0.4),2px 2px 0 #3A1F08; line-height:1.1; margin-bottom:0.5rem; }
+.cover-subtitle { font-family:'Lora',serif; font-size:clamp(1rem,3vw,1.4rem); color:var(--parchment); opacity:0.85; margin-bottom:3rem; font-style:italic; }
+.cover-castle { font-size:5rem; margin-bottom:1.5rem; filter:drop-shadow(0 0 20px rgba(201,150,12,0.3)); }
+.topic-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; max-width:720px; width:100%; margin-top:1rem; }
+.topic-btn { background:rgba(255,248,231,0.05); border:1.5px solid rgba(201,150,12,0.4); border-radius:8px; padding:1rem 0.8rem; color:var(--parchment); cursor:pointer; font-family:'Nunito',sans-serif; font-size:0.88rem; font-weight:700; transition:all 0.25s; display:flex; flex-direction:column; align-items:center; gap:0.4rem; }
+.topic-btn:hover { background:rgba(201,150,12,0.15); border-color:var(--gold); transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.4); }
+.topic-btn.locked { opacity:0.4; cursor:not-allowed; }
+.topic-btn .t-icon { font-size:1.8rem; }
+.topic-btn .t-num { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.15em; color:var(--gold); opacity:0.8; }
+.topic-btn .t-badge { font-size:0.65rem; background:var(--illuminated); color:white; border-radius:10px; padding:0.1rem 0.5rem; margin-top:0.2rem; }
+.topic-btn .t-badge.pass { background:#2E7D32; }
+.topic-btn .t-badge.fail { background:#C62828; }
+
+/* ══════════════════════════════════════════════════════════
+   READER — Historia (Edad Media)
+   Paleta e identidad propias, con ámbito exclusivo a #reader
+   para no afectar #welcome-overlay / #cover.
+   Reutiliza los mismos NOMBRES de variable (--parchment, --ink,
+   --crimson, --gold, --gold-light, --stone, --illuminated,
+   --warm-shadow, --accent-soft) para que todos los selectores
+   ya existentes (.info-card, .gold-card, .pyramid, .quiz-*, etc.)
+   hereden la nueva identidad automáticamente, sin tocar los
+   valores globales que usa el resto del archivo.
+   ══════════════════════════════════════════════════════════ */
+#reader {
+  /* verde profundo / crema / mostaza / terracota / oliva */
+  --parchment: #F6F1E4;       /* crema — fondo general */
+  --ink: #24322A;             /* verde profundo casi negro — texto */
+  --crimson: #B15A3E;         /* terracota — reemplaza al carmesí */
+  --gold: #C79A3D;            /* mostaza — reemplaza al dorado */
+  --gold-light: #DDB35C;      /* mostaza claro */
+  --stone: #6E7458;           /* oliva — texto secundario */
+  --illuminated: #22402F;     /* verde profundo — acentos fuertes */
+  --warm-shadow: #E3D9C3;     /* bordes cálidos */
+  --accent-soft: #FBF8F0;     /* tarjetas claras */
+  --olive-soft: rgba(110,116,88,0.12);
+  --terracotta-soft: rgba(177,90,62,0.10);
+  --mustard-soft: rgba(199,154,61,0.12);
+  --green-soft: rgba(34,64,47,0.08);
+
+  display:none; min-height:100vh; background:var(--parchment);
+  font-family:'Poppins',sans-serif;
+}
+#reader, #reader button, #reader input, #reader textarea { font-family:'Poppins',sans-serif; }
+
+.top-nav { background:var(--ink); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; position:sticky; top:0; z-index:100; border-bottom:2px solid var(--gold); }
+.btn-home { background:none; border:1px solid var(--gold); color:var(--gold); font-size:0.7rem; font-weight:600; letter-spacing:0.08em; padding:0.35rem 0.8rem; border-radius:6px; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.btn-home:hover { background:var(--gold); color:var(--ink); }
+.nav-chapters { display:flex; gap:0.4rem; overflow-x:auto; scrollbar-width:none; flex:1; }
+.nav-chapters::-webkit-scrollbar { display:none; }
+.nav-ch { background:none; border:none; color:var(--parchment); opacity:0.45; font-size:0.78rem; font-weight:600; padding:0.3rem 0.6rem; border-radius:6px; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.nav-ch:hover,.nav-ch.active { opacity:1; background:rgba(199,154,61,0.18); color:var(--gold-light); }
+.nav-ch.passed { opacity:0.85; }
+
+/* ══ CHAPTERS ══ */
+.chapter { display:none; max-width:1200px; margin:0 auto; padding:2.4rem 2.5rem 4rem; }
+.chapter.active { display:block; }
+.ch-header { text-align:center; margin-bottom:1.6rem; padding-bottom:1.4rem; border-bottom:2px solid var(--gold); }
+.ch-eyebrow { font-size:0.72rem; font-weight:700; letter-spacing:0.3em; color:var(--stone); text-transform:uppercase; margin-bottom:0.5rem; }
+.ch-icon { font-size:2.6rem; margin-bottom:0.4rem; display:block; }
+.ch-title { font-size:clamp(1.5rem,4.6vw,2.2rem); font-weight:800; color:var(--illuminated); line-height:1.15; margin-bottom:0.35rem; }
+.ch-subtitle { font-style:italic; font-weight:400; color:var(--stone); font-size:1rem; }
+
+/* ══ INDICADOR DE SUBTEMAS ══ */
+.subtopic-nav { display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem; margin-bottom:1.6rem; }
+.subtopic-pill { display:flex; align-items:center; gap:0.4rem; background:var(--accent-soft); border:1.5px solid var(--warm-shadow); border-radius:999px; padding:0.4rem 0.9rem 0.4rem 0.6rem; font-size:0.76rem; font-weight:600; color:var(--stone); }
+.subtopic-pill .sp-num { display:flex; align-items:center; justify-content:center; width:1.3rem; height:1.3rem; border-radius:50%; background:var(--illuminated); color:#fff; font-size:0.68rem; font-weight:700; }
+.subtopic-pill.sp-quiz .sp-num { background:var(--crimson); }
+.subtopic-pill.sp-current { border-color:var(--gold); color:var(--ink); background:var(--mustard-soft); }
+
+/* ══ GUÍA (personaje contextual: Sofía / Tomás) ══ */
+.guide-card { display:flex; gap:1rem; align-items:flex-start; background:var(--accent-soft); border:1.5px solid var(--warm-shadow); border-radius:14px; padding:1.1rem 1.3rem; margin-bottom:1.8rem; box-shadow:0 3px 14px rgba(34,50,42,0.06); }
+.guide-avatar { flex:0 0 auto; width:2.6rem; height:2.6rem; border-radius:50%; background:linear-gradient(135deg,var(--illuminated),var(--stone)); display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+.guide-body strong { display:block; font-size:0.78rem; font-weight:700; letter-spacing:0.05em; color:var(--illuminated); text-transform:uppercase; margin-bottom:0.25rem; }
+.guide-body p { font-size:0.92rem; line-height:1.55; color:var(--ink); }
+
+/* spread */
+.spread { display:grid; grid-template-columns:1fr 1fr; gap:1.8rem; align-items:start; margin-bottom:2rem; }
+@media(max-width:650px){ .spread{grid-template-columns:1fr;gap:1.3rem;} }
+.page-left,.page-right { background:var(--accent-soft); border:1px solid var(--warm-shadow); border-radius:12px; padding:1.6rem 1.4rem; box-shadow:0 3px 14px rgba(34,50,42,0.06); }
+.page-right { background:#FCF9F1; }
+.page-label { font-size:0.62rem; font-weight:700; letter-spacing:0.22em; color:var(--gold); text-transform:uppercase; margin-bottom:0.8rem; display:block; }
+h3.section-title { font-size:1rem; font-weight:700; color:var(--illuminated); margin-bottom:0.8rem; display:flex; align-items:center; gap:0.5rem; }
+p.body-text { font-size:0.93rem; font-weight:400; line-height:1.75; color:var(--ink); margin-bottom:0.9rem; }
+.dropcap::first-letter { font-size:2.8rem; font-weight:800; color:var(--illuminated); float:left; line-height:0.8; margin:0.1rem 0.3rem 0 0; }
+.info-card { background:var(--terracotta-soft); border-left:3px solid var(--crimson); border-radius:0 8px 8px 0; padding:0.9rem 1rem; margin:1rem 0; font-size:0.87rem; color:var(--ink); line-height:1.6; }
+.info-card strong { color:var(--crimson); }
+.gold-card { background:var(--mustard-soft); border-left:3px solid var(--gold); border-radius:0 8px 8px 0; padding:0.9rem 1rem; margin:1rem 0; font-size:0.87rem; color:var(--ink); line-height:1.6; }
+.gold-card strong { color:#8A6A1E; }
+.green-card { background:var(--green-soft); border-left:3px solid var(--illuminated); border-radius:0 8px 8px 0; padding:0.9rem 1rem; margin:1rem 0; font-size:0.87rem; color:var(--ink); line-height:1.6; }
+.green-card strong { color:var(--illuminated); }
+.pyramid { display:flex; flex-direction:column; align-items:center; gap:3px; margin:1rem 0; }
+.p-level { border-radius:6px; color:white; font-weight:700; font-size:0.75rem; text-align:center; padding:0.4rem 0.5rem; line-height:1.3; }
+.p-level.l1{width:30%;background:var(--gold);color:var(--ink);}
+.p-level.l2{width:50%;background:var(--crimson);}
+.p-level.l3{width:70%;background:var(--stone);}
+.p-level.l4{width:90%;background:var(--illuminated);}
+.timeline { position:relative; padding-left:1.5rem; border-left:2px solid var(--gold); margin:0.8rem 0; }
+.tl-item { position:relative; margin-bottom:1rem; padding-left:0.5rem; }
+.tl-item::before { content:''; position:absolute; left:-1.65rem; top:0.45rem; width:10px; height:10px; border-radius:50%; background:var(--gold); border:2px solid var(--parchment); }
+.tl-year { font-size:0.72rem; font-weight:700; color:var(--crimson); }
+.tl-text { font-size:0.84rem; color:var(--ink); line-height:1.5; }
+.term-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin:0.8rem 0; }
+@media(max-width:520px){ .term-grid{grid-template-columns:1fr;} }
+.term-chip { background:#fff; border:1px solid var(--warm-shadow); border-radius:8px; padding:0.6rem 0.7rem; font-size:0.8rem; line-height:1.4; color:var(--ink); }
+.term-chip strong { color:var(--crimson); display:block; font-size:0.85rem; }
+.illus-row { display:flex; justify-content:space-around; font-size:2rem; margin:1rem 0; }
+
+/* ══ MAPA / DIAGRAMA INTERACTIVO ══ */
+.explore-panel { background:linear-gradient(160deg,var(--illuminated) 0%,#2E4A38 60%,var(--stone) 100%); border-radius:16px; padding:1.6rem; margin-bottom:2rem; box-shadow:0 6px 20px rgba(34,50,42,0.18); }
+.explore-head { margin-bottom:1.1rem; }
+.explore-eyebrow { display:block; font-size:0.66rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-light); margin-bottom:0.3rem; }
+.explore-head h4 { color:#F6F1E4; font-size:1rem; font-weight:600; opacity:0.9; }
+.hotspot-map { display:flex; flex-wrap:wrap; gap:0.8rem; }
+.hotspot { flex:1 1 210px; background:rgba(246,241,228,0.08); border:1.5px solid rgba(246,241,228,0.25); border-radius:12px; padding:0; overflow:hidden; }
+.hotspot summary { list-style:none; cursor:pointer; padding:0.8rem 1rem; font-weight:700; font-size:0.88rem; color:#F6F1E4; display:flex; align-items:center; gap:0.5rem; }
+.hotspot summary::-webkit-details-marker { display:none; }
+.hotspot summary::after { content:'+'; margin-left:auto; font-weight:400; opacity:0.7; }
+.hotspot[open] summary::after { content:'–'; }
+.hotspot p { padding:0 1rem 1rem; font-size:0.82rem; line-height:1.55; color:#EFE9D8; }
+
+/* ══ FILA: TIMELINE · CURIOSIDAD · PREGUNTA ══ */
+.insight-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:2rem; }
+@media(max-width:800px){ .insight-row{grid-template-columns:1fr;} }
+.insight-card { background:var(--accent-soft); border:1.5px solid var(--warm-shadow); border-radius:14px; padding:1.2rem 1.2rem 1.3rem; display:flex; flex-direction:column; }
+.insight-card .ic-label { display:flex; align-items:center; gap:0.4rem; font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--crimson); margin-bottom:0.7rem; }
+.insight-card.ic-time .tl-mini { display:flex; flex-direction:column; gap:0.55rem; }
+.insight-card.ic-time .tl-mini-item .tl-mini-year { font-size:0.72rem; font-weight:700; color:var(--illuminated); }
+.insight-card.ic-time .tl-mini-item .tl-mini-text { font-size:0.8rem; color:var(--ink); line-height:1.45; }
+.insight-card p { font-size:0.85rem; color:var(--ink); line-height:1.55; }
+.insight-card .ic-question-box { margin-top:0.8rem; }
+.insight-card textarea.q-open { width:100%; min-height:56px; border:1.5px solid var(--warm-shadow); border-radius:8px; padding:0.5rem 0.7rem; font-family:'Poppins',sans-serif; font-size:0.82rem; color:var(--ink); background:#fff; resize:vertical; }
+.insight-card textarea.q-open:focus { outline:none; border-color:var(--gold); }
+
+/* ══ PANEL DE RENDIMIENTO ══ */
+.stats-panel { background:var(--illuminated); border-radius:14px; padding:1.3rem 1.4rem; margin-bottom:2rem; display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+@media(max-width:480px){ .stats-panel{grid-template-columns:1fr;} }
+.stats-panel-4col{ grid-template-columns:repeat(4,1fr); }
+@media(max-width:600px){ .stats-panel-4col{grid-template-columns:1fr 1fr;} }
+@media(max-width:400px){ .stats-panel-4col{grid-template-columns:1fr;} }
+.stats-panel .stat-item { text-align:center; }
+.stats-panel .stat-label { font-size:0.66rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:rgba(246,241,228,0.65); margin-bottom:0.3rem; }
+.stats-panel .stat-value { font-size:1.3rem; font-weight:800; color:var(--gold-light); }
+
+/* ══ GRILLA DE EXPLORACIÓN INFERIOR ══ */
+.explore-grid-title { font-size:0.95rem; font-weight:700; color:var(--illuminated); margin-bottom:0.8rem; }
+.explore-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.8rem; margin-bottom:2rem; }
+.explore-tile { background:var(--accent-soft); border:1.5px solid var(--warm-shadow); border-radius:12px; padding:0.9rem 1rem; cursor:pointer; text-align:left; font-family:'Poppins',sans-serif; transition:all 0.18s; }
+.explore-tile:hover { border-color:var(--gold); transform:translateY(-2px); box-shadow:0 6px 16px rgba(34,50,42,0.1); }
+.explore-tile .et-title { display:block; font-size:0.85rem; font-weight:700; color:var(--ink); margin-bottom:0.2rem; }
+.explore-tile .et-sub { display:block; font-size:0.74rem; color:var(--stone); }
+
+/* ══ QUIZ SYSTEM ══ */
+.quiz-section { margin-top:0; border:2px solid var(--gold); border-radius:14px; padding:1.8rem; background:var(--mustard-soft); }
+.quiz-section h3 { color:var(--illuminated); font-size:1.05rem; font-weight:700; margin-bottom:0.4rem; }
+.quiz-progress-bar-wrap { height:8px; background:var(--warm-shadow); border-radius:4px; margin:0.6rem 0 1.5rem; overflow:hidden; }
+.quiz-progress-bar { height:100%; background:var(--gold); border-radius:4px; transition:width 0.4s; }
+.q-block { margin-bottom:1.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--warm-shadow); }
+.q-block:last-child { border-bottom:none; margin-bottom:0; }
+.q-text { font-size:0.88rem; color:var(--ink); margin-bottom:0.8rem; font-weight:700; line-height:1.4; }
+.q-num { color:var(--gold); margin-right:0.4rem; }
+.q-opts { display:flex; flex-direction:column; gap:0.45rem; }
+.q-opt { background:#fff; border:1.5px solid var(--warm-shadow); border-radius:8px; padding:0.55rem 0.9rem; font-family:'Poppins',sans-serif; font-size:0.85rem; cursor:pointer; transition:all 0.18s; text-align:left; color:var(--ink); }
+.q-opt:hover:not(:disabled) { border-color:var(--gold); background:#FFFBF0; }
+.q-opt.correct  { background:#E8F5E9; border-color:#388E3C; color:#1B5E20; font-weight:700; }
+.q-opt.wrong    { background:#FBEAE5; border-color:var(--crimson); color:#8A3B24; }
+.q-opt:disabled { cursor:default; }
+.q-fb { margin-top:0.5rem; font-size:0.82rem; font-weight:700; min-height:1.2em; }
+.q-fb.ok  { color:#2E7D32; }
+.q-fb.err { color:var(--crimson); }
+
+/* written answer */
+.q-written { width:100%; min-height:70px; border:1.5px solid var(--warm-shadow); border-radius:8px; padding:0.6rem 0.8rem; font-family:'Poppins',sans-serif; font-size:0.88rem; color:var(--ink); background:#fff; resize:vertical; transition:border 0.2s; }
+.q-written:focus { outline:none; border-color:var(--gold); }
+.q-written:disabled { background:#f2ede0; cursor:default; }
+.btn-check-written { margin-top:0.5rem; font-size:0.75rem; font-weight:700; letter-spacing:0.04em; padding:0.45rem 1.2rem; border-radius:8px; border:1.5px solid var(--crimson); background:var(--crimson); color:white; cursor:pointer; transition:all 0.2s; }
+.btn-check-written:hover:not(:disabled) { background:#8A3B24; }
+.btn-check-written:disabled { opacity:0.4; cursor:default; }
+
+/* quiz result panel */
+.quiz-result { display:none; margin-top:1.5rem; padding:1.5rem; background:var(--accent-soft); border:2px solid var(--gold); border-radius:12px; text-align:center; }
+.result-score { font-size:1.9rem; font-weight:800; color:var(--illuminated); }
+.result-msg { font-size:0.95rem; margin:0.6rem 0 1rem; color:var(--ink); }
+.btn-retry { font-size:0.85rem; font-weight:700; padding:0.6rem 1.6rem; border-radius:8px; border:2px solid var(--crimson); background:var(--crimson); color:white; cursor:pointer; transition:all 0.2s; }
+.btn-retry:hover { background:#8A3B24; }
+
+/* ch nav */
+.ch-nav { display:flex; justify-content:space-between; align-items:center; margin-top:2.5rem; padding-top:1.5rem; border-top:1px solid var(--warm-shadow); }
+.btn-prev,.btn-next { font-size:0.8rem; font-weight:700; padding:0.6rem 1.4rem; border-radius:8px; border:1.5px solid var(--crimson); background:none; color:var(--crimson); cursor:pointer; transition:all 0.2s; letter-spacing:0.02em; }
+.btn-next { background:var(--crimson); color:white; }
+.btn-prev:hover { background:var(--crimson); color:white; }
+.btn-next:hover { background:#8A3B24; }
+.btn-next:disabled { opacity:0.35; cursor:not-allowed; background:var(--stone); border-color:var(--stone); }
+
+/* ══ FINAL EXAM ══ */
+.final-exam-wrap { max-width:1200px; margin:0 auto; padding:1rem 2.5rem 3rem; }
+.exam-header { text-align:center; margin-bottom:2rem; }
+.exam-header h2 { font-size:clamp(1.4rem,3.6vw,1.9rem); font-weight:800; color:var(--illuminated); margin-bottom:0.3rem; }
+.exam-header p { font-style:italic; color:var(--stone); }
+.exam-progress-wrap { height:10px; background:var(--warm-shadow); border-radius:5px; margin:1rem 0 2rem; overflow:hidden; }
+.exam-progress { height:100%; background:linear-gradient(90deg,var(--crimson),var(--gold)); border-radius:5px; transition:width 0.4s; }
+.exam-q-block { background:var(--accent-soft); border:1px solid var(--warm-shadow); border-radius:12px; padding:1.4rem 1.4rem 1rem; margin-bottom:1.2rem; box-shadow:0 3px 12px rgba(34,50,42,0.06); }
+.exam-q-label { font-size:0.62rem; font-weight:700; letter-spacing:0.2em; color:var(--gold); text-transform:uppercase; margin-bottom:0.5rem; }
+.exam-q-text { font-size:0.95rem; font-weight:700; color:var(--ink); margin-bottom:1rem; line-height:1.45; }
+.btn-submit-exam { display:block; width:100%; font-size:1rem; font-weight:700; letter-spacing:0.05em; padding:1rem; border-radius:10px; border:none; background:linear-gradient(135deg,var(--crimson),#8A3B24); color:white; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 16px rgba(177,90,62,0.3); margin-top:1.5rem; }
+.btn-submit-exam:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(177,90,62,0.35); }
+.btn-submit-exam:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.exam-result-panel { display:none; background:var(--accent-soft); border:2px solid var(--gold); border-radius:14px; padding:2rem; text-align:center; margin-top:2rem; }
+.exam-result-score { font-size:2.6rem; font-weight:800; color:var(--illuminated); }
+.exam-result-msg { font-size:1rem; margin:0.8rem 0 1.5rem; color:var(--ink); line-height:1.6; }
+.correo-envio-final { margin:0 0 1.5rem; padding-top:1.2rem; border-top:1px solid rgba(44,26,14,0.15); }
+.correo-envio-final h4 { font-family:'Cinzel',serif; font-size:0.9rem; color:var(--ink); margin-bottom:0.7rem; }
+.correo-envio { display:flex; gap:0.6rem; flex-wrap:wrap; justify-content:center; }
+.correo-envio input { flex:1; min-width:220px; padding:0.6rem 0.9rem; border-radius:8px; border:1.5px solid rgba(44,26,14,0.25); background:#fff; color:var(--ink); font-family:'Nunito',sans-serif; font-size:0.9rem; outline:none; }
+.correo-envio input:focus { border-color:var(--gold); }
+#btn-enviar-correo { font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; padding:0.6rem 1.4rem; border-radius:8px; border:none; background:var(--illuminated); color:white; cursor:pointer; }
+#btn-enviar-correo:disabled { opacity:0.5; cursor:not-allowed; }
+.correo-msg { font-size:0.82rem; margin-top:0.6rem; min-height:1.1em; }
+.correo-msg.ok { color:var(--illuminated); font-weight:700; }
+.correo-msg.err { color:var(--crimson); font-weight:700; }
+.exam-answers-review { text-align:left; margin-top:1.5rem; }
+.review-item { padding:0.8rem 1rem; border-radius:8px; margin-bottom:0.6rem; font-size:0.85rem; line-height:1.5; }
+.review-item.ok-r  { background:#E8F5E9; border-left:4px solid #388E3C; }
+.review-item.err-r { background:#FBEAE5; border-left:4px solid var(--crimson); }
+.review-item .r-q { font-weight:700; color:var(--ink); margin-bottom:0.3rem; }
+.review-item .r-yours  { color:#555; }
+.review-item .r-correct { color:#2E7D32; font-weight:700; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ WELCOME OVERLAY ══════════════ -->
+<!-- Se muestra solo si todavía no hay alias/guía guardados (primera vez
+     en ORIGEN). Si ya vienen del sidebar de Historia, este overlay ni
+     se muestra: se entra directo a la carátula (showCover). -->
+<div id="welcome-overlay">
+  <div class="welcome-sparkles">✨ ✨ ✨</div>
+
+  <div id="face-display" class="welcome-face" onclick="cycleFace()" title="¡Hacé click!">😊</div>
+  <p class="face-reactions">¡Hacé click en la carita!</p>
+
+  <h1 class="welcome-title" id="welcome-title">¡BIENVENIDO/A!</h1>
+  <p class="welcome-sub">Estoy acá para ayudarte a aprender sobre la Edad Media 🏰</p>
+
+  <div class="welcome-faces-row">📜 ⚔️ 🏰 ⛪ 🌾</div>
+
+  <div class="login-field" style="max-width:320px;margin:0 auto 1.2rem;">
+    <label>¿Cómo te llamamos?</label>
+    <input type="text" id="login-alias" placeholder="Tu alias" oninput="checkEnterReady()" onkeydown="if(event.key==='Enter') enterApp()" />
+  </div>
+
+  <button class="btn-enter" id="btn-enter-app" onclick="enterApp()" disabled>¡Comenzar la aventura! →</button>
+</div>
+
+<!-- ══════════════ COVER ══════════════ -->
+<a href="historia-index.html" style="position:fixed; top:1.2rem; left:1.2rem; z-index:200; display:inline-flex; align-items:center; gap:6px; font-family:'Nunito',sans-serif; font-size:0.85rem; color:var(--parchment); opacity:0.75; text-decoration:none; background:rgba(28,16,8,0.55); padding:0.5rem 0.9rem; border-radius:30px; transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75">← Volver a Historia</a>
+<section id="cover" style="display:none;">
+  <div class="cover-border"></div>
+  <div class="corner-ornament tl">✦</div>
+  <div class="corner-ornament tr">✦</div>
+  <div class="corner-ornament bl">✦</div>
+  <div class="corner-ornament br">✦</div>
+  <div class="cover-castle">🏰</div>
+  <div class="cover-eyebrow" id="cover-eyebrow">Guía Interactiva · Historia Medieval</div>
+  <h1 class="cover-title">La Edad Media</h1>
+  <p class="cover-subtitle">Europa Occidental · Siglos V al XV</p>
+  <div class="topic-grid">
+    <button class="topic-btn" id="cover-btn-0" onclick="tryGoChapter(0)">
+      <span class="t-num">CAPÍTULO I</span><span class="t-icon">⚔️</span>El Feudalismo
+      <span class="t-badge" id="badge-0">Sin iniciar</span>
+    </button>
+    <button class="topic-btn" id="cover-btn-1" onclick="tryGoChapter(1)">
+      <span class="t-num">CAPÍTULO II</span><span class="t-icon">⛪</span>La Iglesia
+      <span class="t-badge" id="badge-1">🔒 Bloqueado</span>
+    </button>
+    <button class="topic-btn" id="cover-btn-2" onclick="tryGoChapter(2)">
+      <span class="t-num">CAPÍTULO III</span><span class="t-icon">👑</span>División del Estado
+      <span class="t-badge" id="badge-2">🔒 Bloqueado</span>
+    </button>
+    <button class="topic-btn" id="cover-btn-3" onclick="tryGoChapter(3)">
+      <span class="t-num">CAPÍTULO IV</span><span class="t-icon">🌾</span>La Economía
+      <span class="t-badge" id="badge-3">🔒 Bloqueado</span>
+    </button>
+    <button class="topic-btn" id="cover-btn-4" onclick="tryGoChapter(4)">
+      <span class="t-num">EXAMEN FINAL</span><span class="t-icon">📜</span>Examen Final
+      <span class="t-badge" id="badge-4">🔒 Bloqueado</span>
+    </button>
+  </div>
+</section>
+
+<!-- ══════════════ READER ══════════════ -->
+<div id="reader">
+  <nav class="top-nav">
+    <button class="btn-home" onclick="goHome()">← Inicio</button>
+    <div class="nav-chapters">
+      <button class="nav-ch" id="nav0" onclick="tryGoChapter(0)">⚔️ Feudalismo</button>
+      <button class="nav-ch" id="nav1" onclick="tryGoChapter(1)">⛪ Iglesia</button>
+      <button class="nav-ch" id="nav2" onclick="tryGoChapter(2)">👑 Estado</button>
+      <button class="nav-ch" id="nav3" onclick="tryGoChapter(3)">🌾 Economía</button>
+      <button class="nav-ch" id="nav4" onclick="tryGoChapter(4)">📜 Examen Final</button>
+    </div>
+  </nav>
+
+  <!-- ════ CAPÍTULO 1: FEUDALISMO ════ -->
+  <article class="chapter" id="ch0">
+    <div class="ch-header">
+      <div class="ch-eyebrow">Capítulo I</div>
+      <span class="ch-icon">⚔️</span>
+      <h2 class="ch-title">El Sistema Feudal</h2>
+      <p class="ch-subtitle">¿Quién mandaba realmente en la Edad Media?</p>
+    </div>
+
+    <div class="subtopic-nav">
+      <span class="subtopic-pill sp-current"><span class="sp-num">1</span>Qué fue el feudalismo</span>
+      <span class="subtopic-pill"><span class="sp-num">2</span>La pirámide feudal</span>
+      <span class="subtopic-pill"><span class="sp-num">3</span>Vínculo señor–vasallo</span>
+      <span class="subtopic-pill"><span class="sp-num">4</span>¿Sabías que...?</span>
+      <span class="subtopic-pill sp-quiz"><span class="sp-num">5</span>Examen del capítulo</span>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-avatar">🧑‍🏫</div>
+      <div class="guide-body">
+        <strong>Tu guía te cuenta</strong>
+        <p>El feudalismo organizó la vida política, económica y social de la Edad Media a partir de un intercambio muy simple: tierra y protección a cambio de lealtad y servicio. Prestá atención a cómo funcionaba la pirámide feudal.</p>
+      </div>
+    </div>
+
+    <div class="spread">
+      <div class="page-left">
+        <span class="page-label">Página 1 · Qué era el feudalismo</span>
+        <h3 class="section-title">🏰 ¿Qué fue el feudalismo?</h3>
+        <p class="body-text dropcap">El feudalismo fue el sistema político y social que organizó la vida en Europa Occidental durante gran parte de la Edad Media (aprox. siglos IX–XV). Surgió tras la caída del Imperio Romano, cuando ya no había un poder central fuerte que protegiera a la gente.</p>
+        <p class="body-text">La idea era simple: <strong>el más poderoso protege al más débil, y a cambio recibe tierras, trabajo o servicios militares.</strong> Todo se manejaba a través de juramentos y compromisos personales llamados <em>homenaje</em>.</p>
+        <div class="info-card" id="card-ch0-feudo"><strong>El feudo:</strong> Era la tierra que un señor entregaba a un vasallo para que la gobernara. Era como un "salario en tierras" por ser leal y estar disponible para la guerra.</div>
+        <h3 class="section-title" style="margin-top:1rem;">🔺 La pirámide feudal</h3>
+        <div class="pyramid">
+          <div class="p-level l1">👑 REY<br><span style="font-size:0.65rem;font-weight:400">Señor de todos</span></div>
+          <div class="p-level l2">⚔️ NOBLES / SEÑORES<br><span style="font-size:0.65rem;font-weight:400">Grandes terratenientes</span></div>
+          <div class="p-level l3">🐴 CABALLEROS<br><span style="font-size:0.65rem;font-weight:400">Vasallos armados</span></div>
+          <div class="p-level l4">🌾 SIERVOS / CAMPESINOS<br><span style="font-size:0.65rem;font-weight:400">La base de todo</span></div>
+        </div>
+      </div>
+      <div class="page-right">
+        <span class="page-label">Página 2 · Cómo funcionaba</span>
+        <h3 class="section-title">🤝 El vínculo señor–vasallo</h3>
+        <p class="body-text">El sistema se sostenía en un juramento de fidelidad llamado <strong>homenaje</strong>. El vasallo se arrodillaba ante su señor, ponía sus manos entre las de él y prometía servirle. Era un vínculo casi sagrado que tenía obligaciones de ambos lados.</p>
+        <div class="gold-card" id="card-ch0-vasallo"><strong>Obligaciones del vasallo:</strong><br>✦ Servicio militar (40–60 días al año)<br>✦ Pagar rescate si el señor era capturado<br>✦ Dar consejo en el tribunal del señor<br>✦ Pagar impuestos especiales en ocasiones</div>
+        <div class="green-card" id="card-ch0-senor"><strong>Obligaciones del señor:</strong><br>✦ Proteger militarmente al vasallo<br>✦ Hacer justicia y respetar el feudo<br>✦ No exigir más de lo acordado<br>✦ Devolver el feudo si el vasallo muere</div>
+        <h3 class="section-title" style="margin-top:1rem;">❓ ¿Sabías que...?</h3>
+        <p class="body-text">Un mismo caballero podía ser vasallo de <em>varios</em> señores a la vez. Para evitar conflictos de lealtad surgió el <strong>señor ligio</strong>: el jefe principal al que se debía lealtad absoluta por encima de los demás.</p>
+        <div class="info-card" id="card-ch0-siervos"><strong>Los siervos:</strong> No eran esclavos, pero estaban atados a la tierra. No podían irse sin permiso del señor, pero tampoco podían ser vendidos solos. Pagaban impuestos con trabajo, productos y dinero.</div>
+      </div>
+    </div>
+
+    <div class="explore-panel">
+      <div class="explore-head">
+        <span class="explore-eyebrow">Explorá la pirámide feudal</span>
+        <h4>Tocá cada nivel para descubrir su lugar en el sistema</h4>
+      </div>
+      <div class="hotspot-map">
+        <details class="hotspot"><summary>👑 Rey</summary><p>Señor de todos: en la cima de la pirámide, aunque en la práctica dependía de la lealtad y los ejércitos de sus nobles.</p></details>
+        <details class="hotspot"><summary>⚔️ Nobles / Señores</summary><p>Grandes terratenientes que recibían feudos y a la vez entregaban tierras a sus propios vasallos, los caballeros.</p></details>
+        <details class="hotspot"><summary>🐴 Caballeros</summary><p>Vasallos armados: debían servicio militar (40–60 días al año) a cambio de un feudo para gobernar.</p></details>
+        <details class="hotspot"><summary>🌾 Siervos / Campesinos</summary><p>La base de todo el sistema: atados a la tierra, no podían irse sin permiso, pero tampoco ser vendidos solos.</p></details>
+      </div>
+    </div>
+
+    <div class="insight-row">
+      <div class="insight-card ic-time">
+        <div class="ic-label">⏳ Línea de tiempo</div>
+        <div class="tl-mini">
+          <div class="tl-mini-item"><div class="tl-mini-year">Siglo V</div><div class="tl-mini-text">Cae el poder centralizado romano en Occidente.</div></div>
+          <div class="tl-mini-item"><div class="tl-mini-year">Siglos IX–XV</div><div class="tl-mini-text">Apogeo del sistema feudal en Europa Occidental.</div></div>
+        </div>
+      </div>
+      <div class="insight-card ic-curiosity">
+        <div class="ic-label">💡 ¿Sabías que...?</div>
+        <p>Un mismo caballero podía ser vasallo de varios señores a la vez. Para evitar conflictos de lealtad surgió el <strong>señor ligio</strong>, al que se debía lealtad absoluta por encima de los demás.</p>
+      </div>
+      <div class="insight-card ic-question">
+        <div class="ic-label">❓ Pregunta para pensar</div>
+        <p>¿Quién creés que mandaba realmente en la Edad Media: el rey, los nobles o la Iglesia? Fundamentá con la pirámide feudal.</p>
+        <div class="ic-question-box"><textarea class="q-open" placeholder="Escribí tu respuesta acá..."></textarea></div>
+      </div>
+    </div>
+
+    <!-- QUIZ CAP 1 -->
+    <div class="quiz-section" id="quiz-ch0">
+      <h3>📝 Examen del Capítulo I — El Feudalismo</h3>
+      <p style="font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--stone);margin-bottom:0.3rem;">Respondé las 10 preguntas para avanzar. Necesitás un 70% para pasar.</p>
+      <div class="quiz-progress-bar-wrap"><div class="quiz-progress-bar" id="qpb0" style="width:0%"></div></div>
+      <div id="qbody0"></div>
+      <button class="btn-enter" id="qsubmit0" onclick="submitChapterQuiz(0)" disabled style="margin:1rem auto;display:block;">✅ Corregir evaluación</button>
+      <div class="quiz-result" id="qresult0">
+        <div class="result-score" id="qscore0"></div>
+        <div class="result-msg" id="qmsg0"></div>
+        <button class="btn-retry" id="qretry0" onclick="retryQuiz(0)" style="display:none">🔄 Volver a intentar</button>
+      </div>
+    </div>
+
+    <div class="stats-panel">
+      <div class="stat-item"><div class="stat-label">Preguntas respondidas</div><div class="stat-value" id="stat-answered-0">0/10</div></div>
+      <div class="stat-item"><div class="stat-label">Precisión</div><div class="stat-value" id="stat-precision-0">—</div></div>
+      <div class="stat-item"><div class="stat-label">Estado</div><div class="stat-value" id="stat-status-0" style="font-size:0.95rem;">⚪ Sin iniciar</div></div>
+    </div>
+
+    <div class="explore-grid-title">¿Cómo funcionaba el sistema feudal? Repasá cada pieza</div>
+    <div class="explore-grid">
+      <button class="explore-tile" onclick="scrollToCard('card-ch0-feudo')"><span class="et-title">🏰 El feudo</span><span class="et-sub">Tierra a cambio de lealtad</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch0-vasallo')"><span class="et-title">🐴 El vasallo</span><span class="et-sub">Servicio militar y consejo</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch0-senor')"><span class="et-title">👑 El señor</span><span class="et-sub">Protección y justicia</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch0-siervos')"><span class="et-title">🌾 Los siervos</span><span class="et-sub">Atados a la tierra</span></button>
+    </div>
+
+    <div class="ch-nav">
+      <button class="btn-prev" onclick="goHome()">← Inicio</button>
+      <button class="btn-next" id="next0" onclick="tryGoChapter(1)" disabled>La Iglesia →</button>
+    </div>
+  </article>
+
+  <!-- ════ CAPÍTULO 2: IGLESIA ════ -->
+  <article class="chapter" id="ch1">
+    <div class="ch-header">
+      <div class="ch-eyebrow">Capítulo II</div>
+      <span class="ch-icon">⛪</span>
+      <h2 class="ch-title">El Rol de la Iglesia</h2>
+      <p class="ch-subtitle">El poder espiritual que gobernó mentes y reinos</p>
+    </div>
+
+    <div class="subtopic-nav">
+      <span class="subtopic-pill sp-current"><span class="sp-num">1</span>Por qué era tan poderosa</span>
+      <span class="subtopic-pill"><span class="sp-num">2</span>Guardiana del saber</span>
+      <span class="subtopic-pill"><span class="sp-num">3</span>Jerarquía eclesiástica</span>
+      <span class="subtopic-pill"><span class="sp-num">4</span>La lucha con el rey</span>
+      <span class="subtopic-pill sp-quiz"><span class="sp-num">5</span>Examen del capítulo</span>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-avatar">🧑‍🏫</div>
+      <div class="guide-body">
+        <strong>Tu guía te cuenta</strong>
+        <p>La Iglesia gobernaba las conciencias tanto como los reyes gobernaban los territorios. Fijate cómo su poder espiritual, económico y educativo la convirtió en la institución más influyente de la Edad Media.</p>
+      </div>
+    </div>
+
+    <div class="spread">
+      <div class="page-left">
+        <span class="page-label">Página 3 · El poder de la Iglesia</span>
+        <h3 class="section-title">✝️ ¿Por qué era tan poderosa?</h3>
+        <p class="body-text dropcap">Durante la Edad Media, casi toda la gente en Europa Occidental era cristiana. La Iglesia Católica —encabezada por el Papa en Roma— era la única institución que tenía presencia en absolutamente todos los rincones del continente.</p>
+        <p class="body-text">Los reyes podían gobernar territorios, pero la Iglesia gobernaba las <strong>conciencias</strong>. Tenía el poder de <em>excomulgar</em> —expulsar de la fe cristiana— incluso a los monarcas más poderosos.</p>
+        <div class="info-card" id="card-ch1-excomunion"><strong>Excomunión:</strong> Ser expulsado de la comunidad cristiana. En la Edad Media era devastador: nadie podía darte los sacramentos y si morías así, ibas al infierno según la creencia de la época. Hasta los reyes le tenían miedo.</div>
+        <h3 class="section-title" style="margin-top:1rem;">📚 Guardiana del saber</h3>
+        <p class="body-text">Prácticamente <strong>toda la educación y la escritura</strong> estaba en manos de la Iglesia. Los monasterios eran los únicos lugares donde se copiaban libros y se enseñaba a leer. Los monjes preservaron textos griegos y romanos que se habrían perdido para siempre.</p>
+        <div class="illus-row">📿 ✝️ 📖 🕯️ 🔔</div>
+      </div>
+      <div class="page-right">
+        <span class="page-label">Página 4 · Estructura y conflictos</span>
+        <h3 class="section-title">🏛️ Jerarquía de la Iglesia</h3>
+        <div class="pyramid">
+          <div class="p-level l1" style="background:#2E4A7A;">👑 PAPA<br><span style="font-size:0.65rem;font-weight:400">Vicario de Cristo</span></div>
+          <div class="p-level l2" style="background:#1A4A2E;">🎓 CARDENALES<br><span style="font-size:0.65rem;font-weight:400">Eligen al Papa</span></div>
+          <div class="p-level l3" style="background:#4A6A4A;">⛪ OBISPOS<br><span style="font-size:0.65rem;font-weight:400">Gobiernan una diócesis</span></div>
+          <div class="p-level l4" style="background:#6A7A6A;">✝️ SACERDOTES / MONJES<br><span style="font-size:0.65rem;font-weight:400">En cada aldea y monasterio</span></div>
+        </div>
+        <div class="gold-card" id="card-ch1-diezmo" style="margin-top:1rem;"><strong>Diezmo:</strong> Todo campesino debía entregar el 10% de lo que producía a la Iglesia. Era un impuesto obligatorio que hacía de la Iglesia una institución enormemente rica con vastas propiedades de tierra.</div>
+        <h3 class="section-title">⚡ La lucha con el rey</h3>
+        <p class="body-text">El mayor conflicto fue la <strong>Querella de las Investiduras</strong> (s. XI): ¿quién nombraba a los obispos, el Papa o el rey? Era una disputa por el poder real. Terminó con el <em>Concordato de Worms</em> (1122) pero el enfrentamiento duró siglos.</p>
+        <div class="green-card" id="card-ch1-cruzadas"><strong>Las Cruzadas:</strong> Expediciones militares organizadas por el Papa para recuperar Tierra Santa de manos musulmanas. Mostraron el enorme poder de convocatoria de la Iglesia: movilizaron a miles de guerreros de toda Europa entre 1096 y 1291.</div>
+      </div>
+    </div>
+
+    <div class="explore-panel">
+      <div class="explore-head">
+        <span class="explore-eyebrow">Explorá la jerarquía eclesiástica</span>
+        <h4>Tocá cada rango para conocer su función</h4>
+      </div>
+      <div class="hotspot-map">
+        <details class="hotspot"><summary>👑 Papa</summary><p>Vicario de Cristo en Roma: cabeza de la Iglesia, con poder para excomulgar incluso a los reyes.</p></details>
+        <details class="hotspot"><summary>🎓 Cardenales</summary><p>Eligen al Papa y lo asesoran en el gobierno de toda la Iglesia.</p></details>
+        <details class="hotspot"><summary>⛪ Obispos</summary><p>Gobiernan una diócesis; su nombramiento fue el centro de la Querella de las Investiduras.</p></details>
+        <details class="hotspot"><summary>✝️ Sacerdotes / Monjes</summary><p>Presentes en cada aldea y monasterio: educaban, copiaban libros y cobraban el diezmo.</p></details>
+      </div>
+    </div>
+
+    <div class="insight-row">
+      <div class="insight-card ic-time">
+        <div class="ic-label">⏳ Línea de tiempo</div>
+        <div class="tl-mini">
+          <div class="tl-mini-item"><div class="tl-mini-year">Siglo XI</div><div class="tl-mini-text">Comienza la Querella de las Investiduras entre el Papa y los reyes.</div></div>
+          <div class="tl-mini-item"><div class="tl-mini-year">1096–1291</div><div class="tl-mini-text">Las Cruzadas movilizan guerreros de toda Europa.</div></div>
+          <div class="tl-mini-item"><div class="tl-mini-year">1122</div><div class="tl-mini-text">El Concordato de Worms pone fin al conflicto.</div></div>
+        </div>
+      </div>
+      <div class="insight-card ic-curiosity">
+        <div class="ic-label">💡 ¿Sabías que...?</div>
+        <p>Ser excomulgado era devastador: nadie podía darte los sacramentos, y según la creencia de la época, si morías así ibas al infierno. Hasta los reyes más poderosos le tenían miedo.</p>
+      </div>
+      <div class="insight-card ic-question">
+        <div class="ic-label">❓ Pregunta para pensar</div>
+        <p>¿Por qué creés que la Iglesia logró tener más poder que muchos reyes durante la Edad Media?</p>
+        <div class="ic-question-box"><textarea class="q-open" placeholder="Escribí tu respuesta acá..."></textarea></div>
+      </div>
+    </div>
+
+    <div class="quiz-section" id="quiz-ch1">
+      <h3>📝 Examen del Capítulo II — La Iglesia</h3>
+      <p style="font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--stone);margin-bottom:0.3rem;">Respondé las 10 preguntas para avanzar. Necesitás un 70% para pasar.</p>
+      <div class="quiz-progress-bar-wrap"><div class="quiz-progress-bar" id="qpb1" style="width:0%"></div></div>
+      <div id="qbody1"></div>
+      <button class="btn-enter" id="qsubmit1" onclick="submitChapterQuiz(1)" disabled style="margin:1rem auto;display:block;">✅ Corregir evaluación</button>
+      <div class="quiz-result" id="qresult1">
+        <div class="result-score" id="qscore1"></div>
+        <div class="result-msg" id="qmsg1"></div>
+        <button class="btn-retry" id="qretry1" onclick="retryQuiz(1)" style="display:none">🔄 Volver a intentar</button>
+      </div>
+    </div>
+
+    <div class="stats-panel">
+      <div class="stat-item"><div class="stat-label">Preguntas respondidas</div><div class="stat-value" id="stat-answered-1">0/10</div></div>
+      <div class="stat-item"><div class="stat-label">Precisión</div><div class="stat-value" id="stat-precision-1">—</div></div>
+      <div class="stat-item"><div class="stat-label">Estado</div><div class="stat-value" id="stat-status-1" style="font-size:0.95rem;">⚪ Sin iniciar</div></div>
+    </div>
+
+    <div class="explore-grid-title">El poder de la Iglesia, pieza por pieza</div>
+    <div class="explore-grid">
+      <button class="explore-tile" onclick="scrollToCard('card-ch1-excomunion')"><span class="et-title">⛔ Excomunión</span><span class="et-sub">El castigo más temido</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch1-diezmo')"><span class="et-title">💰 El diezmo</span><span class="et-sub">10% de impuesto obligatorio</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch1-cruzadas')"><span class="et-title">⚔️ Las Cruzadas</span><span class="et-sub">Expediciones a Tierra Santa</span></button>
+    </div>
+
+    <div class="ch-nav">
+      <button class="btn-prev" onclick="tryGoChapter(0)">← Feudalismo</button>
+      <button class="btn-next" id="next1" onclick="tryGoChapter(2)" disabled>División del Estado →</button>
+    </div>
+  </article>
+
+  <!-- ════ CAPÍTULO 3: ESTADO ════ -->
+  <article class="chapter" id="ch2">
+    <div class="ch-header">
+      <div class="ch-eyebrow">Capítulo III</div>
+      <span class="ch-icon">👑</span>
+      <h2 class="ch-title">División del Estado</h2>
+      <p class="ch-subtitle">¿Cómo se organizaba el poder político medieval?</p>
+    </div>
+
+    <div class="subtopic-nav">
+      <span class="subtopic-pill sp-current"><span class="sp-num">1</span>El fin del mundo romano</span>
+      <span class="subtopic-pill"><span class="sp-num">2</span>Tres fuentes de poder</span>
+      <span class="subtopic-pill"><span class="sp-num">3</span>Canossa (1077)</span>
+      <span class="subtopic-pill sp-quiz"><span class="sp-num">4</span>Examen del capítulo</span>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-avatar">🧑‍🏫</div>
+      <div class="guide-body">
+        <strong>Tu guía te cuenta</strong>
+        <p>Después de la caída de Roma, el poder político se fragmentó en mil pedazos. Tres fuerzas —el rey, la Iglesia y los señores feudales— se disputaron el control durante toda la Edad Media.</p>
+      </div>
+    </div>
+
+    <div class="spread">
+      <div class="page-left">
+        <span class="page-label">Página 5 · El poder fragmentado</span>
+        <h3 class="section-title">💥 El fin del mundo romano</h3>
+        <p class="body-text dropcap">Cuando el Imperio Romano de Occidente cayó en el año 476 d.C., desapareció el único poder que mantenía unido al continente. En su lugar surgieron <strong>reinos bárbaros</strong> (visigodos, francos, ostrogodos) que se repartieron el territorio.</p>
+        <p class="body-text">El resultado fue un mosaico de poderes locales: cada señor gobernaba su feudo casi como un pequeño estado independiente. No había ejércitos nacionales, ni leyes únicas, ni monedas comunes en todo el territorio.</p>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-year">476 d.C.</div><div class="tl-text">Caída del Imperio Romano de Occidente</div></div>
+          <div class="tl-item"><div class="tl-year">800 d.C.</div><div class="tl-text">Carlomagno coronado Emperador: intento de reunificar Europa</div></div>
+          <div class="tl-item"><div class="tl-year">Siglo IX</div><div class="tl-text">Invasiones vikingas, húngaras y sarracenas aceleran la fragmentación</div></div>
+          <div class="tl-item"><div class="tl-year">Siglos XI–XIII</div><div class="tl-text">Los reyes comienzan a recuperar poder central</div></div>
+          <div class="tl-item"><div class="tl-year">Siglo XV</div><div class="tl-text">Fin de la Edad Media: nacen los Estados modernos</div></div>
+        </div>
+      </div>
+      <div class="page-right">
+        <span class="page-label">Página 6 · Los tres poderes</span>
+        <h3 class="section-title">🔱 Tres fuentes de poder</h3>
+        <p class="body-text">En la Edad Media convivían y chocaban permanentemente <strong>tres tipos de poder</strong> que muchas veces entraban en conflicto:</p>
+        <div class="info-card" id="card-ch2-real"><strong>1. El poder real (secular):</strong><br>Los reyes existían, pero eran débiles frente a sus nobles. Dependían de la lealtad y los ejércitos de los señores feudales. Sin el apoyo de sus vasallos, un rey no podía hacer la guerra ni cobrar impuestos.</div>
+        <div class="gold-card" id="card-ch2-eclesiastico"><strong>2. El poder eclesiástico:</strong><br>La Iglesia era un "estado dentro del estado": tenía sus propias leyes (el Derecho Canónico), sus propios tribunales, enormes territorios y una riqueza inmensa gracias al diezmo y las donaciones.</div>
+        <div class="green-card" id="card-ch2-senorial"><strong>3. El poder local / señorial:</strong><br>Los señores feudales tenían el poder más real y cotidiano: cobraban impuestos, hacían justicia, reclutaban soldados. Era el poder más visible para los campesinos que nunca veían al rey.</div>
+        <div class="info-card" id="card-ch2-canossa"><strong>¿Sabías que…?</strong> El rey Enrique IV de Alemania tuvo que caminar descalzo en la nieve hasta el castillo de Canossa (1077) para pedir perdón al Papa Gregorio VII, quien lo había excomulgado. ¡El poder espiritual doblegó al poder político!</div>
+      </div>
+    </div>
+
+    <div class="explore-panel">
+      <div class="explore-head">
+        <span class="explore-eyebrow">Explorá los tres poderes medievales</span>
+        <h4>Tocá cada poder para ver cómo actuaba</h4>
+      </div>
+      <div class="hotspot-map">
+        <details class="hotspot"><summary>👑 Poder real</summary><p>Los reyes existían, pero dependían de la lealtad y los ejércitos de sus nobles para gobernar y hacer la guerra.</p></details>
+        <details class="hotspot"><summary>⛪ Poder eclesiástico</summary><p>La Iglesia tenía sus propias leyes, tribunales y una riqueza inmensa gracias al diezmo: un "estado dentro del estado".</p></details>
+        <details class="hotspot"><summary>🏰 Poder señorial</summary><p>Los señores feudales cobraban impuestos y hacían justicia: era el poder más visible para los campesinos.</p></details>
+      </div>
+    </div>
+
+    <div class="insight-row">
+      <div class="insight-card ic-time">
+        <div class="ic-label">⏳ Línea de tiempo</div>
+        <div class="tl-mini">
+          <div class="tl-mini-item"><div class="tl-mini-year">476 d.C.</div><div class="tl-mini-text">Cae el Imperio Romano de Occidente.</div></div>
+          <div class="tl-mini-item"><div class="tl-mini-year">800 d.C.</div><div class="tl-mini-text">Carlomagno intenta reunificar Europa.</div></div>
+          <div class="tl-mini-item"><div class="tl-mini-year">Siglo XV</div><div class="tl-mini-text">Fin de la Edad Media: nacen los Estados modernos.</div></div>
+        </div>
+      </div>
+      <div class="insight-card ic-curiosity">
+        <div class="ic-label">💡 ¿Sabías que...?</div>
+        <p>En 1077, el rey Enrique IV de Alemania tuvo que caminar descalzo en la nieve hasta Canossa para pedir perdón al Papa Gregorio VII, que lo había excomulgado. El poder espiritual doblegó al político.</p>
+      </div>
+      <div class="insight-card ic-question">
+        <div class="ic-label">❓ Pregunta para pensar</div>
+        <p>¿Cómo se organizaba el poder político medieval? Pensá en los tres poderes que vimos y cuál te parece que pesaba más en la vida cotidiana.</p>
+        <div class="ic-question-box"><textarea class="q-open" placeholder="Escribí tu respuesta acá..."></textarea></div>
+      </div>
+    </div>
+
+    <div class="quiz-section" id="quiz-ch2">
+      <h3>📝 Examen del Capítulo III — División del Estado</h3>
+      <p style="font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--stone);margin-bottom:0.3rem;">Respondé las 10 preguntas para avanzar. Necesitás un 70% para pasar.</p>
+      <div class="quiz-progress-bar-wrap"><div class="quiz-progress-bar" id="qpb2" style="width:0%"></div></div>
+      <div id="qbody2"></div>
+      <button class="btn-enter" id="qsubmit2" onclick="submitChapterQuiz(2)" disabled style="margin:1rem auto;display:block;">✅ Corregir evaluación</button>
+      <div class="quiz-result" id="qresult2">
+        <div class="result-score" id="qscore2"></div>
+        <div class="result-msg" id="qmsg2"></div>
+        <button class="btn-retry" id="qretry2" onclick="retryQuiz(2)" style="display:none">🔄 Volver a intentar</button>
+      </div>
+    </div>
+
+    <div class="stats-panel">
+      <div class="stat-item"><div class="stat-label">Preguntas respondidas</div><div class="stat-value" id="stat-answered-2">0/10</div></div>
+      <div class="stat-item"><div class="stat-label">Precisión</div><div class="stat-value" id="stat-precision-2">—</div></div>
+      <div class="stat-item"><div class="stat-label">Estado</div><div class="stat-value" id="stat-status-2" style="font-size:0.95rem;">⚪ Sin iniciar</div></div>
+    </div>
+
+    <div class="explore-grid-title">Los tres poderes, uno por uno</div>
+    <div class="explore-grid">
+      <button class="explore-tile" onclick="scrollToCard('card-ch2-real')"><span class="et-title">👑 Poder real</span><span class="et-sub">Débil frente a los nobles</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch2-eclesiastico')"><span class="et-title">⛪ Poder eclesiástico</span><span class="et-sub">Leyes y tribunales propios</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch2-senorial')"><span class="et-title">🏰 Poder señorial</span><span class="et-sub">El más visible y cotidiano</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch2-canossa')"><span class="et-title">❄️ Canossa (1077)</span><span class="et-sub">Un rey de rodillas</span></button>
+    </div>
+
+    <div class="ch-nav">
+      <button class="btn-prev" onclick="tryGoChapter(1)">← La Iglesia</button>
+      <button class="btn-next" id="next2" onclick="tryGoChapter(3)" disabled>La Economía →</button>
+    </div>
+  </article>
+
+  <!-- ════ CAPÍTULO 4: ECONOMÍA ════ -->
+  <article class="chapter" id="ch3">
+    <div class="ch-header">
+      <div class="ch-eyebrow">Capítulo IV</div>
+      <span class="ch-icon">🌾</span>
+      <h2 class="ch-title">La Economía Medieval</h2>
+      <p class="ch-subtitle">Del campo al mercado: cómo la gente vivía y sobrevivía</p>
+    </div>
+
+    <div class="subtopic-nav">
+      <span class="subtopic-pill sp-current"><span class="sp-num">1</span>Economía agraria</span>
+      <span class="subtopic-pill"><span class="sp-num">2</span>El señorío</span>
+      <span class="subtopic-pill"><span class="sp-num">3</span>Resurgir de las ciudades</span>
+      <span class="subtopic-pill"><span class="sp-num">4</span>Rutas comerciales</span>
+      <span class="subtopic-pill sp-quiz"><span class="sp-num">5</span>Examen del capítulo</span>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-avatar">🧑‍🏫</div>
+      <div class="guide-body">
+        <strong>Tu guía te cuenta</strong>
+        <p>Casi toda la economía medieval giraba en torno a la tierra y el señorío. Recién a partir del siglo XI el comercio y las ciudades vuelven a crecer, y ahí empieza a resquebrajarse el orden feudal.</p>
+      </div>
+    </div>
+
+    <div class="spread">
+      <div class="page-left">
+        <span class="page-label">Página 7 · La economía del campo</span>
+        <h3 class="section-title">🌾 Una economía agraria</h3>
+        <p class="body-text dropcap">La Edad Media temprana fue casi completamente agrícola. Más del 90% de la población vivía en el campo. El dinero apenas circulaba: lo que importaba era la tierra y lo que ella producía. El intercambio era muchas veces en especie.</p>
+        <div class="info-card" id="card-ch3-servidumbre"><strong>La servidumbre:</strong> Los siervos no eran esclavos, pero tampoco libres. Estaban atados a la tierra del señor: no podían irse sin permiso, pero tampoco podían ser vendidos solos. Debían pagar múltiples "gabelas" (impuestos) al señor.</div>
+        <h3 class="section-title" style="margin-top:1rem;">🏚️ El señorío (manor)</h3>
+        <p class="body-text">La unidad económica básica era el <strong>señorío</strong>: una gran finca donde convivían el castillo del señor, los campos de cultivo y la aldea de los campesinos. Era casi autosuficiente: producía todo lo que consumía.</p>
+        <div class="gold-card" id="card-ch3-trescampos"><strong>Sistema de tres campos:</strong> Para no agotar la tierra, se dividía en tres franjas: una se sembraba en otoño, otra en primavera, y la tercera descansaba ("en barbecho"). Al año siguiente se rotaban. Fue una innovación fundamental.</div>
+        <div class="illus-row">🌾 🐄 🐖 🍷 🪵</div>
+      </div>
+      <div class="page-right">
+        <span class="page-label">Página 8 · El renacimiento comercial</span>
+        <h3 class="section-title">🏙️ El resurgir de las ciudades</h3>
+        <p class="body-text">A partir del siglo XI, la economía comenzó a cambiar. La población creció, la agricultura mejoró y empezaron a sobrar alimentos. Eso permitió que algunas personas se dedicaran al <strong>comercio y la artesanía</strong> en vez de sólo cultivar.</p>
+        <p class="body-text">Las ciudades volvieron a crecer. Surgieron los <strong>burgos</strong>, y sus habitantes —los <em>burgueses</em>— serían la futura clase media que desafiaría al orden feudal.</p>
+        <div class="green-card" id="card-ch3-gremios"><strong>Los Gremios:</strong> Asociaciones de artesanos del mismo oficio (herreros, zapateros, panaderos) que controlaban la producción, fijaban precios y formaban a los aprendices. Tenían enorme poder en las ciudades medievales.</div>
+        <h3 class="section-title" style="margin-top:0.8rem;">🗺️ Rutas comerciales clave</h3>
+        <div class="term-grid" id="card-ch3-rutas">
+          <div class="term-chip"><strong>Ruta de la Seda</strong>Conectaba Europa con China y la India</div>
+          <div class="term-chip"><strong>Ciudades italianas</strong>Venecia y Génova dominaban el comercio</div>
+          <div class="term-chip"><strong>Liga Hanseática</strong>Red comercial del norte de Europa</div>
+          <div class="term-chip"><strong>Ferias de Champaña</strong>Centro del comercio europeo (Francia)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="explore-panel">
+      <div class="explore-head">
+        <span class="explore-eyebrow">Explorá el señorío medieval</span>
+        <h4>Tocá cada parte del feudo para descubrir cómo funcionaba</h4>
+      </div>
+      <div class="hotspot-map">
+        <details class="hotspot"><summary>🏰 Castillo</summary><p>Residencia del señor: centro de gobierno, justicia y defensa de todo el señorío.</p></details>
+        <details class="hotspot"><summary>🌾 Campos de cultivo</summary><p>Divididos en tres franjas rotativas (sistema de tres campos) para no agotar la tierra.</p></details>
+        <details class="hotspot"><summary>🏘️ Aldea</summary><p>Donde vivían los siervos, atados a la tierra y obligados a pagar gabelas al señor.</p></details>
+        <details class="hotspot"><summary>🏙️ Mercado / Burgo</summary><p>A partir del siglo XI, el resurgir del comercio hizo crecer nuevas ciudades y gremios de artesanos.</p></details>
+      </div>
+    </div>
+
+    <div class="insight-row">
+      <div class="insight-card ic-time">
+        <div class="ic-label">⏳ Línea de tiempo</div>
+        <div class="tl-mini">
+          <div class="tl-mini-item"><div class="tl-mini-year">Alta Edad Media</div><div class="tl-mini-text">Economía agraria de subsistencia, más del 90% de la población vive en el campo.</div></div>
+          <div class="tl-mini-item"><div class="tl-mini-year">Desde el siglo XI</div><div class="tl-mini-text">Resurgen el comercio, las ciudades y los gremios de artesanos.</div></div>
+        </div>
+      </div>
+      <div class="insight-card ic-curiosity">
+        <div class="ic-label">💡 ¿Sabías que...?</div>
+        <p>Los gremios medievales no solo fabricaban productos: fijaban precios, controlaban la calidad y formaban a los aprendices durante años antes de dejarlos ejercer un oficio.</p>
+      </div>
+      <div class="insight-card ic-question">
+        <div class="ic-label">❓ Pregunta para pensar</div>
+        <p>¿Por qué creés que el crecimiento del comercio y de los burgueses terminó desafiando al orden feudal?</p>
+        <div class="ic-question-box"><textarea class="q-open" placeholder="Escribí tu respuesta acá..."></textarea></div>
+      </div>
+    </div>
+
+    <div class="quiz-section" id="quiz-ch3">
+      <h3>📝 Examen del Capítulo IV — La Economía</h3>
+      <p style="font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--stone);margin-bottom:0.3rem;">Respondé las 10 preguntas para avanzar. Necesitás un 70% para pasar.</p>
+      <div class="quiz-progress-bar-wrap"><div class="quiz-progress-bar" id="qpb3" style="width:0%"></div></div>
+      <div id="qbody3"></div>
+      <button class="btn-enter" id="qsubmit3" onclick="submitChapterQuiz(3)" disabled style="margin:1rem auto;display:block;">✅ Corregir evaluación</button>
+      <div class="quiz-result" id="qresult3">
+        <div class="result-score" id="qscore3"></div>
+        <div class="result-msg" id="qmsg3"></div>
+        <button class="btn-retry" id="qretry3" onclick="retryQuiz(3)" style="display:none">🔄 Volver a intentar</button>
+      </div>
+    </div>
+
+    <div class="stats-panel">
+      <div class="stat-item"><div class="stat-label">Preguntas respondidas</div><div class="stat-value" id="stat-answered-3">0/10</div></div>
+      <div class="stat-item"><div class="stat-label">Precisión</div><div class="stat-value" id="stat-precision-3">—</div></div>
+      <div class="stat-item"><div class="stat-label">Estado</div><div class="stat-value" id="stat-status-3" style="font-size:0.95rem;">⚪ Sin iniciar</div></div>
+    </div>
+
+    <div class="explore-grid-title">Del campo al mercado, pieza por pieza</div>
+    <div class="explore-grid">
+      <button class="explore-tile" onclick="scrollToCard('card-ch3-servidumbre')"><span class="et-title">🌾 La servidumbre</span><span class="et-sub">Atados a la tierra</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch3-trescampos')"><span class="et-title">🔄 Tres campos</span><span class="et-sub">La rotación que salvó la tierra</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch3-gremios')"><span class="et-title">🔨 Los gremios</span><span class="et-sub">Artesanos organizados</span></button>
+      <button class="explore-tile" onclick="scrollToCard('card-ch3-rutas')"><span class="et-title">🗺️ Rutas comerciales</span><span class="et-sub">De Venecia a la Ruta de la Seda</span></button>
+    </div>
+
+    <div class="ch-nav">
+      <button class="btn-prev" onclick="tryGoChapter(2)">← División del Estado</button>
+      <button class="btn-next" id="next3" onclick="tryGoChapter(4)" disabled>Examen Final →</button>
+    </div>
+  </article>
+
+  <!-- ════ EXAMEN FINAL ════ -->
+  <article class="chapter" id="ch4">
+    <div class="final-exam-wrap">
+      <div class="guide-card">
+        <div class="guide-avatar">🧑‍🏫</div>
+        <div class="guide-body">
+          <strong>Tu guía te cuenta</strong>
+          <p>Llegaste al Examen Final. Repasa mentalmente los cuatro capítulos —feudalismo, Iglesia, Estado y economía— antes de empezar. ¡Vos podés!</p>
+        </div>
+      </div>
+      <div class="stats-panel stats-panel-4col" id="final-summary-panel">
+        <div class="stat-item"><div class="stat-label">Feudalismo</div><div class="stat-value" id="final-sum-0" style="font-size:1rem;">—</div></div>
+        <div class="stat-item"><div class="stat-label">La Iglesia</div><div class="stat-value" id="final-sum-1" style="font-size:1rem;">—</div></div>
+        <div class="stat-item"><div class="stat-label">Estado</div><div class="stat-value" id="final-sum-2" style="font-size:1rem;">—</div></div>
+        <div class="stat-item"><div class="stat-label">Economía</div><div class="stat-value" id="final-sum-3" style="font-size:1rem;">—</div></div>
+      </div>
+      <div class="exam-header">
+        <span style="font-size:3rem">📜</span>
+        <h2>Examen Final — Edad Media</h2>
+        <p>20 preguntas · Multiple choice y respuestas escritas · Mínimo 70% para aprobar</p>
+        <div class="exam-progress-wrap"><div class="exam-progress" id="exam-pb" style="width:0%"></div></div>
+      </div>
+      <div id="final-exam-body"></div>
+      <button class="btn-submit-exam" id="btn-submit-exam" onclick="submitFinalExam()" disabled>📜 Enviar Examen Final</button>
+      <div class="exam-result-panel" id="exam-result-panel">
+        <div class="exam-result-score" id="exam-score-display"></div>
+        <div class="exam-result-msg" id="exam-msg-display"></div>
+        <div class="correo-envio-final">
+          <h4>📩 Enviar resultados por correo</h4>
+          <div class="correo-envio">
+            <input type="email" id="correo-envio-input" placeholder="tucorreo@ejemplo.com">
+            <button id="btn-enviar-correo" onclick="enviarPorCorreo()">Enviar</button>
+          </div>
+          <p class="correo-msg" id="correo-envio-msg"></p>
+        </div>
+        <button class="btn-retry" onclick="retryFinalExam()">🔄 Volver a intentar</button>
+        <div class="exam-answers-review" id="exam-review"></div>
+      </div>
+    </div>
+    <div class="ch-nav" style="max-width:760px;margin:0 auto;padding:0 1.5rem 3rem;">
+      <button class="btn-prev" onclick="tryGoChapter(3)">← Economía</button>
+      <button class="btn-next" onclick="goHome()" style="background:var(--illuminated);border-color:var(--illuminated);">🏰 Inicio</button>
+    </div>
+  </article>
+
+</div><!-- /reader -->
+
+<!-- ══════ CORE de ORIGEN — compartido por todas las materias ══════ -->
+<script src="../../core/js/storage.js"></script>
+<script src="../../core/js/corrector-heuristico.js"></script>
+<script src="../../core/js/evaluacion-motor.js"></script>
+<script src="../../core/js/navegacion-estado.js"></script>
+<script src="../../core/js/resultados.js"></script>
+<script src="../../core/js/email-resultados.js"></script>
+
+<script>
+// ══════════════════════════════════════════
+//  IDENTIDAD (Core: storage.js)
+//  Sin login ni contraseña — se entra directo, igual que el resto
+//  de ORIGEN. safeGet/safeSet/getIdentity/setIdentity vienen de
+//  ../../core/js/storage.js (cargado antes que este script).
+// ══════════════════════════════════════════
+let { alias: studentAlias } = getIdentity();
+function getAlias(){ return studentAlias || 'estudiante'; }
+
+// Historia no tiene personaje-guía por ahora — solo Exactas (Pedro).
+// Habilita "Comenzar la aventura" en cuanto hay un alias escrito.
+function checkEnterReady(){
+  const aliasInput = document.getElementById('login-alias');
+  const aliasVal = aliasInput ? aliasInput.value.trim() : studentAlias;
+  document.getElementById('btn-enter-app').disabled = !aliasVal;
+}
+
+// Decide, al cargar la página, si hace falta pedir alias o si ya viene
+// guardado (por ejemplo, porque el alumno ya lo eligió antes desde el
+// sidebar de Historia): en ese caso se entra directo, sin mostrar nada.
+window.addEventListener('DOMContentLoaded', function(){
+  const aliasInput = document.getElementById('login-alias');
+  if(aliasInput && studentAlias) aliasInput.value = studentAlias;
+  checkEnterReady();
+
+  // Core: navegacion-estado.js — arranca el auto-guardado de scroll para
+  // este módulo. La restauración solo aplica al entrar directo (alumno
+  // ya conocido); goChapter() sigue haciendo su scroll-to-top intencional
+  // al cambiar de capítulo, eso no se toca.
+  NavegacionEstado.iniciarAutoguardadoScroll('historia', 'edad-media', null);
+
+  if(studentAlias){
+    // Identidad ya conocida: entra directo, sin mostrar el selector.
+    document.getElementById('welcome-overlay').style.display = 'none';
+    showCover();
+    NavegacionEstado.restaurarScrollSiCorresponde('historia', 'edad-media', null);
+  } else {
+    // Primera vez en ORIGEN: se pide acá, sin contraseña ni correo.
+    document.getElementById('welcome-overlay').style.display = 'flex';
+  }
+});
+
+// ══════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════
+const FACE_CYCLE = ['😊','😄','🤩','😎','🥳','😇','🤓','👸','🏰','⚔️','📜','✨'];
+let faceIdx = 0;
+function cycleFace(){
+  faceIdx = (faceIdx+1) % FACE_CYCLE.length;
+  document.getElementById('face-display').textContent = FACE_CYCLE[faceIdx];
+}
+
+// chapterPassed[i] = true means chapter i quiz was passed
+const chapterPassed = [false,false,false,false,false];
+// chapter scores storage
+const chapterScores = [{},{},{},{}]; // {correct, total, pct}
+
+// ── QUIZ QUESTIONS PER CHAPTER ──
+const QUIZZES = [
+  // CH 0: Feudalismo
+  [
+    {type:'mc', q:'¿Cómo se llamaba la tierra que un señor entregaba a su vasallo?', opts:['El burgo','El feudo','La abadía','El diezmo'], ans:1},
+    {type:'mc', q:'¿Qué nombre recibía el juramento de fidelidad que hacía un vasallo a su señor?', opts:['El homenaje','La excomunión','El diezmo','El barbecho'], ans:0},
+    {type:'mc', q:'¿Quién estaba en la CIMA de la pirámide feudal?', opts:['El caballero','El obispo','El rey','El siervo'], ans:2},
+    {type:'mc', q:'¿Quién estaba en la BASE de la pirámide feudal?', opts:['Los nobles','Los reyes','Los caballeros','Los siervos y campesinos'], ans:3},
+    {type:'mc', q:'¿Cuántos días aproximados de servicio militar debía el vasallo a su señor por año?', opts:['Entre 40 y 60 días','Todo el año','Solo 5 días','Un mes exacto'], ans:0},
+    {type:'mc', q:'¿Cómo se llamaba el señor principal al que se le debía lealtad absoluta cuando había conflicto entre señores?', opts:['El señor libre','El señor ligio','El señor eclesiástico','El señor vasallo'], ans:1},
+    {type:'mc', q:'¿En qué siglos aproximadamente dominó el feudalismo en Europa Occidental?', opts:['Siglos I al V','Siglos IX al XV','Siglos XVI al XVIII','Siglos II al VIII'], ans:1},
+    {type:'mc', q:'¿Qué pasaba con los siervos en el sistema feudal?', opts:['Eran completamente libres','Eran esclavos que podían venderse','Estaban atados a la tierra pero no podían ser vendidos solos','No tenían ninguna obligación'], ans:2},
+    {type:'mc', q:'¿Por qué surgió el feudalismo?', opts:['Porque los reyes lo inventaron por capricho','Porque tras la caída del Imperio Romano no había poder central que protegiera a la gente','Porque la Iglesia lo ordenó','Porque los campesinos lo pidieron'], ans:1},
+    {type:'mc', q:'¿Cuál de estas NO era una obligación del señor hacia su vasallo?', opts:['Protegerlo militarmente','Hacer justicia','Pagarle un sueldo en dinero','Respetar el feudo entregado'], ans:2},
+  ],
+  // CH 1: Iglesia
+  [
+    {type:'mc', q:'¿Qué significa "excomulgar"?', opts:['Nombrar a alguien obispo','Expulsar a alguien de la comunidad cristiana','Cobrar el diezmo','Organizar una Cruzada'], ans:1},
+    {type:'mc', q:'¿Cómo se llamaba el impuesto del 10% que debía pagarse a la Iglesia?', opts:['La gabela','El feudo','El diezmo','El homenaje'], ans:2},
+    {type:'mc', q:'¿Quién encabezaba la Iglesia Católica?', opts:['El rey de Francia','El Emperador Romano','El Papa en Roma','El Arzobispo de Canterbury'], ans:2},
+    {type:'mc', q:'¿Cómo se llamaba el conflicto entre el Papa y los reyes por el derecho de nombrar obispos?', opts:['La Guerra de los Cien Años','La Querella de las Investiduras','Las Cruzadas','La Reforma Protestante'], ans:1},
+    {type:'mc', q:'¿Qué acuerdo puso fin a la Querella de las Investiduras?', opts:['El Tratado de Westfalia','El Concordato de Worms (1122)','La Paz de Augsburgo','La Bula de Oro'], ans:1},
+    {type:'mc', q:'¿Quiénes copiaban libros y preservaban el conocimiento en la Edad Media?', opts:['Los caballeros en sus castillos','Los comerciantes en las ferias','Los monjes en los monasterios','Los campesinos en sus aldeas'], ans:2},
+    {type:'mc', q:'¿Qué eran las Cruzadas?', opts:['Rutas comerciales medievales','Expediciones militares organizadas por el Papa para recuperar Tierra Santa','Impuestos cobrados por la Iglesia','Juicios realizados por los obispos'], ans:1},
+    {type:'mc', q:'¿Cuál era el rango inmediatamente debajo del Papa en la jerarquía eclesiástica?', opts:['Los sacerdotes','Los monjes','Los obispos','Los cardenales'], ans:3},
+    {type:'mc', q:'¿Por qué era tan grave la excomunión en la Edad Media?', opts:['Porque te quitaban tus tierras inmediatamente','Porque según la creencia de la época condenaba el alma al infierno','Porque te convertían en siervo','Porque te desterraban del país'], ans:1},
+    {type:'mc', q:'¿Qué hacía la Iglesia con los ingresos del diezmo y las donaciones?', opts:['Los repartía entre los pobres únicamente','Los usaba para financiar ejércitos reales','Acumulaba riqueza y grandes propiedades de tierra','Los devolvía a los campesinos'], ans:2},
+  ],
+  // CH 2: División del Estado
+  [
+    {type:'mc', q:'¿En qué año cayó el Imperio Romano de Occidente, marcando el inicio de la Edad Media?', opts:['395 d.C.','476 d.C.','800 d.C.','1066 d.C.'], ans:1},
+    {type:'mc', q:'¿Qué nombre recibían los pueblos que se repartieron Europa tras la caída de Roma?', opts:['Cruzados','Burgueses','Bárbaros','Siervos'], ans:2},
+    {type:'mc', q:'¿Quién fue coronado Emperador en el año 800 con intención de reunificar Europa?', opts:['Julio César','Constantino','Carlomagno','Otón I'], ans:2},
+    {type:'mc', q:'¿Cuáles de estos pueblos invadieron Europa en el siglo IX acelerando la fragmentación política?', opts:['Los romanos, griegos y persas','Los vikingos, húngaros y sarracenos','Los francos, visigodos y ostrogodos','Los españoles, franceses e ingleses'], ans:1},
+    {type:'mc', q:'¿Cómo se llamaba el conjunto de leyes propias de la Iglesia?', opts:['El Derecho Romano','El Código de Hammurabi','El Derecho Canónico','El Fuero Real'], ans:2},
+    {type:'mc', q:'¿Qué episodio mostró el poder del Papa sobre los reyes en 1077?', opts:['La firma de la Carta Magna','La batalla de Hastings','El rey Enrique IV humillándose en Canossa ante el Papa','La coronación de Carlomagno'], ans:2},
+    {type:'mc', q:'¿Por qué el poder real era débil en la Alta Edad Media?', opts:['Porque los reyes eran tontos','Porque los reyes dependían de la lealtad y los ejércitos de sus nobles','Porque la Iglesia elegía a los reyes','Porque no había guerras'], ans:1},
+    {type:'mc', q:'¿Cuál de estos NO era un tipo de poder en la Edad Media?', opts:['Poder real','Poder eclesiástico','Poder señorial local','Poder parlamentario moderno'], ans:3},
+    {type:'mc', q:'¿Qué surgió al final de la Edad Media en el siglo XV?', opts:['El feudalismo más fuerte que nunca','Los Estados modernos con poder centralizado','La desaparición de la Iglesia','El regreso del Imperio Romano'], ans:1},
+    {type:'mc', q:'¿Por qué el poder local (señorial) era el más visible para los campesinos?', opts:['Porque vivían lejos del rey y cerca del señor feudal','Porque los señores les pagaban bien','Porque la Iglesia lo había ordenado así','Porque los campesinos elegían a sus señores'], ans:0},
+  ],
+  // CH 3: Economía
+  [
+    {type:'mc', q:'¿Qué porcentaje de la población medieval vivía y trabajaba en el campo?', opts:['Más del 90%','El 50%','El 30%','Menos del 10%'], ans:0},
+    {type:'mc', q:'¿Cómo se llamaba la técnica agrícola de dividir la tierra en tres partes rotativas?', opts:['Sistema de barbecho único','Rotación bienal','Sistema de tres campos','El método romano'], ans:2},
+    {type:'mc', q:'¿Qué era el "barbecho" en la agricultura medieval?', opts:['Un tipo de arado','Dejar la tierra descansar sin sembrar por una temporada','Un impuesto agrario','Un tipo de semilla'], ans:1},
+    {type:'mc', q:'¿Cómo se llamaba la unidad económica básica del feudalismo?', opts:['El burgo','El gremio','El señorío o manor','La abadía'], ans:2},
+    {type:'mc', q:'¿A partir de qué siglo comenzó el resurgimiento del comercio y las ciudades medievales?', opts:['Siglo VI','Siglo VIII','Siglo XI','Siglo XIV'], ans:2},
+    {type:'mc', q:'¿Cómo se llamaban las asociaciones medievales de artesanos del mismo oficio?', opts:['Burgos','Gremios','Feudos','Monasterios'], ans:1},
+    {type:'mc', q:'¿Cómo se llamaban los habitantes de los burgos medievales, que formaron la futura clase media?', opts:['Siervos','Vasallos','Burgueses','Caballeros'], ans:2},
+    {type:'mc', q:'¿Qué ciudades dominaban el comercio marítimo medieval en el Mediterráneo?', opts:['París y Londres','Venecia y Génova','Ámsterdam y Lisboa','Barcelona y Marsella'], ans:1},
+    {type:'mc', q:'¿Qué era la Liga Hanseática?', opts:['Una alianza de caballeros cruzados','Una red de ciudades comerciales del norte de Europa','Una organización de la Iglesia','Un gremio de comerciantes de seda'], ans:1},
+    {type:'mc', q:'¿Por qué el señorío medieval se consideraba "casi autosuficiente"?', opts:['Porque exportaba todo lo que producía','Porque producía y consumía casi todo lo que necesitaba sin depender del comercio externo','Porque el rey les traía todo lo que necesitaban','Porque la Iglesia lo abastecía'], ans:1},
+  ],
+];
+
+// ── NOMBRES DE MÓDULO (por índice de capítulo) ──
+const TOPIC_NAMES = ['Feudalismo','Iglesia','Estado','Economía'];
+
+// ── BANCO DE PREGUNTAS DE DESARROLLO POR MÓDULO ──
+// 4 preguntas por módulo: en cada evaluación se eligen 2 al azar,
+// y en el examen final se eligen 1 por módulo + 1 extra al azar.
+const WRITTEN_BANK = [
+  // CH 0: Feudalismo
+  [
+    {concept:'Origen del feudalismo', q:'Explicá con tus propias palabras qué era el feudalismo y por qué surgió en Europa.', keywords:['protección','tierra','lealtad','roma','vasallo','señor','feudo'], hint:'Mencioná: la caída de Roma, el intercambio de tierras por lealtad/protección.'},
+    {concept:'Obligaciones del vasallo', q:'¿Cuáles eran las principales obligaciones de un vasallo hacia su señor feudal? Mencioná al menos dos.', keywords:['militar','servicio','guerra','rescate','consejo','impuesto','fidelidad'], hint:'Pensá en el servicio militar y otras obligaciones del juramento.'},
+    {concept:'Relación señor-vasallo', q:'¿Qué diferencia había entre un señor y un vasallo dentro del sistema feudal?', keywords:['tierra','protección','lealtad','servicio','jerarquía','superior','inferior','feudo'], hint:'Pensá en quién entregaba la tierra y quién debía lealtad a cambio.'},
+    {concept:'Pirámide feudal', q:'¿Por qué se dice que la sociedad feudal era una pirámide? Explicá cómo estaba organizada.', keywords:['rey','nobles','caballeros','siervos','jerarquía','arriba','abajo','pirámide'], hint:'Pensá en quién estaba en la cima y quién en la base.'},
+  ],
+  // CH 1: Iglesia
+  [
+    {concept:'Poder de la Iglesia', q:'¿Por qué la Iglesia era tan poderosa en la Edad Media? Mencioná al menos dos razones.', keywords:['excomunión','diezmo','educación','tierra','papa','monasterio','saber','poder'], hint:'Pensá en su poder espiritual, sus riquezas y el control del conocimiento.'},
+    {concept:'Las Cruzadas', q:'¿Qué eran las Cruzadas y quién las organizaba?', keywords:['papa','tierra santa','militar','jerusalén','expedición','cristiana','musulmán'], hint:'¿Quién las convocó? ¿Cuál era el objetivo?'},
+    {concept:'Los monasterios', q:'¿Qué papel cumplían los monasterios en la vida cultural de la Edad Media?', keywords:['monjes','copiaban','libros','conocimiento','educación','conservaron','cultura'], hint:'Pensá en quiénes conservaban el saber en esa época.'},
+    {concept:'La excomunión', q:'¿Qué consecuencias tenía para una persona ser excomulgada en la Edad Media?', keywords:['infierno','alma','condenada','sociedad','aislado','poder','papa'], hint:'Pensá en la creencia religiosa de la época y en el aislamiento social.'},
+  ],
+  // CH 2: Estado
+  [
+    {concept:'Fragmentación del poder', q:'¿Por qué el poder político estaba tan fragmentado en la Edad Media? Explicá brevemente.', keywords:['roma','señor','feudo','local','rey','débil','noble','fragmentación'], hint:'Pensá en qué pasó tras la caída del Imperio Romano.'},
+    {concept:'Canossa 1077', q:'Describí el episodio de Canossa (1077). ¿Qué demostró sobre el poder del Papa?', keywords:['enrique','papa','gregorio','nieve','excomunión','humilló','poder','espiritual'], hint:'¿Qué tuvo que hacer el rey? ¿Qué demostró eso?'},
+    {concept:'Carlomagno', q:'¿Qué significó la coronación de Carlomagno en el año 800?', keywords:['emperador','unificar','europa','papa','poder','imperio','carlomagno'], hint:'Pensá en el intento de recrear un poder central en Europa.'},
+    {concept:'Poder real vs. señorial', q:'¿Qué diferencia había entre el poder real y el poder señorial en la Edad Media?', keywords:['rey','débil','señor','local','nobles','ejércitos','lealtad'], hint:'Pensá en de quién dependía militarmente el rey.'},
+  ],
+  // CH 3: Economía
+  [
+    {concept:'El señorío autosuficiente', q:'¿Qué era el señorío medieval y por qué se dice que era "autosuficiente"?', keywords:['castillo','campo','aldea','producía','consumía','tierra','campesino','señor'], hint:'¿Qué producía? ¿Qué pasaba con lo que producía?'},
+    {concept:'Resurgimiento comercial', q:'¿Qué cambios económicos ocurrieron a partir del siglo XI en Europa? Mencioná al menos dos.', keywords:['comercio','ciudad','burgo','burgués','gremio','artesano','población','mercado'], hint:'Pensá en el crecimiento de las ciudades y el surgimiento del comercio.'},
+    {concept:'Sistema de tres campos', q:'¿Para qué servía el sistema de tres campos en la agricultura medieval?', keywords:['rotación','tierra','descanso','fertilidad','cultivo','barbecho','producción'], hint:'Pensá en por qué convenía no sembrar siempre la misma parcela.'},
+    {concept:'Los gremios', q:'¿Qué función cumplían los gremios en las ciudades medievales?', keywords:['artesanos','oficio','controlaban','calidad','producción','ciudad','comercio'], hint:'Pensá en quiénes los formaban y qué regulaban.'},
+  ],
+];
+
+// ══════════════════════════════════════════
+//  BANCO en formato genérico para el Core (evaluacion-motor.js)
+//  Traduce QUIZZES/WRITTEN_BANK/TOPIC_NAMES — que son contenido
+//  propio de Historia — al contrato agnóstico que espera el motor.
+//  El motor nunca ve "Feudalismo" ni ningún nombre de Historia:
+//  solo ve mc[], desarrollo[] y nombre (string libre).
+// ══════════════════════════════════════════
+const BANCO_EDAD_MEDIA = TOPIC_NAMES.map((nombre, i) => ({
+  nombre,
+  mc: QUIZZES[i],
+  desarrollo: WRITTEN_BANK[i],
+}));
+
+// ══════════════════════════════════════════
+//  HELPERS: aleatorización y corrección heurística
+//  shuffleArray/pickRandom/shuffleMC/pickIndices ahora viven en el Core
+//  (evaluacion-motor.js), accesibles vía EvaluacionMotor.*
+// ══════════════════════════════════════════
+// normalize() y gradeWritten() ahora viven en el Core:
+// ../../core/js/corrector-heuristico.js (cargado antes que este script).
+// Es exactamente el mismo algoritmo, sin ningún cambio de comportamiento —
+// solo se movió para que todas las materias lo reutilicen sin duplicarlo.
+// Alias por compatibilidad, por si algo del código de abajo la llama "normalize":
+const normalize = normalizeTexto;
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let quizState = [{},{},{},{}]; // per chapter quiz state
+let finalExamState = {};
+let currentChapter = -1;
+let FINAL_EXAM = []; // se reconstruye en cada buildFinalExam() con selección al azar
+let ultimoResultadoExamen = null; // para poder reenviar el correo sin recalcular
+
+// ══════════════════════════════════════════
+//  WELCOME
+//  Mostrar/ocultar este overlay ya lo decide el DOMContentLoaded
+//  de identidad (arriba): solo aparece si todavía no hay alias/guía.
+// ══════════════════════════════════════════
+function enterApp(){
+  const aliasInput = document.getElementById('login-alias');
+  const aliasVal = aliasInput ? aliasInput.value.trim() : '';
+  if(!aliasVal){ checkEnterReady(); return; }
+
+  studentAlias = aliasVal;
+  setAlias(studentAlias); // Core: storage.js — no toca 'origenGuide'
+
+  const ov = document.getElementById('welcome-overlay');
+  ov.classList.add('fade-out');
+  setTimeout(()=>{ ov.style.display='none'; showCover(); },800);
+}
+function showCover(){
+  document.getElementById('cover').style.display='flex';
+  document.getElementById('reader').style.display='none';
+  const eyebrow = document.getElementById('cover-eyebrow');
+  if(eyebrow) eyebrow.textContent = 'Guía Interactiva · Historia Medieval' + (studentAlias ? ' · ' + studentAlias : '');
+  updateCoverBadges();
+}
+function goHome(){ showCover(); currentChapter=-1; }
+
+// ══════════════════════════════════════════
+//  NAVIGATION & LOCKING
+// ══════════════════════════════════════════
+function tryGoChapter(n){
+  // ch0 always unlocked; ch1-4 need previous completed (no exige aprobar)
+  if(n > 0 && !chapterPassed[n-1]){
+    alert('🔒 Completá el capítulo anterior primero (enviá tu evaluación, apruebes o no).');
+    return;
+  }
+  goChapter(n);
+}
+
+function goChapter(n){
+  document.getElementById('cover').style.display='none';
+  document.getElementById('reader').style.display='block';
+  document.querySelectorAll('.chapter').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.nav-ch').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ch'+n).classList.add('active');
+  document.getElementById('nav'+n).classList.add('active');
+  currentChapter = n;
+  window.scrollTo({top:0,behavior:'smooth'});
+  // build quizzes lazily
+  if(n < 4) buildChapterQuiz(n);
+  if(n === 4) buildFinalExam();
+  // refresh new UI components (subtopic/guide/explore panels are static;
+  // these two only re-render live numbers from data that already exists)
+  renderStatsPanel(n);
+  if(n === 4) renderFinalSummary();
+}
+
+// ══════════════════════════════════════════
+//  NUEVOS COMPONENTES DE LA GUÍA (aditivos)
+//  No modifican tryGoChapter, updateCoverBadges,
+//  ni la estructura de QUIZZES/FINAL_EXAM.
+// ══════════════════════════════════════════
+
+// Grilla de exploración: hace scroll suave hacia una tarjeta existente
+function scrollToCard(cardId){
+  const el = document.getElementById(cardId);
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+  el.style.transition = 'box-shadow 0.3s, border-color 0.3s';
+  el.style.boxShadow = '0 0 0 3px var(--gold)';
+  setTimeout(()=>{ el.style.boxShadow=''; }, 1200);
+}
+
+// Panel de rendimiento por capítulo: lee el estado real de la última
+// evaluación rendida (chapterScores / chapterPassed), no inventa números.
+function renderStatsPanel(n){
+  if(n > 3) return;
+  const s = chapterScores[n];
+
+  const elA = document.getElementById('stat-answered-'+n);
+  const elP = document.getElementById('stat-precision-'+n);
+  const elS = document.getElementById('stat-status-'+n);
+  if(elA) elA.textContent = s ? `${s.points}/${s.maxPoints} pts` : '—';
+  if(elP) elP.textContent = s && s.pct!==undefined ? `${s.pct}%` : '—';
+  if(elS){
+    if(chapterPassed[n])      elS.textContent = '✅ Aprobado';
+    else if(s)                elS.textContent = '⏳ Intentalo de nuevo';
+    else                      elS.textContent = '⚪ Sin iniciar';
+  }
+}
+
+// Resumen del recorrido en el Examen Final: reutiliza chapterScores,
+// que ya se completa en showChapterResult() al aprobar cada capítulo.
+function renderFinalSummary(){
+  for(let i=0;i<4;i++){
+    const el = document.getElementById('final-sum-'+i);
+    if(!el) continue;
+    const s = chapterScores[i];
+    el.textContent = (s && s.pct!==undefined) ? `${s.pct}%` : '—';
+  }
+}
+
+// Actualiza el panel de rendimiento en vivo cuando se responde una
+// pregunta del quiz del capítulo (delegación de eventos, no reemplaza
+// ni redefine selectChapterMC/retryQuiz).
+document.addEventListener('DOMContentLoaded', function(){
+  const readerEl = document.getElementById('reader');
+  if(readerEl){
+    readerEl.addEventListener('click', function(e){
+      if(e.target.classList && (e.target.classList.contains('q-opt') || e.target.classList.contains('btn-retry'))){
+        setTimeout(()=>{ if(currentChapter>=0) renderStatsPanel(currentChapter); }, 60);
+      }
+    });
+  }
+});
+
+// ══════════════════════════════════════════
+//  COVER BADGES
+// ══════════════════════════════════════════
+function updateCoverBadges(){
+  const labels = ['Sin iniciar','Sin iniciar','Sin iniciar','Sin iniciar','Sin iniciar'];
+  for(let i=0;i<4;i++){
+    const badge = document.getElementById('badge-'+i);
+    const btn   = document.getElementById('cover-btn-'+i);
+    if(chapterPassed[i]){
+      badge.textContent='✅ Completado'; badge.className='t-badge pass';
+      btn.classList.remove('locked');
+    } else if(i===0 || chapterPassed[i-1]){
+      badge.textContent='📖 Disponible'; badge.className='t-badge';
+      btn.classList.remove('locked');
+    } else {
+      badge.textContent='🔒 Bloqueado'; badge.className='t-badge';
+      btn.classList.add('locked');
+    }
+  }
+  // final exam badge
+  const fb = document.getElementById('badge-4');
+  const fb_btn = document.getElementById('cover-btn-4');
+  if(chapterPassed[4]){
+    fb.textContent='🏆 Completado'; fb.className='t-badge pass'; fb_btn.classList.remove('locked');
+  } else if(chapterPassed[3]){
+    fb.textContent='📖 Disponible'; fb.className='t-badge'; fb_btn.classList.remove('locked');
+  } else {
+    fb.textContent='🔒 Bloqueado'; fb.className='t-badge'; fb_btn.classList.add('locked');
+  }
+
+  // Core: navegacion-estado.js — persiste el progreso real del módulo
+  // (antes chapterPassed solo vivía en memoria, se perdía al recargar).
+  const completados = chapterPassed.filter(Boolean).length; // 4 capítulos + examen final
+  const pct = Math.round((completados / chapterPassed.length) * 100);
+  NavegacionEstado.guardarProgresoModulo('historia', 'edad-media', pct);
+}
+
+// ══════════════════════════════════════════
+//  BUILD CHAPTER QUIZ
+// ══════════════════════════════════════════
+// Cada evaluación de módulo: 3 objetivas (al azar del banco de 10,
+// con opciones barajadas) + 2 de desarrollo (al azar del banco de 4).
+// 0.5 pts c/objetiva (máx 1.5) + hasta 1 pt c/desarrollo (máx 2) = 3.5 máx.
+function buildChapterQuiz(chIdx){
+  const clave = `historia:edad-media:${chIdx}`;
+
+  // Core: navegacion-estado.js — si ya hay un intento guardado y sin
+  // enviar para este módulo, se restaura tal cual (mismas preguntas,
+  // mismas respuestas) en vez de armar uno nuevo. Así no se pierde
+  // nada si el alumno recarga la página a mitad de la evaluación.
+  const guardado = NavegacionEstado.obtenerIntentoEvaluacion(clave);
+  if (guardado && !guardado.submitted && guardado.items && guardado.items.length){
+    quizState[chIdx] = guardado;
+  } else {
+    // Core: evaluacion-motor.js arma 5 preguntas (3 obj + 2 desarrollo)
+    // eligiendo al azar del banco de este módulo, sin conocer nada de
+    // Historia — solo recibe BANCO_EDAD_MEDIA y el índice de sección.
+    const armado = EvaluacionMotor.armarQuizSeccion(BANCO_EDAD_MEDIA, chIdx);
+    quizState[chIdx] = {items: armado.items, mcAnswers:{}, writtenAnswers:{}, submitted:false};
+    NavegacionEstado.guardarIntentoEvaluacion(clave, quizState[chIdx]);
+  }
+  const items = quizState[chIdx].items;
+
+  const body = document.getElementById('qbody'+chIdx);
+  body.innerHTML='';
+  document.getElementById('qresult'+chIdx).style.display='none';
+  document.getElementById('qpb'+chIdx).style.width='0%';
+  const nextBtn = document.getElementById('next'+chIdx);
+  if(nextBtn && !chapterPassed[chIdx]) nextBtn.disabled=true;
+  const submitBtn = document.getElementById('qsubmit'+chIdx);
+  if(submitBtn) submitBtn.disabled=true;
+
+  items.forEach((q,i)=>{
+    const block = document.createElement('div');
+    block.className='q-block';
+    block.id=`qblock-${chIdx}-${i}`;
+    const typeLabel = q.type==='mc' ? '🔘 Objetiva' : '✍️ Desarrollo';
+    let inner=`<p class="q-text"><span class="q-num">${i+1}. ${typeLabel} ·</span> ${q.q}</p>`;
+    if(q.type==='mc'){
+      inner+=`<div class="q-opts" id="qopts-${chIdx}-${i}">`;
+      q.opts.forEach((opt,oi)=>{
+        inner+=`<button class="q-opt" onclick="selectChapterMC(${chIdx},${i},${oi})">${opt}</button>`;
+      });
+      inner+=`</div>`;
+    } else {
+      inner+=`<textarea class="q-written" id="qw-${chIdx}-${i}" placeholder="Escribí tu respuesta acá..." oninput="onChapterWrittenInput(${chIdx},${i})"></textarea>`;
+      if(q.hint) inner+=`<p style="font-family:'Nunito',sans-serif;font-size:0.78rem;color:var(--stone);margin-top:0.4rem;">💡 Pista: ${q.hint}</p>`;
+    }
+    inner+=`<p class="q-fb" id="qfb-${chIdx}-${i}"></p>`;
+    block.innerHTML=inner;
+    body.appendChild(block);
+
+    // Si este intento fue restaurado (recarga a mitad de la evaluación),
+    // refleja visualmente la respuesta ya guardada, no solo en memoria.
+    if (q.type==='mc' && quizState[chIdx].mcAnswers[i] !== undefined){
+      const optsDiv = document.getElementById(`qopts-${chIdx}-${i}`);
+      const btn = optsDiv.querySelectorAll('.q-opt')[quizState[chIdx].mcAnswers[i]];
+      if (btn){ btn.style.borderColor='var(--gold)'; btn.style.background='#FFFBF0'; }
+    } else if (q.type!=='mc' && quizState[chIdx].writtenAnswers[i]){
+      document.getElementById(`qw-${chIdx}-${i}`).value = quizState[chIdx].writtenAnswers[i];
+    }
+  });
+  chapterQuizProgress(chIdx);
+}
+
+function chapterQuizProgress(chIdx){
+  const state = quizState[chIdx];
+  const total = state.items.length;
+  const mcDone = Object.keys(state.mcAnswers).length;
+  const wDone  = Object.keys(state.writtenAnswers).filter(k=>state.writtenAnswers[k].trim().length>4).length;
+  const done = mcDone + wDone;
+  document.getElementById('qpb'+chIdx).style.width = Math.round((done/total)*100) + '%';
+  // El botón de enviar siempre está habilitado: la corrección (no en
+  // el momento, recién al enviar) es la que avisa qué quedó
+  // incompleto o mal. No se bloquea el envío por respuestas faltantes.
+  const submitBtn = document.getElementById('qsubmit'+chIdx);
+  if(submitBtn) submitBtn.disabled = false;
+}
+
+function selectChapterMC(chIdx, qIdx, optIdx){
+  const state = quizState[chIdx];
+  if(state.submitted) return;
+  const optsDiv = document.getElementById(`qopts-${chIdx}-${qIdx}`);
+  optsDiv.querySelectorAll('.q-opt').forEach(b=>{ b.style.borderColor=''; b.style.background=''; });
+  const btn = optsDiv.querySelectorAll('.q-opt')[optIdx];
+  btn.style.borderColor='var(--gold)'; btn.style.background='#FFFBF0';
+  state.mcAnswers[qIdx]=optIdx;
+  NavegacionEstado.guardarIntentoEvaluacion(`historia:edad-media:${chIdx}`, state);
+  chapterQuizProgress(chIdx);
+}
+
+function onChapterWrittenInput(chIdx, qIdx){
+  const state = quizState[chIdx];
+  state.writtenAnswers[qIdx] = document.getElementById(`qw-${chIdx}-${qIdx}`).value;
+  NavegacionEstado.guardarIntentoEvaluacion(`historia:edad-media:${chIdx}`, state);
+  chapterQuizProgress(chIdx);
+}
+
+// Corrige la evaluación del módulo vía el Core (evaluacion-motor.js):
+// objetivas 0.5c/u, desarrollo con corrección heurística graduada
+// (0/0.5/1). Nota final sobre 10. Acá solo se traduce el resultado
+// genérico del motor al feedback visual de esta pantalla.
+function submitChapterQuiz(chIdx){
+  const state = quizState[chIdx];
+  if(state.submitted) return;
+  state.submitted = true;
+  NavegacionEstado.guardarIntentoEvaluacion(`historia:edad-media:${chIdx}`, state);
+  document.getElementById('qsubmit'+chIdx).disabled = true;
+
+  const respuestas = {mc: state.mcAnswers, desarrollo: state.writtenAnswers};
+  const resultado = EvaluacionMotor.corregirQuizSeccion(state.items, respuestas);
+
+  resultado.detalle.forEach(d=>{
+    const i = d.idx;
+    const q = state.items[i];
+    const fb = document.getElementById(`qfb-${chIdx}-${i}`);
+    if(q.type==='mc'){
+      const optsDiv = document.getElementById(`qopts-${chIdx}-${i}`);
+      optsDiv.querySelectorAll('.q-opt').forEach((b,bi)=>{
+        b.style.borderColor=''; b.style.background=''; b.disabled=true;
+        if(bi===d.correctIdx) b.classList.add('correct');
+        else if(bi===d.elegido && !d.correcto) b.classList.add('wrong');
+      });
+      fb.textContent = d.correcto ? '✅ Correcto' : '❌ Incorrecto';
+      fb.className = 'q-fb ' + (d.correcto?'ok':'err');
+    } else {
+      document.getElementById(`qw-${chIdx}-${i}`).disabled = true;
+      if(d.puntos>=1){ fb.textContent=`✅ Desarrollo completo (1/1) — ${d.concept}`; fb.className='q-fb ok'; }
+      else if(d.puntos>=0.5){ fb.textContent=`🟡 Desarrollo parcial (0.5/1) — te falta profundizar en: ${d.concept}`; fb.className='q-fb'; }
+      else { fb.textContent=`❌ Sin desarrollo suficiente (0/1) — repasá: ${d.concept}`; fb.className='q-fb err'; }
+    }
+  });
+
+  showChapterResult(chIdx, resultado);
+}
+
+function showChapterResult(chIdx, resultado){
+  // Core: resultados.js arma la devolución (mensaje, fortalezas, a
+  // repasar, recomendaciones) sin conocer nada de Historia. El render
+  // visual sigue siendo propio de esta pantalla (dorado/pergamino).
+  const devolucion = Resultados.armarDevolucion(resultado, {alias: getAlias()});
+  const {pct, nota10, aprobado: passed, fortalezas: uniqueStrengths, aRepasar: uniqueReview} = resultado;
+
+  const resDiv = document.getElementById('qresult'+chIdx);
+  resDiv.style.display='block';
+  document.getElementById('qscore'+chIdx).textContent = `Nota: ${nota10}/10 (${pct}%)`;
+
+  let feedbackHtml = `<p style="margin-bottom:0.6rem;">${devolucion.mensajePrincipal}</p>`;
+  if(uniqueStrengths.length) feedbackHtml += `<p style="margin-bottom:0.4rem;"><strong>💪 Fortalezas:</strong> ${uniqueStrengths.slice(0,4).join(', ')}</p>`;
+  if(uniqueReview.length) feedbackHtml += `<p style="margin-bottom:0.4rem;"><strong>📖 Para repasar:</strong> ${uniqueReview.join(', ')}</p>`;
+  devolucion.recomendaciones.forEach(r => {
+    feedbackHtml += `<p style="font-style:italic;opacity:0.85;">💡 ${r}</p>`;
+  });
+  document.getElementById('qmsg'+chIdx).innerHTML = feedbackHtml;
+
+  // Se marca como completado al enviar (haberlo intentado), no al
+  // aprobar. Bloquear el avance por nota no es un criterio de esta
+  // plataforma — la nota queda registrada igual.
+  chapterPassed[chIdx] = true;
+  chapterScores[chIdx] = {points: resultado.puntos, maxPoints: resultado.maxPuntos, pct};
+
+  const retryBtn = document.getElementById('qretry'+chIdx);
+  const nextBtn  = document.getElementById('next'+chIdx);
+  retryBtn.style.display = passed ? 'none' : 'inline-block';
+  if(nextBtn) nextBtn.disabled = false;
+  updateCoverBadges();
+}
+
+// Reintento: se vuelve a armar la evaluación con preguntas distintas
+// (elegidas al azar de nuevo de los bancos).
+function retryQuiz(chIdx){
+  buildChapterQuiz(chIdx);
+}
+
+// ══════════════════════════════════════════
+//  BUILD FINAL EXAM
+//  (pickIndices ahora vive en el Core, evaluacion-motor.js)
+// ══════════════════════════════════════════
+
+// Examen final: 10 objetivas + 5 desarrollo, cubriendo los 4 módulos
+// (2 obj + 1 desarrollo por módulo, más 2 obj y 1 desarrollo extra al
+// azar), con opciones de MC barajadas. 0.5pts c/obj (máx 5) + hasta
+// 1pt c/desarrollo (máx 5) = 10 puntos máximo, ya sobre base 10.
+function buildFinalExam(){
+  const clave = 'historia:edad-media:final';
+  const guardado = NavegacionEstado.obtenerIntentoEvaluacion(clave);
+
+  if (guardado && !guardado.submitted && guardado.examen && guardado.examen.length){
+    FINAL_EXAM = guardado.examen;
+    finalExamState = {mcAnswers: guardado.mcAnswers, writtenAnswers: guardado.writtenAnswers, submitted:false, mcTotal:0, writtenTotal:0};
+  } else {
+    // Core: evaluacion-motor.js arma 10 objetivas + 5 desarrollo
+    // (2 obj + 1 desarrollo por módulo, más 2 obj y 1 desarrollo extra
+    // al azar), con opciones de MC ya barajadas.
+    FINAL_EXAM = EvaluacionMotor.armarExamenFinal(BANCO_EDAD_MEDIA, {
+      mcPorSeccion: 2, desarrolloPorSeccion: 1, mcExtra: 2, desarrolloExtra: 1
+    }).map(q => ({...q, topic: q.nombreSeccion})); // alias: el resto del código usa "topic"
+    finalExamState = {mcAnswers:{}, writtenAnswers:{}, submitted:false, mcTotal:0, writtenTotal:0};
+    NavegacionEstado.guardarIntentoEvaluacion(clave, {examen: FINAL_EXAM, mcAnswers:{}, writtenAnswers:{}, submitted:false});
+  }
+
+  const body = document.getElementById('final-exam-body');
+  body.innerHTML='';
+  document.getElementById('exam-result-panel').style.display='none';
+  document.getElementById('btn-submit-exam').disabled=true;
+  document.getElementById('exam-pb').style.width='0%';
+
+  let mcCount=0, writtenCount=0;
+  FINAL_EXAM.forEach((q,i)=>{
+    const block = document.createElement('div');
+    block.className='exam-q-block';
+    const typeLabel = q.type==='mc' ? '🔘 Objetiva' : '✍️ Desarrollo';
+    let inner=`<div class="exam-q-label">${typeLabel} · ${q.topic}</div>`;
+    inner+=`<p class="exam-q-text">${i+1}. ${q.q}</p>`;
+    if(q.type==='mc'){
+      mcCount++;
+      inner+=`<div class="q-opts" id="feopts-${i}">`;
+      q.opts.forEach((opt,oi)=>{
+        inner+=`<button class="q-opt" onclick="selectFinalMC(${i},${oi})">${opt}</button>`;
+      });
+      inner+=`</div>`;
+    } else {
+      writtenCount++;
+      inner+=`<textarea class="q-written" id="fetext-${i}" placeholder="Escribí tu respuesta acá..." oninput="onWrittenInput(${i})"></textarea>`;
+      if(q.hint) inner+=`<p style="font-family:'Nunito',sans-serif;font-size:0.78rem;color:var(--stone);margin-top:0.4rem;">💡 Pista: ${q.hint}</p>`;
+    }
+    inner+=`<p class="q-fb" id="fefb-${i}"></p>`;
+    block.innerHTML=inner;
+    body.appendChild(block);
+
+    // Restaurar visualmente respuestas guardadas (recarga a mitad del examen)
+    if (q.type==='mc' && finalExamState.mcAnswers[i] !== undefined){
+      const optsDiv = document.getElementById(`feopts-${i}`);
+      const btn = optsDiv.querySelectorAll('.q-opt')[finalExamState.mcAnswers[i]];
+      if (btn){ btn.style.borderColor='var(--gold)'; btn.style.background='#FFFBF0'; }
+    } else if (q.type!=='mc' && finalExamState.writtenAnswers[i]){
+      document.getElementById(`fetext-${i}`).value = finalExamState.writtenAnswers[i];
+    }
+  });
+
+  finalExamState.mcTotal=mcCount;
+  finalExamState.writtenTotal=writtenCount;
+  updateFinalProgress();
+  checkFinalReady();
+}
+
+function selectFinalMC(qIdx, optIdx){
+  if(finalExamState.submitted) return;
+  const optsDiv = document.getElementById(`feopts-${qIdx}`);
+  optsDiv.querySelectorAll('.q-opt').forEach(b=>b.classList.remove('correct','wrong'));
+  optsDiv.querySelectorAll('.q-opt')[optIdx].style.borderColor='var(--gold)';
+  optsDiv.querySelectorAll('.q-opt')[optIdx].style.background='#FFFBF0';
+  finalExamState.mcAnswers[qIdx]=optIdx;
+  NavegacionEstado.guardarIntentoEvaluacion('historia:edad-media:final', {examen: FINAL_EXAM, mcAnswers: finalExamState.mcAnswers, writtenAnswers: finalExamState.writtenAnswers, submitted:false});
+  updateFinalProgress();
+  checkFinalReady();
+}
+
+function onWrittenInput(qIdx){
+  const val = document.getElementById(`fetext-${qIdx}`).value;
+  finalExamState.writtenAnswers[qIdx]=val;
+  NavegacionEstado.guardarIntentoEvaluacion('historia:edad-media:final', {examen: FINAL_EXAM, mcAnswers: finalExamState.mcAnswers, writtenAnswers: finalExamState.writtenAnswers, submitted:false});
+  updateFinalProgress();
+  checkFinalReady();
+}
+
+function updateFinalProgress(){
+  const mcDone  = Object.keys(finalExamState.mcAnswers).length;
+  const wDone   = Object.keys(finalExamState.writtenAnswers).filter(k=>finalExamState.writtenAnswers[k].trim().length>4).length;
+  const total   = FINAL_EXAM.length;
+  const done    = mcDone + wDone;
+  const pct     = Math.round((done/total)*100);
+  document.getElementById('exam-pb').style.width=pct+'%';
+}
+
+function checkFinalReady(){
+  document.getElementById('btn-submit-exam').disabled = false;
+}
+
+// Corrige el examen final: 0.5pts c/objetiva, corrección heurística
+// graduada (0/0.5/1) c/desarrollo. Nota sobre 10 (ya calza sin reescalar:
+// 10×0.5 + 5×1 = 10). No se revela la respuesta correcta de desarrollo.
+function submitFinalExam(){
+  if(finalExamState.submitted) return;
+  finalExamState.submitted=true;
+  NavegacionEstado.guardarIntentoEvaluacion('historia:edad-media:final', {examen: FINAL_EXAM, mcAnswers: finalExamState.mcAnswers, writtenAnswers: finalExamState.writtenAnswers, submitted:true});
+  document.getElementById('btn-submit-exam').disabled=true;
+
+  const respuestas = {mc: finalExamState.mcAnswers, desarrollo: finalExamState.writtenAnswers};
+  const resultado = EvaluacionMotor.corregirExamenFinal(FINAL_EXAM, respuestas);
+
+  // El examen final reporta fortalezas/a-repasar POR TEMA (no por
+  // concepto/opción puntual, a diferencia del quiz de cada módulo).
+  // Se reconstruye acá, arriba del "detalle" genérico del motor.
+  const strengths = [], toReview = [];
+  resultado.detalle.forEach(d=>{
+    const i = d.idx;
+    const q = FINAL_EXAM[i];
+    const fb = document.getElementById(`fefb-${i}`);
+    if(q.type==='mc'){
+      if(d.correcto) strengths.push(q.topic); else toReview.push(q.topic);
+      const optsDiv = document.getElementById(`feopts-${i}`);
+      optsDiv.querySelectorAll('.q-opt').forEach((b,bi)=>{
+        b.style.borderColor=''; b.style.background=''; b.disabled=true;
+        if(bi===d.correctIdx) b.classList.add('correct');
+        else if(bi===d.elegido && !d.correcto) b.classList.add('wrong');
+      });
+      fb.textContent = d.correcto ? '✅ Correcto' : '❌ Incorrecto';
+      fb.className = 'q-fb ' + (d.correcto?'ok':'err');
+    } else {
+      if(d.puntos>=1) strengths.push(q.topic); else toReview.push(q.topic);
+      document.getElementById(`fetext-${i}`).disabled = true;
+      if(d.puntos>=1){ fb.textContent=`✅ Desarrollo completo (1/1)`; fb.className='q-fb ok'; }
+      else if(d.puntos>=0.5){ fb.textContent=`🟡 Desarrollo parcial (0.5/1) — profundizá más este concepto.`; fb.className='q-fb'; }
+      else { fb.textContent=`❌ Sin desarrollo suficiente (0/1)`; fb.className='q-fb err'; }
+    }
+  });
+
+  const {pct, nota10, aprobado: passed, puntos: points, maxPuntos: maxPoints} = resultado;
+  chapterPassed[4]=true; // completado al enviar, apruebe o no
+  updateCoverBadges();
+
+  // Core: resultados.js — se le pasan las fortalezas/a-repasar YA
+  // calculadas por tema (no por concepto puntual, a diferencia del
+  // quiz de módulo), para reutilizar sus recomendaciones sin duplicar
+  // esa lógica.
+  const uniqueStrengths = [...new Set(strengths)];
+  const uniqueReview = [...new Set(toReview)];
+  const resultadoCompleto = {...resultado, fortalezas: uniqueStrengths, aRepasar: uniqueReview};
+  ultimoResultadoExamen = resultadoCompleto;
+  const devolucion = Resultados.armarDevolucion(resultadoCompleto, {alias: getAlias()});
+
+  // Registro académico persistente (Core: storage.js) — mismo punto del
+  // flujo y misma estructura que usa Fisicoquímica en su examen final,
+  // para que "Notas" y la descarga de PDF funcionen igual en las dos materias.
+  addGradeRecord('historia', {
+    tema: 'edad-media',
+    temaNombre: 'La Edad Media',
+    alias: getAlias(),
+    puntos: points,
+    maxPuntos: maxPoints,
+    pct,
+    nota10,
+    aprobado: passed,
+    fortalezas: uniqueStrengths,
+    aRepasar: uniqueReview,
+    items: FINAL_EXAM.map(q => ({
+      type: q.type, q: q.q, opts: q.opts, ans: q.ans, concept: q.concept,
+    })),
+    respuestas: JSON.parse(JSON.stringify(respuestas)),
+    detalle: resultado.detalle,
+  });
+
+  const panel = document.getElementById('exam-result-panel');
+  panel.style.display='block';
+  document.getElementById('exam-score-display').textContent=`Nota: ${nota10}/10 (${pct}%)`;
+
+  // Reset del bloque de envío de correo por si este es un reintento
+  // (el campo/estado de un intento anterior no debe quedar pegado).
+  document.getElementById('correo-envio-input').value = '';
+  document.getElementById('correo-envio-msg').textContent = '';
+  document.getElementById('correo-envio-msg').className = 'correo-msg';
+  document.getElementById('btn-enviar-correo').disabled = false;
+
+  let msg = '';
+  if(passed){
+    msg += `🏆 ¡FELICITACIONES, ${getAlias().toUpperCase()}! Aprobaste el examen final con <strong>${nota10}/10 (${pct}%)</strong>.<br>¡Ya sos experto/a en la Edad Media! 🏰⚔️📜<br><br>`;
+  } else {
+    msg += `😔 Obtuviste <strong>${nota10}/10 (${pct}%)</strong>. Necesitás al menos 7/10 para aprobar.<br>Repasá los módulos y volvé a intentarlo. ¡Vos podés, ${getAlias()}!<br><br>`;
+  }
+  if(uniqueStrengths.length) msg += `💪 <strong>Fortalezas:</strong> ${uniqueStrengths.join(', ')}<br>`;
+  if(uniqueReview.length) msg += `📖 <strong>Para repasar:</strong> ${uniqueReview.join(', ')}<br>`;
+  devolucion.recomendaciones.forEach(r => { msg += `<em>${r}</em><br>`; });
+  document.getElementById('exam-msg-display').innerHTML = msg;
+
+  // Nota: no se arma "review" pregunta por pregunta con la respuesta correcta
+  // en pantalla (para no revelar las de desarrollo).
+  document.getElementById('exam-review').innerHTML = '';
+
+  panel.scrollIntoView({behavior:'smooth'});
+}
+
+// Mismo patrón que usa Fisicoquímica (Core: email-resultados.js): el
+// correo se pide en este momento, nunca se guarda ni se recuerda de una
+// vez anterior, y viaja a la dirección que el alumno tipeó acá — no a
+// una fija.
+function enviarPorCorreo(){
+  const input = document.getElementById('correo-envio-input');
+  const msg = document.getElementById('correo-envio-msg');
+  const btn = document.getElementById('btn-enviar-correo');
+  const valor = input ? input.value.trim() : '';
+
+  if(!EmailResultados.emailValido(valor)){
+    msg.textContent = 'Ingresá un correo válido.';
+    msg.className = 'correo-msg err';
+    return;
+  }
+
+  btn.disabled = true;
+  msg.textContent = 'Enviando...';
+  msg.className = 'correo-msg';
+
+  EmailResultados.enviar({
+    toEmail: valor,
+    alias: getAlias(),
+    materia: 'Historia',
+    tema: 'La Edad Media',
+    resultado: ultimoResultadoExamen,
+  }).then(()=>{
+    msg.textContent = '✅ Resultados enviados.';
+    msg.className = 'correo-msg ok';
+    btn.disabled = false;
+  }).catch(()=>{
+    msg.textContent = 'No se pudo enviar. Probá de nuevo.';
+    msg.className = 'correo-msg err';
+    btn.disabled = false;
+  });
+}
+
+function retryFinalExam(){
+  buildFinalExam();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

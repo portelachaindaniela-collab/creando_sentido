@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Origen — experiencias de aprendizaje interactivas</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+.origen-story-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;}
+@media(max-width:760px){.origen-story-grid{grid-template-columns:1fr;}}
+:root{
+  --verde:    #1F2D2A;
+  --verde-deep:#141F1C;
+  --verde2:   #2B3F3B;
+  --terracota:#7A5D3A;
+  --terracota2:#9A7A52;
+  --beige:    #C9B79A;
+  --crema:    #FAF7F0;
+  --oliva:    #6B7A4A;
+  --salvia:   #A7B89A;
+  --mostaza:  #C49A3A;
+  --tx-muted: #6E7A72;
+  --line:     rgba(31,45,42,0.12);
+  --r:        14px;
+  --t:        .2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--verde);color:var(--crema);line-height:1.65;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+.page{display:none;}
+.page.active{display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:'Poppins',sans-serif;}
+
+/* ══ ISOTIPO (aproximación en CSS del anillo con pincelada, hasta tener el archivo final) ══ */
+.ring{border-radius:50%;background:conic-gradient(from 200deg, var(--verde) 0%, var(--verde) 45%, var(--terracota) 75%, var(--terracota) 100%);position:relative;flex-shrink:0;}
+.ring::after{content:'';position:absolute;inset:26%;background:var(--verde);border-radius:50%;}
+.ring.on-dark::after{background:var(--verde);}
+
+/* ══ LAYOUT: sidebar + main (unificado con el resto de ORIGEN) ══ */
+.app-layout{display:flex; min-height:100vh;}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:250px; flex-shrink:0; background:var(--verde-deep);
+  border-right:1px solid rgba(250,247,240,.08);
+  display:flex; flex-direction:column; padding:26px 20px;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.sidebar-brand{display:flex;align-items:center;gap:10px;margin-bottom:30px;cursor:pointer;}
+.sidebar-brand-text{font-weight:600;font-size:18px;letter-spacing:-.01em;color:var(--crema);}
+.sidebar-brand-tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--salvia);opacity:.75;}
+
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;margin-bottom:24px;}
+.sidebar-nav a{
+  display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;
+  font-size:13.5px;font-weight:500;color:var(--salvia);transition:var(--t);cursor:pointer;
+}
+.sidebar-nav a:hover{background:rgba(250,247,240,.06);color:var(--crema);}
+.sidebar-nav a .ic{width:16px;text-align:center;font-size:14px;}
+
+.sidebar-divider{height:1px;background:rgba(250,247,240,.08);margin:6px 0 18px;}
+
+.main{flex:1;min-width:0;}
+html,body{overflow-x:hidden;}
+.mobile-menu-btn{display:none;}
+.sidebar-overlay{display:none;}
+
+/* ══ HERO ══ */
+.hero{padding:80px 0 60px;text-align:center;}
+.hero .ring{width:88px;height:88px;margin:0 auto 28px;}
+.hero h1{font-size:clamp(30px,4.5vw,44px);font-weight:600;letter-spacing:-.02em;max-width:640px;margin:0 auto 18px;line-height:1.25;}
+.hero p{font-size:15.5px;color:var(--salvia);max-width:520px;margin:0 auto 32px;}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--mostaza);color:var(--verde);padding:13px 28px;border-radius:30px;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:var(--t);}
+.hero-cta:hover{background:var(--terracota);color:var(--crema);}
+
+/* ══ PILARES ══ */
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:60px 0;}
+.pillar{text-align:center;padding:0 10px;}
+.pillar-ic{width:52px;height:52px;border-radius:50%;background:var(--terracota);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--crema);}
+.pillar-ic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;}
+.pillar h3{font-size:14.5px;font-weight:600;margin-bottom:6px;color:var(--crema);}
+.pillar p{font-size:12.5px;color:var(--salvia);line-height:1.6;}
+@media (max-width:760px){.pillars{grid-template-columns:1fr 1fr;}}
+
+/* ══ MÓDULOS (cards) ══ */
+.modules{padding:20px 0 90px;}
+.sec-label{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mostaza);margin-bottom:14px;text-align:center;}
+.sec-title{font-size:26px;font-weight:600;text-align:center;margin-bottom:44px;letter-spacing:-.01em;color:var(--crema);}
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.mod-card{background:var(--verde2);border:1px solid rgba(250,247,240,.12);border-radius:20px;padding:32px;transition:var(--t);cursor:pointer;text-align:center;}
+.mod-card:hover{border-color:var(--mostaza);transform:translateY(-3px);}
+.mod-graphic{width:64px;height:64px;border-radius:50%;background:var(--mostaza);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;color:var(--verde);}
+.mod-graphic svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.6;}
+.mod-card:nth-child(2) .mod-graphic{background:var(--salvia);}
+.mod-card h3{font-size:19px;font-weight:600;margin-bottom:4px;color:var(--crema);}
+.mod-card .mod-materia{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mostaza);margin-bottom:10px;}
+.mod-status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--oliva);}
+.mod-status::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--oliva);}
+@media (max-width:700px){.mod-grid{grid-template-columns:1fr;}}
+
+footer{border-top:1px solid rgba(250,247,240,.12);padding:30px 0;text-align:center;font-size:12px;color:var(--salvia);background:var(--verde-deep);}
+
+/* ══════════ APP (login / mapa / pregunta) ══════════ */
+.app-shell{min-height:70vh;display:flex;align-items:center;justify-content:center;padding:60px 20px;}
+.app-card{background:#fff;border-radius:22px;box-shadow:0 20px 50px rgba(31,45,42,.08);padding:44px;max-width:420px;width:100%;}
+.app-card.wide{max-width:640px;}
+.app-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--tx-muted);margin-bottom:20px;cursor:pointer;}
+.app-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;}
+
+/* login */
+.app-ring{width:56px;height:56px;margin:0 auto 18px;}
+.app-title{font-size:20px;font-weight:600;text-align:center;margin-bottom:6px;}
+.app-sub{font-size:13px;color:var(--tx-muted);text-align:center;margin-bottom:26px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:500;margin-bottom:6px;color:var(--verde2);}
+.field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;background:var(--crema);}
+.field input:focus{outline:2px solid var(--terracota);outline-offset:1px;}
+.app-submit{width:100%;background:var(--verde);color:var(--crema);border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;transition:var(--t);}
+.app-submit:hover{background:var(--terracota);}
+
+/* mapa de capítulos */
+.paloma-greet{display:flex;align-items:center;gap:14px;background:var(--crema);border-radius:16px;padding:18px 20px;margin-bottom:26px;}
+.paloma-av{width:44px;height:44px;border-radius:50%;background:var(--terracota);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.paloma-greet p{font-size:13px;color:var(--verde2);}
+.paloma-greet strong{display:block;font-size:14.5px;margin-bottom:2px;}
+
+.chap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.chap{border:1px solid var(--line);border-radius:14px;padding:18px 16px;position:relative;cursor:pointer;transition:var(--t);}
+.chap:hover{border-color:var(--terracota);}
+.chap.locked{cursor:not-allowed;opacity:.5;}
+.chap.done{border-color:var(--oliva);background:rgba(107,122,74,.06);}
+.chap-num{font-size:10.5px;font-weight:600;color:var(--tx-muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.chap-name{font-size:14.5px;font-weight:600;margin-bottom:6px;}
+.chap-state{font-size:11px;color:var(--tx-muted);display:flex;align-items:center;gap:5px;}
+.chap-state svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;}
+
+/* pregunta */
+.q-progress{display:flex;gap:5px;margin-bottom:24px;}
+.q-progress span{flex:1;height:4px;border-radius:2px;background:var(--line);}
+.q-progress span.done{background:var(--oliva);}
+.q-progress span.current{background:var(--terracota);}
+.q-text{font-size:16.5px;font-weight:500;margin-bottom:22px;line-height:1.5;}
+.q-opt{display:block;width:100%;text-align:left;background:var(--crema);border:1.5px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px;font-size:13.5px;cursor:pointer;transition:var(--t);font-family:'Poppins',sans-serif;color:var(--verde);}
+.q-opt:hover{border-color:var(--terracota);}
+.q-opt.correct{border-color:var(--oliva);background:rgba(107,122,74,.1);}
+.q-opt.wrong{border-color:#B5533E;background:rgba(181,83,62,.08);}
+.q-feedback{font-size:13px;margin-top:14px;padding:12px 14px;border-radius:10px;display:none;}
+.q-feedback.show{display:block;}
+.q-feedback.ok{background:rgba(107,122,74,.1);color:var(--oliva);}
+.q-feedback.bad{background:rgba(181,83,62,.08);color:#B5533E;}
+
+/* ══ RESPONSIVE / MOBILE ══ */
+@media (max-width:820px){
+  .mobile-menu-btn{
+    display:flex;align-items:center;justify-content:center;
+    position:fixed;top:14px;left:14px;z-index:80;
+    width:42px;height:42px;border-radius:10px;
+    background:var(--verde-deep);color:var(--crema);
+    border:1px solid rgba(250,247,240,.15);font-size:19px;line-height:1;
+    cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25);
+  }
+  .app-layout{display:block;}
+  .sidebar{
+    position:fixed;top:0;left:0;height:100vh;width:250px;max-width:80vw;
+    transform:translateX(-100%);transition:transform .25s ease;z-index:75;
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{
+    position:fixed;inset:0;background:rgba(20,31,28,.55);z-index:70;
+  }
+  .sidebar-overlay.show{display:block;}
+  .main{width:100%;}
+  .wrap{padding:0 18px;}
+  .hero{padding:90px 0 40px;}
+  .app-card{padding:32px 22px;}
+  .app-card.wide{max-width:100%;}
+  .chap-grid{grid-template-columns:1fr;}
+}
+@media (max-width:420px){
+  .wrap{padding:0 14px;}
+  .pillars{gap:14px;padding:44px 0;}
+  .app-card{padding:26px 16px;}
+  .mod-card{padding:24px 18px;}
+  .sec-title{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand" data-page="home">
+      <img src="../assets/img/logo.png" alt="Origen" style="width:32px;height:32px;object-fit:contain;border-radius:50%;">
+      <div>
+        <div class="sidebar-brand-text">Origen</div>
+        <div class="sidebar-brand-tag">Aprender es explorar</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a data-page="home"><span class="ic">🏠</span>Inicio</a>
+      <a data-scroll="modulos"><span class="ic">📚</span>Mis materias</a>
+      <a href="#"><span class="ic">📈</span>Mi progreso</a>
+      <a href="#"><span class="ic">⭐</span>Favoritos</a>
+      <a href="notas.html"><span class="ic">📝</span>Notas</a>
+      <a href="#"><span class="ic">🏆</span>Logros</a>
+      <a href="#"><span class="ic">📦</span>Recursos</a>
+      <a href="#"><span class="ic">🕓</span>Línea de tiempo</a>
+      <a href="#"><span class="ic">🗺️</span>Mapas</a>
+      <a data-scroll="contacto"><span class="ic">💬</span>Foro</a>
+      <a href="#"><span class="ic">⚙️</span>Ajustes</a>
+    </nav>
+
+    <div class="sidebar-divider"></div>
+  </aside>
+
+  <main class="main">
+
+
+<!-- ══ HOME ══ -->
+<div class="page active" id="page-home">
+  <section class="hero wrap">
+    <img src="../assets/img/logo.png" alt="Origen" style="width:88px;height:88px;object-fit:contain;margin:0 auto 28px;display:block;">
+    <h1>En el origen del conocimiento<br>comienza la comprensión.</h1>
+    <p>Experiencias de aprendizaje interactivas que transforman información en comprensión real — pensadas para un estudiante en particular, no para todos por igual.</p>
+    <button class="hero-cta" onclick="scrollToId('modulos')">Ver los módulos <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+  </section>
+
+  <section class="pillars wrap">
+    <div class="pillar">
+      <div class="pillar-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8l3 3-3 5-3-5z"/></svg></div>
+      <h3>Explorar</h3>
+      <p>Descubrimos el origen de las ideas y los conceptos.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-ic"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 015 5c0 2-1 3-2 4s-1 2-1 3H10c0-1 0-2-1-3s-2-2-2-4a5 5 0 015-5z"/><path d="M9 21h6M10 18h4"/></svg></div>
+      <h3>Comprender</h3>
+      <p>Organizamos la información para entender el panorama completo.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-ic"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M8 7l3 9M16 7l-3 9M8.5 6h7"/></svg></div>
+      <h3>Conectar</h3>
+      <p>Relacionamos conceptos para generar conocimiento profundo.</p>
+    </div>
+    <div class="pillar">
+      <div class="pillar-ic"><svg viewBox="0 0 24 24"><path d="M12 3v11M12 3c-3 0-5 2-5 5M12 3c3 0 5 2 5 5M7 19h10"/></svg></div>
+      <h3>Aprender</h3>
+      <p>Creamos experiencias que hacen el aprendizaje más vivo.</p>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding:20px 0 70px;">
+    <div class="origen-story-grid" style="background:var(--verde2);border-radius:22px;padding:44px;">
+      <div>
+        <div class="sec-label" style="text-align:left;">Cómo nació</div>
+        <p style="font-size:15px;color:var(--crema);line-height:1.85;margin-bottom:16px;">Origen nace de una historia concreta: Valentina, una estudiante de trece años, tenía acceso a todos los recursos posibles para preparar sus exámenes — libros, apuntes, internet, videos — y sin embargo nada de eso resolvía el problema real: no lograba sostener la atención el tiempo suficiente para comprender lo que estudiaba.</p>
+        <p style="font-size:15px;color:var(--salvia);line-height:1.85;">La respuesta no fue inventar algo nuevo, sino recuperar algo que ya funcionaba — la guía de estudio estructurada de los manuales clásicos — y presentarla con la velocidad e interactividad que un estudiante de hoy espera de cualquier pantalla.</p>
+      </div>
+      <div style="background:var(--verde);border-radius:16px;padding:28px;">
+        <div style="font-size:13px;color:var(--mostaza);font-weight:600;margin-bottom:10px;">El problema no era la información.</div>
+        <p style="font-size:14px;color:var(--beige);line-height:1.75;">Era la falta de un formato que hablara en su idioma: visual, progresivo, con retroalimentación inmediata — y sin avanzar sin comprender.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="modules wrap" id="modulos">
+    <div class="sec-label">Módulos</div>
+    <div class="sec-title">Dos guías, dos formas de estudiar</div>
+    <div class="mod-grid">
+      <div class="mod-card" onclick="window.location.href='historia/historia-index.html'">
+        <div class="mod-graphic"><svg viewBox="0 0 24 24"><path d="M4 21V10l8-6 8 6v11"/><path d="M9 21v-6h6v6"/><path d="M4 10l8-6 8 6"/></svg></div>
+        <div class="mod-materia">Historia</div>
+        <h3>El Feudalismo y la Edad Media</h3>
+      </div>
+      <div class="mod-card" onclick="window.location.href='fisicoquimica/fisicoquimica-index.html'">
+        <div class="mod-graphic"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3"/></svg></div>
+        <div class="mod-materia">Fisicoquímica</div>
+        <h3>Mezclas y Sistemas</h3>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="contacto" style="padding:70px 0 90px;text-align:center;">
+    <div class="sec-label">Contacto</div>
+    <div class="sec-title">¿Querés sumar Origen a tu escuela o club?</div>
+    <p style="color:var(--salvia);max-width:460px;margin:0 auto 26px;font-size:14px;">Escribinos y lo pensamos juntos.</p>
+    <a class="hero-cta" href="mailto:hola@origen.com" style="display:inline-flex;">hola@origen.com</a>
+  </section>
+</div>
+
+<!-- ══ HISTORIA — LOGIN ══ -->
+<div class="page" id="page-app-historia-login">
+  <div class="app-shell wrap">
+    <div class="app-card">
+      <div class="app-back" data-page="home"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver a Origen</div>
+      <img src="../assets/img/logo.png" alt="Origen" class="app-ring" style="width:56px;height:56px;object-fit:contain;margin:0 auto 18px;display:block;">
+      <div class="app-title">La Edad Media</div>
+      <div class="app-sub">Guía interactiva · ingresá para continuar</div>
+      <div class="field"><label>Nombre</label><input type="text" placeholder="Tu nombre" id="hist-name"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" placeholder="tucorreo@ejemplo.com"></div>
+      <button class="app-submit" onclick="startHistoria()">Entrar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HISTORIA — MAPA DE CAPÍTULOS ══ -->
+<div class="page" id="page-app-historia-mapa">
+  <div class="app-shell wrap">
+    <div class="app-card wide">
+      <div class="app-back" data-page="home"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Salir</div>
+      <div class="app-title" id="hist-welcome" style="text-align:left;">¡Hola!</div>
+      <div class="app-sub" style="text-align:left;margin-bottom:22px;">Europa Occidental · Siglos V al XV</div>
+      <div class="chap-grid">
+        <div class="chap done" onclick="openQuestion('historia',1)">
+          <div class="chap-num">Capítulo I</div>
+          <div class="chap-name">El Feudalismo</div>
+          <div class="chap-state" style="color:var(--oliva);"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Completado</div>
+        </div>
+        <div class="chap" onclick="openQuestion('historia',2)">
+          <div class="chap-num">Capítulo II</div>
+          <div class="chap-name">La Iglesia</div>
+          <div class="chap-state">Disponible</div>
+        </div>
+        <div class="chap locked">
+          <div class="chap-num">Capítulo III</div>
+          <div class="chap-name">División del Estado</div>
+          <div class="chap-state"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Bloqueado</div>
+        </div>
+        <div class="chap locked">
+          <div class="chap-num">Capítulo IV</div>
+          <div class="chap-name">La Economía</div>
+          <div class="chap-state"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Bloqueado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FISICOQUÍMICA — LOGIN ══ -->
+<div class="page" id="page-app-fq-login">
+  <div class="app-shell wrap">
+    <div class="app-card">
+      <div class="app-back" data-page="home"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver a Origen</div>
+      <img src="../assets/img/logo.png" alt="Origen" class="app-ring" style="width:56px;height:56px;object-fit:contain;margin:0 auto 18px;display:block;">
+      <div class="app-title">Fisicoquímica</div>
+      <div class="app-sub">Ingresá para estudiar con la Sra. Paloma 🧪</div>
+      <div class="field"><label>Nombre</label><input type="text" placeholder="Tu nombre" id="fq-name"></div>
+      <div class="field"><label>Correo electrónico</label><input type="email" placeholder="tucorreo@ejemplo.com"></div>
+      <button class="app-submit" onclick="startFQ()">Entrar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FISICOQUÍMICA — MAPA ══ -->
+<div class="page" id="page-app-fq-mapa">
+  <div class="app-shell wrap">
+    <div class="app-card wide">
+      <div class="app-back" data-page="home"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Salir</div>
+      <div class="paloma-greet">
+        <div class="paloma-av">🧪</div>
+        <p><strong id="fq-welcome">¡Bienvenida!</strong>La Sra. Paloma te va a guiar por todo el camino.</p>
+      </div>
+      <div class="chap-grid">
+        <div class="chap" onclick="openQuestion('fq',1)">
+          <div class="chap-num">Módulo 1</div>
+          <div class="chap-name">Sistemas homogéneos</div>
+          <div class="chap-state">Disponible</div>
+        </div>
+        <div class="chap locked">
+          <div class="chap-num">Módulo 2</div>
+          <div class="chap-name">Sistemas heterogéneos</div>
+          <div class="chap-state"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Bloqueado</div>
+        </div>
+        <div class="chap locked">
+          <div class="chap-num">Módulo 3</div>
+          <div class="chap-name">Sistema centesimal</div>
+          <div class="chap-state"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Bloqueado</div>
+        </div>
+        <div class="chap locked">
+          <div class="chap-num">Módulo 4</div>
+          <div class="chap-name">Métodos de separación</div>
+          <div class="chap-state"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Bloqueado</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PREGUNTA DE EJEMPLO (compartida) ══ -->
+<div class="page" id="page-app-pregunta">
+  <div class="app-shell wrap">
+    <div class="app-card wide">
+      <div class="app-back" id="q-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Volver al mapa</div>
+      <div class="q-progress">
+        <span class="done"></span><span class="current"></span><span></span><span></span><span></span>
+      </div>
+      <div class="q-text" id="q-text">Pregunta de ejemplo</div>
+      <button class="q-opt" onclick="answer(this,false)">Opción A</button>
+      <button class="q-opt" onclick="answer(this,true)">Opción B</button>
+      <button class="q-opt" onclick="answer(this,false)">Opción C</button>
+      <div class="q-feedback" id="q-feedback"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div><!-- /app-layout -->
+
+<footer>
+  ORIGEN · EXPERIENCIAS DE APRENDIZAJE INTERACTIVAS — prototipo funcional, sin backend conectado todavía
+</footer>
+
+<script>
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const sidebarEl = document.querySelector('.sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+function closeSidebar(){
+  if(!sidebarEl) return;
+  sidebarEl.classList.remove('open');
+  if(sidebarOverlay) sidebarOverlay.classList.remove('show');
+  if(mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded','false');
+}
+function toggleSidebar(){
+  if(!sidebarEl) return;
+  const isOpen = sidebarEl.classList.toggle('open');
+  if(sidebarOverlay) sidebarOverlay.classList.toggle('show', isOpen);
+  if(mobileMenuBtn) mobileMenuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+if(mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleSidebar);
+if(sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+const PAGES = document.querySelectorAll('.page');
+function show(id){
+  PAGES.forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if(pg){ pg.classList.add('active'); window.scrollTo(0,0); }
+}
+document.querySelectorAll('[data-page]').forEach(el => {
+  el.addEventListener('click', e => { e.preventDefault(); show(el.dataset.page); closeSidebar(); });
+});
+document.querySelectorAll('[data-scroll]').forEach(el => {
+  el.addEventListener('click', e => {
+    e.preventDefault();
+    show('home');
+    closeSidebar();
+    setTimeout(() => scrollToId(el.dataset.scroll), 50);
+  });
+});
+function scrollToId(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+}
+
+function startHistoria(){
+  const name = document.getElementById('hist-name').value.trim() || 'estudiante';
+  document.getElementById('hist-welcome').textContent = '¡Bienvenido/a, ' + name + '!';
+  show('app-historia-mapa');
+}
+function startFQ(){
+  const name = document.getElementById('fq-name').value.trim() || 'estudiante';
+  document.getElementById('fq-welcome').textContent = '¡Bienvenida, ' + name + '!';
+  show('app-fq-mapa');
+}
+
+let backTarget = 'home';
+const QUESTIONS = {
+  'historia-2': { text: '¿Qué institución concentraba gran parte del poder político y cultural durante la Edad Media?', correctIdx: 1, back: 'app-historia-mapa' },
+  'fq-1': { text: 'En una solución homogénea, ¿cómo se distribuyen las partículas del soluto?', correctIdx: 1, back: 'app-fq-mapa' }
+};
+
+function openQuestion(track, chapter){
+  const key = track + '-' + chapter;
+  const q = QUESTIONS[key] || { text: 'Este capítulo todavía no tiene una pregunta de ejemplo cargada.', correctIdx: 0, back: track === 'historia' ? 'app-historia-mapa' : 'app-fq-mapa' };
+  document.getElementById('q-text').textContent = q.text;
+  backTarget = q.back;
+  document.getElementById('q-back').onclick = () => show(backTarget);
+  document.querySelectorAll('.q-opt').forEach((btn,i) => {
+    btn.classList.remove('correct','wrong');
+    btn.disabled = false;
+    btn.dataset.correct = (i === q.correctIdx) ? 'true' : 'false';
+  });
+  document.getElementById('q-feedback').className = 'q-feedback';
+  document.getElementById('q-feedback').textContent = '';
+  show('app-pregunta');
+}
+
+function answer(btn, forcedCorrect){
+  const isCorrect = btn.dataset.correct === 'true';
+  document.querySelectorAll('.q-opt').forEach(b => b.disabled = true);
+  const fb = document.getElementById('q-feedback');
+  if(isCorrect){
+    btn.classList.add('correct');
+    fb.textContent = '¡Correcto! Podés avanzar al siguiente capítulo.';
+    fb.className = 'q-feedback show ok';
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = 'No es correcta. Volvé al contenido del capítulo y repasá antes de reintentar — no te decimos cuál era la respuesta correcta a propósito.';
+    fb.className = 'q-feedback show bad';
+  }
+}
+</script>
+</body>
+</html>

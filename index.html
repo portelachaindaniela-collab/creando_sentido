@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creando Sentido — Laboratorio de Proyectos Digitales</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/creando-sentido.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ HEADER ══════════════════════════════════════════ -->
+<header>
+  <div class="wrap nav-row">
+    <a class="brand" href="#top">
+      <img class="brand-mark" src="assets/img/cs-brand-mark.png" alt="Creando Sentido">
+      <div>
+        <div class="brand-name">CREANDO SENTIDO</div>
+        <div class="brand-tag">Laboratorio de proyectos digitales</div>
+      </div>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a href="#hacemos">Qué hacemos</a>
+      <a href="#enfoque">Enfoque</a>
+      <a href="#proyectos">Proyectos</a>
+      <a href="#manifiesto">Manifiesto</a>
+    </nav>
+    <a class="nav-cta" href="#contacto">Hablemos</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false" onclick="toggleNav()">☰</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════ HERO ══════════════════════════════════════════ -->
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-eyebrow"><span class="dot"></span><span>Creando Sentido</span></div>
+      <h1>Creando<br>Sentido<span class="accent">.</span></h1>
+      <div class="hero-descriptor mono">Laboratorio de Proyectos Digitales</div>
+      <p class="lead">Transformamos ideas en herramientas que <span class="hl">conectan</span> personas, información y <span class="hl">oportunidades</span>. No somos una software factory, ni una agencia, ni una consultora: somos un laboratorio donde la tecnología existe para ayudar a las personas.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#proyectos">Ver proyectos</a>
+        <a class="btn btn-ghost" href="#contacto">Contanos tu idea</a>
+      </div>
+    </div>
+    <div class="hero-visual reveal">
+      <div class="hero-note script">Para Valentina, para que sus ideas lleguen más lejos que cualquier límite. ♥</div>
+      <div class="hero-mug mono">☕ CS</div>
+      <div class="hero-photo-scene">
+        <svg viewBox="0 0 320 200" width="100%" style="max-width:340px;">
+          <rect x="0" y="150" width="320" height="50" fill="#0e0d0b"/>
+          <rect x="30" y="120" width="120" height="34" rx="4" fill="#1c1712" stroke="#3a2a1c"/>
+          <rect x="40" y="128" width="100" height="18" rx="2" fill="#2a1f16"/>
+          <circle cx="230" cy="100" r="34" fill="none" stroke="var(--tierra)" stroke-width="1.4" opacity=".6"/>
+          <path d="M120 150 Q160 80 230 100 Q270 112 300 150" fill="none" stroke="var(--terracota-l)" stroke-width="1.4" opacity=".7"/>
+          <circle cx="120" cy="150" r="4" fill="var(--terracota-l)"/>
+          <circle cx="230" cy="100" r="4" fill="var(--beige)"/>
+          <circle cx="300" cy="150" r="4" fill="var(--terracota-l)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ LO QUE NOS MUEVE ══════════════════════════════════════════ -->
+<section class="movers wrap">
+  <div class="section-label mono">Lo que nos mueve</div>
+  <div class="movers-grid">
+    <div class="mover reveal">
+      <div class="mover-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="7" r="3"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/><circle cx="4.5" cy="9" r="2"/><path d="M1 18c.3-2 1.7-3.4 3.5-3.8"/><circle cx="19.5" cy="9" r="2"/><path d="M23 18c-.3-2-1.7-3.4-3.5-3.8"/></svg></div>
+      <h3>Humano</h3>
+      <p>Ponemos a las personas en el centro de cada proyecto.</p>
+    </div>
+    <div class="mover reveal">
+      <div class="mover-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3 17V10c3-4 15-4 18 0v7"/><path d="M3 17h18"/><path d="M6 10v7M10 8.5v8.5M14 8.5v8.5M18 10v7"/></svg></div>
+      <h3>Conectamos</h3>
+      <p>Construimos puentes entre ideas, datos y personas.</p>
+    </div>
+    <div class="mover reveal">
+      <div class="mover-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 3a4 4 0 00-4 4c0 1 .3 1.7.8 2.3A3.5 3.5 0 004 12.5 3.5 3.5 0 006 15.6V18a3 3 0 003 3"/><path d="M15 3a4 4 0 014 4c0 1-.3 1.7-.8 2.3A3.5 3.5 0 0120 12.5a3.5 3.5 0 01-2 3.1V18a3 3 0 01-3 3"/><path d="M9 3a3 3 0 016 0v14a3 3 0 01-6 0z"/></svg></div>
+      <h3>Entendemos</h3>
+      <p>Escuchamos, analizamos y encontramos lo que de verdad importa.</p>
+    </div>
+    <div class="mover reveal">
+      <div class="mover-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 6L3 12l5 6M16 6l5 6-5 6"/><line x1="13" y1="4" x2="11" y2="20"/></svg></div>
+      <h3>Creamos</h3>
+      <p>Diseñamos soluciones digitales simples, útiles y potentes.</p>
+    </div>
+    <div class="mover reveal">
+      <div class="mover-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 3c2 2 3 4 3 6a3 3 0 01-6 0c0-2 1-4 3-6z"/><path d="M6 21h12M9 21v-4a3 3 0 016 0v4"/></svg></div>
+      <h3>Impactamos</h3>
+      <p>Generamos herramientas que producen cambios reales.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ QUÉ HACEMOS + ENFOQUE ══════════════════════════════════════════ -->
+<section class="approach" id="hacemos">
+  <div class="wrap approach-grid">
+    <div>
+      <div class="section-label mono">Qué hacemos</div>
+      <h2>Creamos productos digitales con propósito.</h2>
+      <p class="lead-dark">Cada proyecto empieza con datos y termina en una idea que evoluciona con quien la usa.</p>
+
+      <div class="flow-row">
+        <div class="flow-step"><div class="flow-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-3"/></svg></div><strong>Datos</strong><p>Que informan</p></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step"><div class="flow-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div><strong>Conocimiento</strong><p>Que transforma</p></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step"><div class="flow-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></svg></div><strong>Contenidos</strong><p>Que conectan</p></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step"><div class="flow-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.6 10.8c.5.4.8 1 .8 1.7v.5h5.6v-.5c0-.7.3-1.3.8-1.7A6 6 0 0012 3z"/></svg></div><strong>Ideas</strong><p>Que evolucionan</p></div>
+      </div>
+    </div>
+
+    <div id="enfoque">
+      <div class="section-label mono">Nuestro enfoque</div>
+      <h2>Tecnología con alma.</h2>
+      <div class="venn">
+        <div class="venn-circle venn-tech"><div><strong>Tecnología</strong>Usamos lo mejor de lo digital para resolver problemas reales.</div></div>
+        <div class="venn-circle venn-personas"><div><strong>Personas</strong>Entendemos necesidades, emociones y contextos.</div></div>
+        <div class="venn-circle venn-proposito"><div><strong>Propósito</strong>Cada proyecto tiene un porqué que lo hace importante.</div></div>
+        <div class="venn-center">CS</div>
+      </div>
+      <p class="venn-note">En cada intersección nace el verdadero valor. Ahí es donde <strong>creamos sentido.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ PROYECTOS ══════════════════════════════════════════ -->
+<section class="projects wrap" id="proyectos">
+  <div class="section-label mono">Proyectos que generan sentido</div>
+  <div class="projects-grid">
+    <div class="proj-card reveal">
+      <div class="proj-visual" style="background:linear-gradient(150deg,#2a1c12,#141210);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--terracota-l)" stroke-width="1.2"><path d="M3 17l4-6 4 3 5-8 5 6"/></svg>
+      </div>
+      <div class="proj-body">
+        <h3>Deporte que merece visibilidad</h3>
+        <p>Plataformas que acercan el fútbol femenino y otros deportes a más personas.</p>
+      </div>
+    </div>
+    <a class="proj-card reveal" href="origen/index.html" style="cursor:pointer;">
+      <div class="proj-visual" style="background:linear-gradient(150deg,#332417,#161310);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--beige)" stroke-width="1.2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      </div>
+      <div class="proj-body">
+        <h3>ORIGEN — aprender es explorar</h3>
+        <p>Una plataforma educativa interactiva, materia por materia, con guías propios y evaluaciones. Experiencias que motivan, explican y acompañan.</p>
+      </div>
+    </a>
+    <div class="proj-card reveal">
+      <div class="proj-visual" style="background:linear-gradient(150deg,#26241a,#141310);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--tierra)" stroke-width="1.2"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-3"/></svg>
+      </div>
+      <div class="proj-body">
+        <h3>Datos que toman forma</h3>
+        <p>Dashboards y reportes que convierten datos complejos en decisiones claras.</p>
+      </div>
+    </div>
+    <div class="proj-card reveal">
+      <div class="proj-visual" style="background:linear-gradient(150deg,#2c1c14,#151210);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--terracota-l)" stroke-width="1.2"><path d="M12 3c2 2 3 4 3 6a3 3 0 01-6 0c0-2 1-4 3-6z"/><path d="M6 21h12M9 21v-4a3 3 0 016 0v4"/></svg>
+      </div>
+      <div class="proj-body">
+        <h3>Ideas que se construyen</h3>
+        <p>Investigamos, diseñamos y prototipamos soluciones que nacen de las ideas y se vuelven reales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ MANIFIESTO / IDENTIDAD / LABORATORIO ══════════════════════════════════════════ -->
+<section class="bottom-grid" id="manifiesto">
+  <div class="wrap bottom-cols">
+    <div class="manifesto reveal">
+      <h3>Nuestro manifiesto</h3>
+      <p>
+        No se trata solo de tecnología.<br>
+        Se trata de personas.<br>
+        De entender para conectar.<br>
+        De crear para transformar.<br>
+        De darle sentido a lo que hacemos,<br>
+        para que otros puedan entender mejor su mundo y tomar mejores decisiones.<br><br>
+        Eso es lo que nos mueve.<br>
+        Eso es lo que hacemos.
+      </p>
+      <span class="script">Eso es crear sentido. ♥</span>
+    </div>
+
+    <div class="reveal">
+      <h3>Identidad visual</h3>
+      <div class="swatch-row">
+        <div class="swatch" style="background:var(--carbon);"></div>
+        <div class="swatch" style="background:var(--blanco);"></div>
+        <div class="swatch" style="background:var(--terracota);"></div>
+        <div class="swatch" style="background:var(--oliva);"></div>
+        <div class="swatch" style="background:var(--tierra);"></div>
+      </div>
+      <div class="type-row">
+        <div class="type-sample"><span class="Aa">Aa</span><span class="label mono">MONTSERRAT — moderna, clara</span></div>
+        <div class="type-sample"><span class="Aa mono">Aa</span><span class="label mono">IBM PLEX MONO — técnica, simple</span></div>
+      </div>
+      <div class="photo-strip">
+        <div class="photo-swatch"></div><div class="photo-swatch"></div><div class="photo-swatch"></div><div class="photo-swatch"></div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <h3>Somos un laboratorio</h3>
+      <div class="bridge-wrap">
+        <svg viewBox="0 0 280 120">
+          <path d="M20 90 Q140 20 260 90" fill="none" stroke="var(--beige)" stroke-width="1.6" opacity=".8"/>
+          <line x1="20" y1="90" x2="20" y2="105" stroke="var(--beige)" stroke-width="1.6" opacity=".8"/>
+          <line x1="260" y1="90" x2="260" y2="105" stroke="var(--beige)" stroke-width="1.6" opacity=".8"/>
+          <circle cx="20" cy="90" r="4" fill="var(--terracota-l)"/>
+          <circle cx="260" cy="90" r="4" fill="var(--terracota-l)"/>
+          <circle cx="140" cy="34" r="5" fill="var(--beige)"/>
+        </svg>
+        <div class="bridge-labels"><span>Ideas · Datos</span><span>Nosotros construimos puentes</span><span>Personas · Oportunidades</span></div>
+      </div>
+      <p class="lab-copy">Nos apasiona explorar, probar, equivocarnos, aprender y volver a intentar. Porque sabemos que detrás de cada proyecto hay alguien que confía, que sueña y que quiere llegar más lejos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ FOOTER ══════════════════════════════════════════ -->
+<footer id="contacto">
+  <div class="wrap foot-row">
+    <div class="foot-brand">
+      <img src="assets/img/cs-footer-mark.png" alt="Creando Sentido" style="width:44px;height:auto;">
+      <div>
+        <div class="foot-brand-name">CREANDO SENTIDO</div>
+        <div class="foot-brand-tag">Laboratorio de proyectos digitales</div>
+      </div>
+    </div>
+    <p style="max-width:260px;font-size:13px;">Si tenés una idea, un problema o un sueño, hablemos. Podemos construir algo increíble juntos.</p>
+    <div class="foot-contact mono">
+      <a href="#">🌐 creandosentido.lab</a>
+      <a href="mailto:hola@creandosentido.com">✉️ hola@creandosentido.com</a>
+      <a href="#">📸 @creandosentido.lab</a>
+    </div>
+    <div class="foot-script script">Hecha con pasión, datos y mucho corazón. ♥</div>
+  </div>
+</footer>
+
+<script src="assets/js/creando-sentido.js"></script>
+</body>
+</html>

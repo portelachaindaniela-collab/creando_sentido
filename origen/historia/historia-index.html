@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historia — ORIGEN</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/historia.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ══════════════ SIDEBAR (idéntico patrón de navegación de ORIGEN) ══════════════ -->
+  <aside class="sidebar">
+    <a href="../index.html" class="sidebar-brand">
+      <img src="../../assets/img/logo.png" alt="ORIGEN" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+      <div>
+        <div class="sidebar-brand-text">ORIGEN</div>
+        <div class="sidebar-brand-tag">Aprender es explorar</div>
+      </div>
+    </a>
+    <button class="sidebar-mobile-toggle" id="sidebar-toggle" aria-label="Abrir menú" aria-expanded="false" onclick="toggleSidebar()">☰</button>
+
+    <div class="sidebar-collapsible" id="sidebar-collapsible">
+    <nav class="sidebar-nav">
+      <a href="../index.html"><span class="ic">🏠</span>Inicio</a>
+      <a href="../index.html" class="active"><span class="ic">📚</span>Mis materias</a>
+      <a href="#"><span class="ic">📈</span>Mi progreso</a>
+      <a href="#"><span class="ic">⭐</span>Favoritos</a>
+      <a href="../notas.html"><span class="ic">📝</span>Notas</a>
+      <a href="#"><span class="ic">🏆</span>Logros</a>
+      <a href="#"><span class="ic">📦</span>Recursos</a>
+      <a href="#timeline-tag"><span class="ic">🕓</span>Línea de tiempo</a>
+      <a href="#"><span class="ic">🗺️</span>Mapas</a>
+      <a href="#"><span class="ic">💬</span>Foro</a>
+      <a href="#"><span class="ic">⚙️</span>Ajustes</a>
+    </nav>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="progress-card">
+      <h4>Tu progreso en Historia</h4>
+      <div class="progress-ring-wrap">
+        <svg width="96" height="96" viewBox="0 0 96 96" style="position:absolute;">
+          <circle cx="48" cy="48" r="42" fill="none" stroke="rgba(250,247,240,.1)" stroke-width="8"/>
+          <circle id="progress-circle" cx="48" cy="48" r="42" fill="none" stroke="var(--mostaza)" stroke-width="8"
+            stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 48 48)"/>
+        </svg>
+        <div class="progress-ring"><span class="progress-ring-value" id="progress-pct">0%</span></div>
+      </div>
+      <p class="progress-sub" id="progress-sub">0 de 19 temas completados</p>
+    </div>
+
+    <!-- Se completa vía JS: setup rápido (primera vez) o tarjeta del guía elegido -->
+    <div id="guide-slot"></div>
+    </div><!-- /sidebar-collapsible -->
+  </aside>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="search-box">🔍<input type="text" placeholder="Buscar temas, épocas, procesos…"></div>
+      <div class="icon-btn">🔔</div>
+      <img class="topbar-avatar" id="topbar-avatar" src="" alt="Tu guía">
+    </div>
+
+    <section class="hero" id="timeline-tag">
+      <div class="hero-eyebrow">Historia · Museo interactivo</div>
+      <h1 class="hero-title">HISTORIA</h1>
+      <p class="hero-sub">Explorá el pasado para comprender el presente y construir el futuro. Un recorrido por los grandes procesos históricos — no para memorizar fechas, sino para entender por qué pasaron.</p>
+
+      <img class="hero-banner" src="../../assets/img/historia-hero-banner.jpg" alt="Pirámides, templos clásicos, el Coliseo, un castillo medieval, un ferrocarril industrial y un skyline contemporáneo">
+
+      <div class="era-labels">
+        <span>Prehistoria</span><span>Antigüedad</span><span>Edad Media</span><span>Edad Moderna</span><span>Edad Contemporánea</span>
+      </div>
+
+      <p class="hero-quote">"Quien no conoce su historia está condenado a repetirla." — Cada tema de este recorrido es una parada en esa línea.</p>
+    </section>
+
+
+    <section class="pillars">
+      <div class="pillar"><div class="pillar-ic">🏛️</div><h3>Comprendé procesos</h3><p>No memorices fechas: entendé por qué las cosas pasaron y qué las conectó.</p></div>
+      <div class="pillar"><div class="pillar-ic">🧭</div><h3>Recorré como en un museo</h3><p>Cada tema abre primero su propia carátula y después la experiencia interactiva.</p></div>
+      <div class="pillar"><div class="pillar-ic">🗺️</div><h3>Mapas y líneas de tiempo</h3><p>La arquitectura de esta materia está pensada para sumar recorridos visuales e inmersivos.</p></div>
+      <div class="pillar"><div class="pillar-ic">🎓</div><h3>Guía a tu manera</h3><p>Elegís con quién aprender, y avanzás con evaluaciones al final de cada tema.</p></div>
+    </section>
+
+    <section class="topics-section">
+      <div class="topics-head">
+        <h2>Elegí un tema para explorar</h2>
+        <span class="topics-count" id="topics-count">19 temas</span>
+      </div>
+      <div class="topics-grid" id="topics-grid"><!-- generado por JS --></div>
+    </section>
+
+    <section class="footer-grid">
+      <div class="foot-card">
+        <h3>¿Cómo vas a aprender?</h3>
+        <div class="steps-row">
+          <div class="step"><div class="step-ic">👁️</div><span>Explorá</span></div>
+          <div class="step"><div class="step-ic">📖</div><span>Comprendé</span></div>
+          <div class="step"><div class="step-ic">🧩</div><span>Practicá</span></div>
+          <div class="step"><div class="step-ic">✅</div><span>Evaluá</span></div>
+        </div>
+      </div>
+      <div class="foot-card">
+        <h3>Tu viaje en el tiempo</h3>
+        <div class="timeline-mini">
+          <div class="tl-dot"></div><div class="tl-seg"></div>
+          <div class="tl-dot"></div><div class="tl-seg"></div>
+          <div class="tl-dot"></div><div class="tl-seg"></div>
+          <div class="tl-dot"></div><div class="tl-seg"></div>
+          <div class="tl-dot"></div>
+        </div>
+        <p>Cada tema es una parada. Podés recorrerlas en orden cronológico o saltar directo a la que más te interese.</p>
+      </div>
+      <div class="foot-card cta-card">
+        <div>
+          <h3>¿Listo para comenzar?</h3>
+          <p>Elegí un tema, explorá su carátula y entrá a la guía interactiva cuando quieras.</p>
+        </div>
+        <button class="btn-cta" onclick="document.getElementById('topics-grid').scrollIntoView({behavior:'smooth'})">Comenzar a explorar</button>
+      </div>
+    </section>
+
+    <p class="credit-line">ORIGEN · Historia — prototipo funcional. Los temas marcados "Próximamente" ya tienen su carátula y arquitectura lista; su guía interactiva se suma progresivamente.</p>
+  </main>
+</div>
+
+<script src="../../assets/js/historia.js"></script>
+</body>
+</html>

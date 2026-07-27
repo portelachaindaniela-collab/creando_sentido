@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notas — ORIGEN</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/historia.css">
+<style>
+/* ══ Sección Notas (Core — punto 8 y 14 de la revisión funcional) ══ */
+.notas-head{padding:32px 40px 6px;}
+.notas-head h1{font-size:clamp(28px,4vw,38px);font-weight:800;margin-bottom:8px;}
+.notas-head p{font-size:14px;color:var(--salvia);max-width:640px;}
+
+.notas-wrap{padding:10px 40px 50px;}
+
+.alias-gate{background:var(--verde2);border:1px solid rgba(250,247,240,.1);border-radius:16px;padding:28px;max-width:420px;margin-top:20px;}
+.alias-gate h3{font-size:15px;margin-bottom:8px;color:var(--mostaza);}
+.alias-gate p{font-size:13px;color:var(--salvia);margin-bottom:14px;}
+.alias-gate input{width:100%;padding:11px 14px;border-radius:10px;border:1px solid rgba(250,247,240,.2);background:rgba(250,247,240,.06);color:var(--crema);font-family:inherit;margin-bottom:12px;}
+.alias-gate button{background:var(--mostaza);color:var(--verde-deep);border:none;padding:10px 20px;border-radius:10px;font-weight:700;cursor:pointer;}
+
+.notas-empty{background:var(--verde2);border:1px dashed rgba(250,247,240,.2);border-radius:16px;padding:32px;text-align:center;color:var(--salvia);margin-top:10px;}
+
+.notas-tabla-wrap{overflow-x:auto;border-radius:16px;border:1px solid rgba(250,247,240,.1);margin-top:10px;}
+table.notas-tabla{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px;}
+table.notas-tabla thead th{background:var(--verde-deep);color:var(--mostaza);text-align:left;padding:14px 16px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+table.notas-tabla tbody td{padding:14px 16px;border-top:1px solid rgba(250,247,240,.08);vertical-align:middle;}
+table.notas-tabla tbody tr:hover{background:rgba(250,247,240,.03);}
+.nota-valor{font-weight:700;}
+.nota-valor.baja{color:#C0554A;}
+.nota-valor.media{color:var(--mostaza);}
+.nota-valor.alta{color:var(--oliva);}
+
+.estado-pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap;}
+.estado-pill.aprobado{background:rgba(107,122,74,.18);color:#8FAE5E;}
+.estado-pill.no-aprobado{background:rgba(192,85,74,.15);color:#E08477;}
+.estado-pill.pendiente{background:rgba(196,154,58,.16);color:var(--mostaza);}
+
+.btn-tabla{background:transparent;border:1.5px solid var(--salvia);color:var(--crema);padding:.45rem 1rem;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;}
+.btn-tabla:hover:not(:disabled){border-color:var(--mostaza);color:var(--mostaza);}
+.btn-tabla:disabled{opacity:.4;cursor:not-allowed;}
+.btn-tabla + .btn-tabla{margin-left:6px;}
+
+/* modal simple de detalle */
+.detalle-overlay{display:none;position:fixed;inset:0;background:rgba(10,15,13,.6);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.detalle-overlay.show{display:flex;}
+.detalle-modal{background:var(--verde2);border:1px solid rgba(250,247,240,.15);border-radius:18px;padding:28px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;}
+.detalle-modal h3{color:var(--mostaza);font-size:17px;margin-bottom:4px;}
+.detalle-modal .sub{font-size:12.5px;color:var(--salvia);margin-bottom:18px;}
+.detalle-modal h4{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--salvia);margin:14px 0 6px;}
+.detalle-modal ul{padding-left:18px;list-style:disc;font-size:13.5px;line-height:1.6;}
+.detalle-modal .cerrar{margin-top:20px;background:transparent;border:1.5px solid var(--salvia);color:var(--crema);padding:.6rem 1.4rem;border-radius:30px;font-weight:700;cursor:pointer;}
+.detalle-aviso{font-size:11.5px;color:var(--salvia);opacity:.8;margin-top:14px;font-style:italic;}
+</style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ══════════════ SIDEBAR (mismo patrón de navegación de ORIGEN) ══════════════ -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-brand">
+      <img src="../assets/img/logo.png" alt="ORIGEN" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+      <div>
+        <div class="sidebar-brand-text">ORIGEN</div>
+        <div class="sidebar-brand-tag">Aprender es explorar</div>
+      </div>
+    </a>
+    <button class="sidebar-mobile-toggle" id="sidebar-toggle" aria-label="Abrir menú" aria-expanded="false" onclick="toggleSidebar()">☰</button>
+
+    <div class="sidebar-collapsible" id="sidebar-collapsible">
+    <nav class="sidebar-nav">
+      <a href="index.html"><span class="ic">🏠</span>Inicio</a>
+      <a href="index.html"><span class="ic">📚</span>Mis materias</a>
+      <a href="#"><span class="ic">📈</span>Mi progreso</a>
+      <a href="#"><span class="ic">⭐</span>Favoritos</a>
+      <a href="notas.html" class="active"><span class="ic">📝</span>Notas</a>
+      <a href="#"><span class="ic">🏆</span>Logros</a>
+      <a href="#"><span class="ic">📦</span>Recursos</a>
+      <a href="#"><span class="ic">🗺️</span>Mapas</a>
+      <a href="#"><span class="ic">💬</span>Foro</a>
+      <a href="#"><span class="ic">⚙️</span>Ajustes</a>
+    </nav>
+  </div><!-- /sidebar-collapsible -->
+  </aside>
+
+  <!-- ══════════════ MAIN ══════════════ -->
+  <main class="main">
+
+    <section class="notas-head">
+      <h1>📝 Notas</h1>
+      <p>Tu registro académico en ORIGEN: todas las evaluaciones que rendiste, en todas las materias, con su nota y estado. Incluye también los resultados bajos — nada se oculta acá.</p>
+    </section>
+
+    <section class="notas-wrap">
+      <div id="alias-gate" class="alias-gate" style="display:none;">
+        <h3>¿Quién sos?</h3>
+        <p>Para mostrarte tus notas (y no las de otro alumno que haya usado este dispositivo), decinos tu alias.</p>
+        <input type="text" id="alias-gate-input" placeholder="Tu nombre o alias" maxlength="40">
+        <button onclick="confirmarAliasGate()">Ver mis notas →</button>
+      </div>
+
+      <div id="notas-contenido"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Modal de detalle (versión básica — punto 9 completo llega con el
+     etiquetado por tema/concepto del banco de preguntas, punto 10) -->
+<div class="detalle-overlay" id="detalle-overlay">
+  <div class="detalle-modal">
+    <h3 id="detalle-titulo"></h3>
+    <p class="sub" id="detalle-sub"></p>
+    <div id="detalle-cuerpo"></div>
+    <p class="detalle-aviso" id="detalle-aviso" style="display:none;">Este es un resumen básico — este resultado se generó antes de sumar el desglose completo por tema.</p>
+    <button class="cerrar" onclick="cerrarDetalle()">Cerrar</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="../core/js/storage.js"></script>
+<script src="../core/js/devolucion-pedagogica.js"></script>
+<script>
+function toggleSidebar(){
+  const el = document.getElementById('sidebar-collapsible');
+  const btn = document.getElementById('sidebar-toggle');
+  const isOpen = el.classList.toggle('open');
+  btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  btn.textContent = isOpen ? '✕' : '☰';
+}
+
+const NOMBRES_MATERIA = {
+  fisicoquimica: 'Fisicoquímica',
+  historia: 'Historia',
+};
+
+function nombreMateria(clave){
+  return NOMBRES_MATERIA[clave] || (clave.charAt(0).toUpperCase() + clave.slice(1));
+}
+
+function claseNota(nota10){
+  if(nota10 >= 7) return 'alta';
+  if(nota10 >= 4) return 'media';
+  return 'baja';
+}
+
+function estadoDe(registro){
+  // "Pendiente de revisión" queda reservado para registros sin un
+  // veredicto aprobado/no-aprobado definido (hoy el corrector siempre
+  // decide uno de los dos; este tercer estado queda listo para el día
+  // en que una materia sume corrección manual/docente).
+  if(registro.aprobado === true) return {texto:'Aprobado', clase:'aprobado'};
+  if(registro.aprobado === false) return {texto:'No aprobado', clase:'no-aprobado'};
+  return {texto:'Pendiente de revisión', clase:'pendiente'};
+}
+
+function formatearFecha(iso){
+  try{
+    return new Date(iso).toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit', year:'numeric'});
+  }catch(e){ return iso || '—'; }
+}
+
+let registrosAlumno = []; // se completa al renderizar, para el modal de detalle
+
+function renderNotas(){
+  const cont = document.getElementById('notas-contenido');
+  const alias = getAlias();
+
+  if(!alias){
+    document.getElementById('alias-gate').style.display = 'block';
+    cont.innerHTML = '';
+    return;
+  }
+  document.getElementById('alias-gate').style.display = 'none';
+
+  const todas = getGradeHistory(); // { materia: [registros...] }
+  let filas = [];
+  Object.keys(todas).forEach(materia=>{
+    (todas[materia]||[])
+      .filter(r => r.alias === alias)
+      .forEach(r => filas.push(Object.assign({materiaClave:materia}, r)));
+  });
+  // más reciente primero
+  filas.sort((a,b)=> new Date(b.fecha) - new Date(a.fecha));
+  registrosAlumno = filas;
+
+  if(!filas.length){
+    cont.innerHTML = `<div class="notas-empty">Todavía no rendiste ninguna evaluación, ${alias}. Cuando termines un examen final, va a aparecer acá.</div>`;
+    return;
+  }
+
+  cont.innerHTML = `
+    <div class="notas-tabla-wrap">
+      <table class="notas-tabla">
+        <thead>
+          <tr>
+            <th>Materia</th>
+            <th>Evaluación / módulo</th>
+            <th>Fecha</th>
+            <th>Nota</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filas.map((r,idx)=>{
+            const estado = estadoDe(r);
+            return `
+              <tr>
+                <td>${nombreMateria(r.materiaClave)}</td>
+                <td>${r.temaNombre || r.tema || '—'}</td>
+                <td>${formatearFecha(r.fecha)}</td>
+                <td><span class="nota-valor ${claseNota(r.nota10)}">${r.nota10}/10</span></td>
+                <td><span class="estado-pill ${estado.clase}">${estado.texto}</span></td>
+                <td>
+                  <button class="btn-tabla" onclick="verDetalle(${idx})">Ver detalle</button>
+                  ${(r.items && r.items.length)
+                    ? `<button class="btn-tabla" onclick="descargarPDF(${idx})">Descargar PDF</button>`
+                    : `<button class="btn-tabla" disabled title="No disponible para este resultado">Descargar PDF</button>`}
+                </td>
+              </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function confirmarAliasGate(){
+  const input = document.getElementById('alias-gate-input');
+  const valor = (input.value||'').trim();
+  if(!valor) return;
+  setAlias(valor);
+  renderNotas();
+}
+
+function pillClasificacion(temas, clase, etiqueta){
+  if(!temas.length) return '';
+  return `<h4>${etiqueta}</h4><ul>${temas.map(t=>`<li>${t}</li>`).join('')}</ul>`;
+}
+
+function verDetalle(idx){
+  const r = registrosAlumno[idx];
+  if(!r) return;
+  document.getElementById('detalle-titulo').textContent = `${nombreMateria(r.materiaClave)} — ${r.temaNombre || r.tema || ''}`;
+  document.getElementById('detalle-sub').textContent = `${formatearFecha(r.fecha)} · ${r.puntos}/${r.maxPuntos} pts · ${r.nota10}/10`;
+
+  let cuerpo = '';
+
+  if(r.detalle && r.detalle.length){
+    // Desglose completo (punto 9) — disponible para resultados
+    // generados después de que el banco quedó etiquetado por tema.
+    const desglose = DevolucionPedagogica.desglosarResultado(r.detalle);
+    cuerpo += pillClasificacion(desglose.temasBien, 'bien', '✅ Bien');
+    cuerpo += pillClasificacion(desglose.temasARevisar, 'a-revisar', '🟡 A revisar');
+    cuerpo += pillClasificacion(desglose.temasRefuerzo, 'refuerzo', '🔴 Necesita refuerzo');
+    if(desglose.conceptosARepasar.length){
+      cuerpo += `<h4>📚 Conceptos para repasar</h4><ul>${desglose.conceptosARepasar.map(c=>`<li>${c}</li>`).join('')}</ul>`;
+    }
+    if(desglose.recomendaciones.length){
+      cuerpo += `<h4>💡 Recomendaciones de estudio</h4><ul>${desglose.recomendaciones.map(c=>`<li>${c}</li>`).join('')}</ul>`;
+    }
+  } else {
+    // Vista básica (registros previos al etiquetado por tema) —
+    // mismo contenido que ya guardábamos antes de este punto.
+    const fortalezas = r.fortalezas || [];
+    const aRepasar = r.aRepasar || [];
+    if(fortalezas.length) cuerpo += `<h4>✅ Te fue bien en</h4><ul>${fortalezas.map(f=>`<li>${f}</li>`).join('')}</ul>`;
+    if(aRepasar.length) cuerpo += `<h4>📚 Conviene repasar</h4><ul>${aRepasar.map(f=>`<li>${f}</li>`).join('')}</ul>`;
+  }
+
+  if(!cuerpo){
+    cuerpo = `<p style="font-size:13.5px;color:var(--salvia);">No hay desglose disponible para este resultado.</p>`;
+  }
+  document.getElementById('detalle-aviso').style.display = (r.detalle && r.detalle.length) ? 'none' : 'block';
+  document.getElementById('detalle-cuerpo').innerHTML = cuerpo;
+  document.getElementById('detalle-overlay').classList.add('show');
+}
+
+function cerrarDetalle(){
+  document.getElementById('detalle-overlay').classList.remove('show');
+}
+
+// Genera el PDF de una evaluación (punto 11). Nunca revela una
+// respuesta "modelo" para las de desarrollo — igual que en pantalla,
+// solo se orienta. Para las objetivas se replica lo que YA se ve en
+// pantalla (opción correcta resaltada): es "la misma regla pedagógica
+// de la plataforma", no una excepción nueva.
+async function descargarPDF(idx){
+  const r = registrosAlumno[idx];
+  if(!r || !r.items || !r.items.length) return;
+
+  if(typeof PDFLib === 'undefined'){
+    alert('No se pudo cargar el generador de PDF. Revisá tu conexión e intentá de nuevo.');
+    return;
+  }
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+
+  const pdfDoc = await PDFDocument.create();
+  const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const PAGE_W = 595.28, PAGE_H = 841.89; // A4 en puntos
+  const MARGIN = 50;
+  const VERDE = rgb(0.086, 0.122, 0.110);
+  const MOSTAZA = rgb(0.769, 0.604, 0.227);
+  const TEXTO = rgb(0.15, 0.15, 0.15);
+  const VERDE_OK = rgb(0.18, 0.40, 0.14);
+  const ROJO_ERR = rgb(0.55, 0.22, 0.16);
+
+  let page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+  let y = PAGE_H - MARGIN;
+
+  function nuevaPagina(){
+    page = pdfDoc.addPage([PAGE_W, PAGE_H]);
+    y = PAGE_H - MARGIN;
+  }
+  function asegurarEspacio(alto){
+    if(y - alto < MARGIN) nuevaPagina();
+  }
+  function envolverTexto(str, font, size, maxWidth){
+    const palabras = String(str).split(/\s+/);
+    const lineas = [];
+    let linea = '';
+    palabras.forEach(w=>{
+      const prueba = linea ? linea + ' ' + w : w;
+      if(font.widthOfTextAtSize(prueba, size) > maxWidth && linea){
+        lineas.push(linea);
+        linea = w;
+      } else {
+        linea = prueba;
+      }
+    });
+    if(linea) lineas.push(linea);
+    return lineas;
+  }
+  // La fuente estándar del PDF (WinAnsi) no puede codificar emoji (ej. "✅"
+  // de DevolucionPedagogica.orientacionItem) y hace fallar pdf-lib en
+  // silencio. Se quita cualquier carácter fuera de Latin-1 antes de dibujar,
+  // en vez de tocar orientacionItem (que sí debe mostrar el emoji en pantalla).
+  function limpiarParaPDF(str){
+    return Array.from(String(str)).filter(ch => ch.codePointAt(0) <= 0xFF).join('').replace(/\s+/g,' ').trim();
+  }
+  function texto(str, opts={}){
+    str = limpiarParaPDF(str);
+    const size = opts.size || 10;
+    const font = opts.bold ? fontBold : fontRegular;
+    const color = opts.color || TEXTO;
+    const lineas = envolverTexto(str, font, size, PAGE_W - MARGIN*2);
+    lineas.forEach(l=>{
+      asegurarEspacio(size + 5);
+      page.drawText(l, {x:MARGIN, y, size, font, color});
+      y -= (size + 5);
+    });
+  }
+
+  // ── Encabezado con identidad visual de ORIGEN ──
+  page.drawRectangle({x:0, y:PAGE_H-72, width:PAGE_W, height:72, color:VERDE});
+  page.drawText('ORIGEN', {x:MARGIN, y:PAGE_H-38, size:24, font:fontBold, color:MOSTAZA});
+  page.drawText('Registro de evaluación', {x:MARGIN, y:PAGE_H-58, size:11, font:fontRegular, color:rgb(0.95,0.95,0.92)});
+  y = PAGE_H - 100;
+
+  const estado = estadoDe(r);
+  texto(`Alumno/a: ${r.alias}`, {bold:true, size:13});
+  texto(`Materia: ${nombreMateria(r.materiaClave)}`, {size:11});
+  texto(`Módulo / examen: ${r.temaNombre || r.tema || '—'}`, {size:11});
+  texto(`Fecha: ${formatearFecha(r.fecha)}`, {size:11});
+  texto(`Nota: ${r.nota10}/10  (${r.puntos}/${r.maxPuntos} pts — ${r.pct}%)  ·  Estado: ${estado.texto}`, {bold:true, size:11.5});
+  y -= 6;
+
+  const desglose = (r.detalle && r.detalle.length) ? DevolucionPedagogica.desglosarResultado(r.detalle) : null;
+  if(desglose){
+    if(desglose.temasBien.length){
+      texto('Fortalezas:', {bold:true, size:11});
+      desglose.temasBien.forEach(t=> texto('•  ' + t));
+      y -= 4;
+    }
+    if(desglose.conceptosARepasar.length){
+      texto('Conceptos para repasar:', {bold:true, size:11});
+      desglose.conceptosARepasar.forEach(c=> texto('•  ' + c));
+      y -= 4;
+    }
+    if(desglose.recomendaciones.length){
+      texto('Recomendaciones de estudio:', {bold:true, size:11});
+      desglose.recomendaciones.forEach(c=> texto('•  ' + c));
+      y -= 4;
+    }
+  }
+
+  y -= 6;
+  asegurarEspacio(20);
+  page.drawLine({start:{x:MARGIN,y}, end:{x:PAGE_W-MARGIN,y}, thickness:1, color:rgb(0.8,0.8,0.8)});
+  y -= 18;
+  texto('Detalle de preguntas', {bold:true, size:13});
+  y -= 2;
+
+  const respuestas = r.respuestas || {mc:{}, desarrollo:{}};
+  r.items.forEach((q, i)=>{
+    asegurarEspacio(50);
+    texto(`${i+1}. ${q.q}`, {bold:true, size:10.5});
+
+    const d = (r.detalle||[]).find(x=>x.idx===i) || {};
+    const puntosItem = d.puntos!==undefined ? d.puntos : (d.correcto?0.5:0);
+    const maxItem = q.type==='mc' ? 0.5 : 1;
+
+    if(q.type==='mc'){
+      const elegidoIdx = respuestas.mc ? respuestas.mc[i] : undefined;
+      const elegidoTxt = (elegidoIdx!==undefined && q.opts[elegidoIdx]!==undefined) ? q.opts[elegidoIdx] : '(sin responder)';
+      texto(`Tu respuesta: ${elegidoTxt}`, {size:10});
+      texto(`Opción correcta: ${q.opts[q.ans]}`, {size:10, color: d.correcto ? VERDE_OK : ROJO_ERR});
+    } else {
+      const textoResp = (respuestas.desarrollo ? respuestas.desarrollo[i] : '') || '(sin responder)';
+      texto(`Tu respuesta: ${textoResp}`, {size:10});
+    }
+
+    texto(`Puntaje: ${puntosItem}/${maxItem}`, {size:9.5, color:rgb(0.4,0.4,0.4)});
+    texto(DevolucionPedagogica.orientacionItem(Object.assign({}, d, {type:q.type, concept:q.concept})), {
+      size:10, color: puntosItem>=maxItem ? VERDE_OK : ROJO_ERR,
+    });
+    y -= 8;
+  });
+
+  asegurarEspacio(30);
+  y -= 10;
+  texto('Si una respuesta de desarrollo no fue correcta, este documento no muestra una respuesta modelo — solo orientación para repasar. Cada intento vuelve a traer preguntas distintas.', {size:8.5, color:rgb(0.5,0.5,0.5)});
+
+  const bytes = await pdfDoc.save();
+  const blob = new Blob([bytes], {type:'application/pdf'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const nombreArchivo = `ORIGEN_${nombreMateria(r.materiaClave)}_${(r.temaNombre||r.tema||'evaluacion')}_${formatearFecha(r.fecha).replace(/\//g,'-')}.pdf`.replace(/\s+/g,'_');
+  a.download = nombreArchivo;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+renderNotas();
+</script>
+</body>
+</html>
