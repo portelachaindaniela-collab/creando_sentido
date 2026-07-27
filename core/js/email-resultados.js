@@ -38,6 +38,30 @@ const EmailResultados = (function(){
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((valor||'').trim());
   }
 
+  // Arma el texto de la sección "DETALLE POR CAPÍTULO" de la plantilla
+  // de EmailJS (variable {{detalle_capitulos}}). Agrupa "detalle" (el
+  // array que ya entrega evaluacion-motor.js) por módulo/tema y muestra
+  // puntaje + estado de cada uno — 100% agnóstico de materia, agrupa
+  // por la clave que ya viene en cada item (nunca un nombre fijo de
+  // capítulo ni de módulo). No depende de devolucion-pedagogica.js
+  // porque no todas las materias lo cargan hoy (ej. Historia).
+  function detallePorCapitulo(detalle, umbralAprobacion){
+    umbralAprobacion = umbralAprobacion || 70;
+    const grupos = {};
+    (detalle || []).forEach(d=>{
+      const key = d.tema || d.modulo || 'General';
+      if(!grupos[key]) grupos[key] = {puntos:0, max:0};
+      grupos[key].puntos += (d.puntos !== undefined ? d.puntos : (d.correcto ? 0.5 : 0));
+      grupos[key].max += (d.type==='mc' ? 0.5 : 1);
+    });
+    return Object.keys(grupos).map(nombre=>{
+      const g = grupos[nombre];
+      const pct = g.max > 0 ? Math.round((g.puntos/g.max)*100) : 0;
+      const estado = pct >= umbralAprobacion ? '✅ Aprobado' : '❌ No aprobado';
+      return `${nombre}: ${g.puntos}/${g.max} pts (${pct}%) — ${estado}`;
+    }).join('\n');
+  }
+
   // datos: {
   //   toEmail:   correo elegido por el alumno en ESE momento (nunca
   //              se guarda ni se recuerda de una vez anterior),
@@ -45,7 +69,10 @@ const EmailResultados = (function(){
   //   materia:   string libre (ej. 'Fisicoquímica'),
   //   tema:      string libre (ej. 'Mezclas y Sistemas'),
   //   resultado: el objeto que ya entrega evaluacion-motor.js
-  //              {puntos, maxPuntos, pct, nota10, aprobado, fortalezas, aRepasar}
+  //              {puntos, maxPuntos, pct, nota10, aprobado, fortalezas, aRepasar,
+  //               detalle} — "detalle" es opcional: si viene, arma el desglose
+  //               por módulo/tema de {{detalle_capitulos}}; si no, esa
+  //               variable se manda vacía (la plantilla no debería romperse).
   // }
   // Devuelve una Promise (resuelve/rechaza igual que emailjs.send).
   function enviar(datos){
@@ -74,6 +101,7 @@ const EmailResultados = (function(){
       fecha:             fecha,
       resultado_general: `${encabezado} — ${r.nota10}/10 — ${r.pct}% — ${r.aprobado ? '✅ APROBADO' : '❌ NO APROBADO'} (${r.puntos}/${r.maxPuntos} pts)`,
       detalle_examen:    detalle,
+      detalle_capitulos: detallePorCapitulo(r.detalle),
     };
 
     return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
