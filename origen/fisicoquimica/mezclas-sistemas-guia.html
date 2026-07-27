@@ -722,13 +722,11 @@ let ultimoResultadoExamen = null; // para poder reenviar el correo sin recalcula
 
 function verResultadosExamen(){
   const resultado = EvaluacionMotor.corregirExamenFinal(examenItems, examenAnswers);
-  const fortalezasPorTema = [], aRepasarPorTema = [];
-  resultado.detalle.forEach(d=>{
-    const q = examenItems[d.idx];
-    const ok = q.type==='mc' ? d.correcto : d.puntos>=1;
-    (ok ? fortalezasPorTema : aRepasarPorTema).push(q.nombreSeccion);
-  });
-  const resultadoCompleto = {...resultado, fortalezas:[...new Set(fortalezasPorTema)], aRepasar:[...new Set(aRepasarPorTema)]};
+  // Mismo criterio agregado por módulo que submitExamen() — ver comentario ahí.
+  const clasificacion = DevolucionPedagogica.clasificarPorTema(resultado.detalle);
+  const fortalezasPorTema = Object.keys(clasificacion).filter(t => clasificacion[t]==='bien');
+  const aRepasarPorTema = Object.keys(clasificacion).filter(t => clasificacion[t]!=='bien');
+  const resultadoCompleto = {...resultado, fortalezas:fortalezasPorTema, aRepasar:aRepasarPorTema};
   ultimoResultadoExamen = resultadoCompleto;
   Resultados.mostrarEn(document.getElementById('examen-result'), resultadoCompleto, {alias:getAlias()});
   document.getElementById('examen-result').style.display = 'block';
@@ -740,12 +738,9 @@ function submitExamen(){
   NavegacionEstado.guardarIntentoEvaluacion(CLAVE_EXAMEN, {items:examenItems, mcAnswers:examenAnswers.mc, writtenAnswers:examenAnswers.desarrollo, submitted:true});
 
   const resultado = EvaluacionMotor.corregirExamenFinal(examenItems, examenAnswers);
-  const fortalezasPorTema = [], aRepasarPorTema = [];
   resultado.detalle.forEach(d=>{
     const q = examenItems[d.idx];
     const fb = document.getElementById(`fefb-${d.idx}`);
-    const ok = q.type==='mc' ? d.correcto : d.puntos>=1;
-    (ok ? fortalezasPorTema : aRepasarPorTema).push(q.nombreSeccion);
     if(q.type==='mc'){
       const optsDiv = document.getElementById(`feopts-${d.idx}`);
       optsDiv.querySelectorAll('.q-opt').forEach((b,bi)=>{
@@ -761,7 +756,16 @@ function submitExamen(){
       fb.className = 'q-fb ' + (d.puntos>=1 ? 'ok' : (d.puntos>=0.5 ? '' : 'err'));
     }
   });
-  const resultadoCompleto = {...resultado, fortalezas:[...new Set(fortalezasPorTema)], aRepasar:[...new Set(aRepasarPorTema)]};
+  // Clasificación por módulo en base al puntaje AGREGADO de ese módulo en
+  // todo el examen (Core: devolucion-pedagogica.js) — no por cada pregunta
+  // suelta. Antes se decidía pregunta por pregunta y se juntaban ambas
+  // listas con Set, así que un módulo con resultado mixto (alguna bien,
+  // alguna mal) terminaba apareciendo A LA VEZ en Fortalezas y en A
+  // repasar. Con el agregado, cada módulo cae en una sola lista.
+  const clasificacion = DevolucionPedagogica.clasificarPorTema(resultado.detalle);
+  const fortalezasPorTema = Object.keys(clasificacion).filter(t => clasificacion[t]==='bien');
+  const aRepasarPorTema = Object.keys(clasificacion).filter(t => clasificacion[t]!=='bien');
+  const resultadoCompleto = {...resultado, fortalezas:fortalezasPorTema, aRepasar:aRepasarPorTema};
   ultimoResultadoExamen = resultadoCompleto;
 
   // Registro académico persistente — sobrevive al reinicio de sesión
