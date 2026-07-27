@@ -70,11 +70,13 @@ function getProgress(){
   catch(e){ return {}; }
 }
 // El dibujo del anillo en sí vive en Core: progreso-ring.js (compartido
-// con Fisicoquímica). Acá solo se arma la lista de slugs (uno por tema)
-// y se le pasa el progreso ya leído — mismo cálculo de siempre, sin
-// cambios de comportamiento.
+// con Fisicoquímica). Se promedia solo entre los temas VISIBLES (con
+// guía real) — si el anillo promediara contra los 19 igual, el % se
+// vería artificialmente bajo por temas que ni siquiera aparecen en la
+// lista.
 function renderHistoriaProgressRing(){
-  renderProgressRing({slugs: TOPICS.map(t=>t.slug), progreso: getProgress(), unidadLabel: 'temas'});
+  const unidad = TOPICS_VISIBLES.length===1 ? 'tema' : 'temas';
+  renderProgressRing({slugs: TOPICS_VISIBLES.map(t=>t.slug), progreso: getProgress(), unidadLabel: unidad});
 }
 
 // ══════════════════════════════════════════
@@ -107,10 +109,16 @@ const TOPICS = [
   {slug:'globalizacion',      title:'Globalización',            desc:'Un mundo cada vez más conectado, y sus desafíos actuales.', icon:'🌐', img:'../../assets/img/historia/globalizacion.jpg', time:'25 min', available:false},
 ];
 
+// Temas sin guía interactiva real (available:false) se ocultan de la
+// navegación y de los índices — no se borra nada, TOPICS sigue
+// teniendo los 19 completos (con sus datos, imágenes y carátulas
+// intactas); esto es solo lo que se muestra hoy en el listado.
+const TOPICS_VISIBLES = TOPICS.filter(t => t.available);
+
 function renderTopics(){
   const grid = document.getElementById('topics-grid');
   const progress = getProgress();
-  grid.innerHTML = TOPICS.map((t,i)=>{
+  grid.innerHTML = TOPICS_VISIBLES.map((t,i)=>{
     const pct = progress[t.slug] || 0;
     const statusLabel = t.available ? '📖 Disponible' : '🔜 Próximamente';
     const statusClass = t.available ? 'available' : 'soon';
@@ -134,7 +142,7 @@ function renderTopics(){
       </div>
     </div>`;
   }).join('');
-  document.getElementById('topics-count').textContent = TOPICS.length + ' temas';
+  document.getElementById('topics-count').textContent = TOPICS_VISIBLES.length + (TOPICS_VISIBLES.length===1 ? ' tema' : ' temas');
 }
 
 function goToTopic(slug){
