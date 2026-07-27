@@ -342,12 +342,12 @@ window.addEventListener('DOMContentLoaded', function(){
 });
 
 // ══════════════════════════════════════════
-//  ESTADO DE LOS 5 CAPÍTULOS (secuencial, dentro de ESTE tema)
+//  ESTADO DE LOS 4 CAPÍTULOS (secuencial, dentro de ESTE tema)
 // ══════════════════════════════════════════
 let capituloActivo = 0;
 let capituloPasado = [false,false,false,false];
-let quizItemsPorCap = [null,null,null,null,null];
-let quizAnswersPorCap = [null,null,null,null,null];
+let quizItemsPorCap = [null,null,null,null];
+let quizAnswersPorCap = [null,null,null,null];
 
 function mostrarReader(){
   document.getElementById('reader').style.display = 'block';
@@ -617,7 +617,7 @@ function submitQuizCapitulo(i){
 }
 
 // ══════════════════════════════════════════
-//  EXAMEN FINAL — solo se puede rendir con los 5 capítulos aprobados
+//  EXAMEN FINAL — solo se puede rendir con los 4 capítulos aprobados
 // ══════════════════════════════════════════
 let examenItems = [];
 let examenAnswers = {mc:{}, desarrollo:{}};
