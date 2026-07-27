@@ -69,17 +69,12 @@ function getProgress(){
   try{ return JSON.parse(safeGet('origenHistoriaProgress') || '{}'); }
   catch(e){ return {}; }
 }
-function renderProgressRing(){
-  const progress = getProgress();
-  const values = TOPICS.map(t => progress[t.slug] || 0);
-  const avgPct = Math.round(values.reduce((a,b)=>a+b,0) / TOPICS.length);
-  const doneCount = values.filter(v=>v>=100).length;
-
-  const circumference = 264; // 2 * PI * 42, redondeado
-  const offset = circumference - (circumference * avgPct/100);
-  document.getElementById('progress-circle').style.strokeDashoffset = offset;
-  document.getElementById('progress-pct').textContent = avgPct + '%';
-  document.getElementById('progress-sub').textContent = `${doneCount} de ${TOPICS.length} temas completados`;
+// El dibujo del anillo en sí vive en Core: progreso-ring.js (compartido
+// con Fisicoquímica). Acá solo se arma la lista de slugs (uno por tema)
+// y se le pasa el progreso ya leído — mismo cálculo de siempre, sin
+// cambios de comportamiento.
+function renderHistoriaProgressRing(){
+  renderProgressRing({slugs: TOPICS.map(t=>t.slug), progreso: getProgress(), unidadLabel: 'temas'});
 }
 
 // ══════════════════════════════════════════
@@ -159,4 +154,4 @@ function toggleSidebar(){
 // ══════════════════════════════════════════
 renderGuideSlot();
 renderTopics();
-renderProgressRing();
+renderHistoriaProgressRing();

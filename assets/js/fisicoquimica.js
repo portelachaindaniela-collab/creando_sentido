@@ -41,7 +41,7 @@ function saveSetup(){
 //  reorganizado al formato TOPICS[] + tema.html?tema=slug)
 // ══════════════════════════════════════════
 const TOPICS = [
-  {slug:'mezclas-y-sistemas', title:'Mezclas y Sistemas', icon:'🧪', desc:'4 módulos: Homogéneos, Heterogéneos, Fases y Métodos de Separación.', time:'~2.5 hs', available:true, href:'mezclas-sistemas-guia.html'},
+  {slug:'mezclas-y-sistemas', title:'Mezclas y Sistemas', icon:'🧪', desc:'4 módulos: Homogéneos, Heterogéneos, Fases y Métodos de Separación.', time:'~2.5 hs', available:true, href:'mezclas-sistemas-guia.html', modulos:4},
 ];
 
 function renderTopics(){
@@ -74,6 +74,19 @@ function goToTopic(slug){
   window.location.href = `tema.html?tema=${slug}`;
 }
 
+// El dibujo del anillo vive en Core: progreso-ring.js (compartido con
+// Historia). Acá se arma la lista de slugs por MÓDULO (no por tema —
+// hoy hay un solo tema, pero varios módulos adentro) a partir de
+// "modulos" declarado en cada TOPIC, y se le pasa el progreso ya leído.
+function renderFisicoquimicaProgressRing(){
+  const progreso = getMateriaProgress('fisicoquimica');
+  const slugs = [];
+  TOPICS.forEach(t=>{
+    for(let i=0;i<(t.modulos||0);i++) slugs.push(`${t.slug}-cap-${i}`);
+  });
+  renderProgressRing({slugs, progreso, unidadLabel: 'módulos'});
+}
+
 function toggleSidebar(){
   const el = document.getElementById('sidebar-collapsible');
   const btn = document.getElementById('sidebar-toggle');
@@ -87,3 +100,4 @@ function toggleSidebar(){
 // ══════════════════════════════════════════
 renderGuideSlot();
 renderTopics();
+renderFisicoquimicaProgressRing();
