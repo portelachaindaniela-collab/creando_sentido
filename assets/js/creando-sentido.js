@@ -1,4 +1,16 @@
 
+// El header es sticky y su alto real cambia según el viewport (la
+// marca puede pasar a 2 líneas en pantallas chicas) — se mide acá y
+// se guarda en --header-h para que scroll-margin-top (CSS) sepa
+// cuánto dejar libre arriba de cada sección al hacer scroll por ancla.
+function actualizarAltoHeader(){
+  const header = document.querySelector('header');
+  if(header) document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+}
+actualizarAltoHeader();
+window.addEventListener('resize', actualizarAltoHeader);
+window.addEventListener('load', actualizarAltoHeader);
+
 // Menú mobile: abre/cierra el dropdown de navegación
 function toggleNav(){
   const nav = document.getElementById('nav-links');

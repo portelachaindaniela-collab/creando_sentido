@@ -19,6 +19,7 @@
   --r-md: 16px;
   --r-lg: 24px;
   --t: .25s cubic-bezier(.4,0,.2,1);
+  --header-h: 80px; /* fallback; assets/js/creando-sentido.js lo ajusta al alto real del header */
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -45,6 +46,14 @@ h1,h2,h3{font-family:'Montserrat',sans-serif;font-weight:800;letter-spacing:-.01
 header{
   position:sticky; top:0; z-index:100; background:rgba(11,11,10,.92);
   backdrop-filter:blur(10px); border-bottom:1px solid rgba(247,241,231,.08);
+}
+/* El header es sticky y tapa el título de la sección al hacer scroll
+   por ancla (menú, botón "Hablemos"). El alto real del header varía
+   con el viewport (el texto de la marca puede pasar a 2 líneas en
+   pantallas chicas), por eso --header-h se recalcula en JS en vez de
+   quedar fijo acá — este scroll-margin-top solo lo consume. */
+#top, #hacemos, #enfoque, #proyectos, #manifiesto, #contacto{
+  scroll-margin-top: var(--header-h);
 }
 .nav-row{display:flex; align-items:center; justify-content:space-between; padding:18px 0;}
 .brand{display:flex; align-items:center; gap:12px;}
