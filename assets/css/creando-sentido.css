@@ -51,9 +51,14 @@ header{
    por ancla (menú, botón "Hablemos"). El alto real del header varía
    con el viewport (el texto de la marca puede pasar a 2 líneas en
    pantallas chicas), por eso --header-h se recalcula en JS en vez de
-   quedar fijo acá — este scroll-margin-top solo lo consume. */
+   quedar fijo acá — este scroll-margin-top solo lo consume. Los +20px
+   son el margen chico y parejo debajo del header (sin esto el título
+   queda pegado al borde). Los 4 anclajes de sección (hacemos, enfoque,
+   proyectos, manifiesto) están puestos directo sobre el título visible
+   — no sobre el <section> — para no sumarle además el padding-top
+   propio de cada sección, que antes duplicaba el hueco. */
 #top, #hacemos, #enfoque, #proyectos, #manifiesto, #contacto{
-  scroll-margin-top: var(--header-h);
+  scroll-margin-top: calc(var(--header-h) + 20px);
 }
 .nav-row{display:flex; align-items:center; justify-content:space-between; padding:18px 0;}
 .brand{display:flex; align-items:center; gap:12px;}
