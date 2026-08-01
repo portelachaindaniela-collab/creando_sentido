@@ -11,6 +11,9 @@
   --terracota:#7A5D3A; --terracota2:#9A7A52; --crema:#FAF7F0;
   --oliva:#6B7A4A; --salvia:#A7B89A; --mostaza:#C49A3A; --tx-muted:#6E7A72;
   --ok:#5A8A5A; --err:#B5533C;
+  --pedro-btn-h:2.75rem;   /* alto real de #btn-pedro (~44px medido) */
+  --pedro-btn-gap:2.25rem; /* separación entre el contenido y el botón */
+  --pedro-btn-w:10.5rem;   /* ancho real de #btn-pedro expandido (~166px medido, con margen) */
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Poppins',sans-serif;background:var(--verde);color:var(--crema);min-height:100vh;}
@@ -27,7 +30,7 @@ a{color:inherit;}
 .btn-enter{background:var(--mostaza);color:var(--verde-deep);border:none;padding:.9rem 2rem;border-radius:30px;font-weight:700;cursor:pointer;}
 .btn-enter:disabled{opacity:.4;cursor:not-allowed;}
 
-#reader{display:none; max-width:1200px; margin:0 auto; padding:2.5rem 2.5rem 5rem;}
+#reader{display:none; max-width:1200px; margin:0 auto; padding:2.5rem 2.5rem calc(var(--pedro-btn-h) + var(--pedro-btn-gap) + env(safe-area-inset-bottom));}
 .back-link{display:inline-flex;gap:6px;font-size:13px;color:var(--salvia);margin-bottom:18px;}
 .back-link:hover{color:var(--mostaza);}
 
@@ -50,7 +53,21 @@ a{color:inherit;}
 .origen-modulo-error-frecuente{border-left:3px solid var(--err);}
 .origen-modulo-curiosidad{border-left:3px solid var(--mostaza);}
 
-#btn-pedro{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--mostaza);color:var(--verde-deep);border:none;padding:.9rem 1.4rem;border-radius:30px;font-weight:700;cursor:pointer;z-index:700;box-shadow:0 4px 14px rgba(0,0,0,.3);}
+#btn-pedro{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--mostaza);color:var(--verde-deep);border:none;padding:.9rem 1.4rem;border-radius:30px;font-weight:700;cursor:pointer;z-index:700;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;align-items:center;gap:.5rem;}
+.pedro-btn-avatar{display:none;}
+/* ══ repliegue a ícono en mobile: el botón fijo no puede reservarse
+   espacio con padding (position:fixed no lo respeta), así que en vez
+   de tapar texto se achica mientras el usuario scrollea o toca la
+   guía, y vuelve a su tamaño normal cuando está quieto (ver JS) ══ */
+@media(max-width:600px){
+  #btn-pedro{transition:width .25s ease,height .25s ease,border-radius .25s ease,padding .25s ease,gap .25s ease;
+    width:var(--pedro-btn-h);height:var(--pedro-btn-h);padding:0;border-radius:50%;justify-content:center;gap:0;overflow:hidden;}
+  #btn-pedro .pedro-btn-avatar{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover;flex-shrink:0;}
+  #btn-pedro .pedro-btn-label{display:none;}
+  #btn-pedro.expanded{width:var(--pedro-btn-w);height:var(--pedro-btn-h);padding:0 1.4rem;border-radius:30px;justify-content:flex-start;gap:.5rem;}
+  #btn-pedro.expanded .pedro-btn-avatar{display:none;}
+  #btn-pedro.expanded .pedro-btn-label{display:block;white-space:nowrap;}
+}
 #pedro-panel{display:none;position:fixed;top:0;right:0;width:min(360px,90vw);height:100%;background:var(--verde2);border-left:1px solid rgba(250,247,240,.15);z-index:600;overflow-y:auto;padding:1.2rem;}
 .pedro-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;font-size:1.1rem;}
 .pedro-header strong{flex:1;}
@@ -135,7 +152,7 @@ a{color:inherit;}
   </div>
 </div>
 
-<button id="btn-pedro">Preguntale a Pedro</button>
+<button id="btn-pedro" aria-label="Preguntale a Pedro"><img class="pedro-btn-avatar" src="../../assets/img/pedro.png" alt="" aria-hidden="true"><span class="pedro-btn-label">Preguntale a Pedro</span></button>
 <div id="pedro-panel"></div>
 
 <!-- ══════ CORE de ORIGEN — compartido por todas las materias ══════ -->
@@ -351,6 +368,7 @@ let quizAnswersPorCap = [null,null,null,null];
 
 function mostrarReader(){
   document.getElementById('reader').style.display = 'block';
+  initPedroBtnRepliegue();
   NavegacionEstado.iniciarAutoguardadoScroll('fisicoquimica', 'mezclas-y-sistemas', 'capitulo-'+capituloActivo);
 
   // Restaurar progreso de capítulos ya aprobados
@@ -420,6 +438,55 @@ function mostrarCapitulo(i){
 function actualizarPedro(){
   Pedro.configurarAvatar('../../assets/img/pedro.png');
   Pedro.montarPanel(document.getElementById('pedro-panel'), document.getElementById('btn-pedro'), MODULOS[capituloActivo]);
+}
+
+// ══ repliegue de #btn-pedro a ícono en mobile (≤600px). Por CSS
+// arranca colapsado (ver #btn-pedro dentro del @media). La condición
+// "cerca del top" solo aplica al arranque inicial en carga (t=0):
+// cualquier repliegue posterior por scroll/touch reexpande a los
+// 500ms de inactividad sin importar scrollY. Se inicializa desde
+// mostrarReader(), no al parsear el script, para que el debounce
+// corra desde que el usuario ve la guía (no desde antes del login,
+// que puede tardar minutos). Sin listeners en desktop. ══
+function initPedroBtnRepliegue(){
+  if (!window.matchMedia('(max-width:600px)').matches) return;
+  const btn = document.getElementById('btn-pedro');
+  const wrap = document.getElementById('capitulos-wrap');
+  if (!btn || btn.dataset.replieguePronto) return;
+  btn.dataset.replieguePronto = '1';
+
+  const CERCA_DE_ARRIBA_PX = 20;
+  let lastScrollY = window.scrollY;
+  let idleTimer = null;
+
+  function programarExpansionInicial(){
+    idleTimer = setTimeout(() => {
+      idleTimer = null;
+      if (window.scrollY <= CERCA_DE_ARRIBA_PX) btn.classList.add('expanded');
+    }, 500);
+  }
+  function programarReexpansion(){
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      idleTimer = null;
+      btn.classList.add('expanded');
+    }, 500);
+  }
+  function replegar(){
+    btn.classList.remove('expanded');
+    programarReexpansion();
+  }
+  function onScroll(){
+    const y = window.scrollY;
+    if (Math.abs(y - lastScrollY) > 8){
+      lastScrollY = y;
+      replegar();
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, {passive:true});
+  if (wrap) wrap.addEventListener('touchstart', replegar, {passive:true});
+  programarExpansionInicial();
 }
 
 // ══════════════════════════════════════════
