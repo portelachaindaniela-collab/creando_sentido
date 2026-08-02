@@ -74,9 +74,11 @@ const VIEWPORTS = [
 // Elementos interactivos que se enganchan SOLO por JS (addEventListener),
 // no por onclick inline -- se excluyen del chequeo generico de "boton sin
 // funcion" (reglas 9 y 27) porque ya se verifican con su propio chequeo
-// especifico mas abajo (ver auditarPedro). Ver nota de "Simplificaciones
-// deliberadas" en el encabezado de este archivo.
-const SELECTORES_JS_WIRED = ['#btn-pedro', '.pedro-opcion', '.pedro-close'];
+// especifico mas abajo (ver auditarPedro), o porque se confirmo a mano que
+// origen.js los engancha via querySelectorAll+addEventListener (nav de
+// origen/index.html: [data-page]/[data-scroll], y #mobileMenuBtn). Ver
+// nota de "Simplificaciones deliberadas" en el encabezado de este archivo.
+const SELECTORES_JS_WIRED = ['#btn-pedro', '.pedro-opcion', '.pedro-close', '[data-page]', '[data-scroll]', '#mobileMenuBtn'];
 
 // ────────────────────────────────────────────────────────────────
 // Hallazgos: un array plano, cada uno con la regla exacta del pedido
@@ -217,7 +219,15 @@ async function getFixedOverlaps(page) {
       if (cs.position !== 'fixed') return false;
       if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0) return false;
       const r = el.getBoundingClientRect();
-      return r.width > 0 && r.height > 0;
+      if (r.width === 0 || r.height === 0) return false;
+      // Excluye overlays/modales a pantalla completa (ej. #welcome-overlay,
+      // position:fixed;inset:0): tapar TODO el contenido de atras es su
+      // funcion real (login gate), no un bug de layout -- solo interesan
+      // acá elementos fixed chicos (botones flotantes, headers) que
+      // conviven con contenido visible al mismo tiempo.
+      const cubreCasiToda = r.width >= window.innerWidth * 0.9 && r.height >= window.innerHeight * 0.9;
+      if (cubreCasiToda) return false;
+      return true;
     });
 
     const resultados = [];
@@ -405,9 +415,16 @@ async function auditarIndices(browser, materiasConTopics) {
       if (cardCount === m.topics.length) ok('B5', m.indexHref, viewport.name, `${cardCount} tarjetas == ${m.topics.length} TOPICS`);
       else fail('B5', m.indexHref, viewport.name, `${cardCount} tarjetas != ${m.topics.length} TOPICS`);
 
-      // B6 (generico): si existe .era-labels, su cantidad de <span> == TOPICS.length
+      // B6: cantidad de <span> en .era-labels == TOPICS.length -- SOLO en
+      // historia-index (spec original de Daniela: "para historia-index
+      // puntualmente"). En Fisicoquimica ese mismo banner muestra los
+      // submodulos de UN topic (Homogeneos/Heterogeneos/Fases/Separacion),
+      // no un span por TOPIC -- aplicar esta regla ahi da falso positivo.
+      const esHistoriaIndex = /historia-index\.html$/.test(m.indexHref);
       const eraSpans = await page.locator('.era-labels span').count();
-      if (eraSpans === 0) {
+      if (!esHistoriaIndex) {
+        skip('B6', m.indexHref, viewport.name, 'regla acotada a historia-index (ver spec original)');
+      } else if (eraSpans === 0) {
         skip('B6', m.indexHref, viewport.name, 'esta pagina no tiene banner .era-labels');
       } else if (eraSpans === m.topics.length) {
         ok('B6', m.indexHref, viewport.name, `${eraSpans} <span> == ${m.topics.length} TOPICS`);
@@ -646,6 +663,24 @@ async function auditarProgreso(browser, corridaAnterior) {
       await loguearComoAlumno(page, guiaHref);
       const hayQuiz = await page.locator('#btn-submit-0').count() > 0;
       if (hayQuiz) {
+        // Interceptamos Resultados.mostrarEn ANTES de enviar, para capturar
+        // el alias real que le pasan -- no alcanza con leer el texto
+        // renderizado despues: si el intento no aprueba (muy probable,
+        // ya que contestamos al azar), el mensaje de "no aprobado" de
+        // resultados.js directamente NO incluye el alias por diseño (solo
+        // el de "aprobado" lo saluda por nombre), lo que daba falso
+        // positivo sin importar si el alias estaba bien o mal.
+        await page.evaluate(() => {
+          window.__auditoriaAliasCapturado = undefined;
+          window.__auditoriaMostrarEnLlamado = false;
+          const original = Resultados.mostrarEn;
+          Resultados.mostrarEn = function (elemento, resultado, contexto) {
+            window.__auditoriaMostrarEnLlamado = true;
+            window.__auditoriaAliasCapturado = contexto ? contexto.alias : undefined;
+            return original.apply(this, arguments);
+          };
+        });
+
         // Responde lo que haya (MC: primera opcion; desarrollo: texto generico) --
         // no importa si acierta, solo que se complete el envio.
         const mcButtons = await page.locator('#quiz-body-0 .q-opts').all();
@@ -660,14 +695,17 @@ async function auditarProgreso(browser, corridaAnterior) {
         await page.click('#btn-submit-0');
         await page.waitForTimeout(150);
 
-        const mensajeResultado = await page.evaluate(() => {
-          const el = document.getElementById('quiz-result-0');
-          return el ? el.textContent : '';
-        });
-        const contieneAlias = mensajeResultado.includes(ALIAS_TEST);
-        const contieneGenerico = /\bestudiante\b/i.test(mensajeResultado) && !contieneAlias;
-        if (contieneAlias) ok('E21', guiaHref, 'desktop', `Resultados.mostrarEn uso el alias real ('${ALIAS_TEST}')`);
-        else fail('E21', guiaHref, 'desktop', `no se encontro el alias '${ALIAS_TEST}' en la devolucion${contieneGenerico ? " (aparecio 'estudiante' generico)" : ''}: "${mensajeResultado.slice(0, 200)}"`);
+        const { llamado, aliasCapturado } = await page.evaluate(() => ({
+          llamado: window.__auditoriaMostrarEnLlamado === true,
+          aliasCapturado: window.__auditoriaAliasCapturado,
+        }));
+        if (!llamado) {
+          fail('E21', guiaHref, 'desktop', 'Resultados.mostrarEn nunca se llamo tras enviar el quiz');
+        } else if (aliasCapturado === ALIAS_TEST) {
+          ok('E21', guiaHref, 'desktop', `Resultados.mostrarEn se llamo con el alias real ('${aliasCapturado}')`);
+        } else {
+          fail('E21', guiaHref, 'desktop', `Resultados.mostrarEn se llamo con alias='${aliasCapturado}', esperado '${ALIAS_TEST}'`);
+        }
       } else {
         skip('E21', guiaHref, 'desktop', 'no se encontro el quiz del capitulo 0 (#btn-submit-0)');
       }
