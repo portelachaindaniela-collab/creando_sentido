@@ -1,0 +1,92 @@
+name: Auditoria periodica ORIGEN
+
+# Cron no tiene un intervalo nativo de "cada 72 horas": la unidad mas chica
+# que soporta de forma exacta es el dia. "*/3" en el campo dia-del-mes es la
+# aproximacion estandar, pero se resetea en cada cambio de mes, asi que
+# ocasionalmente el gap real entre corridas puede ser de 1 o hasta 4 dias
+# en vez de 3 exactos. Si necesitas un intervalo exacto de 72h hay que
+# guardar un timestamp de la ultima corrida (por ejemplo en un artifact o
+# en GitHub Actions cache) y chequearlo en cada run diario - avisame si
+# preferis esa version.
+on:
+  schedule:
+    - cron: '0 6 */3 * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  auditoria:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias (Playwright)
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Correr la auditoria (scripts/audit-origen.js -- reglas fijas, sin subagente)
+        id: audit
+        env:
+          AUDIT_OUTPUT_DIR: ${{ runner.temp }}/audit-output
+          ORIGEN_AUDIT_WEBHOOK_URL: ${{ secrets.ORIGEN_AUDIT_WEBHOOK_URL }}
+        run: node scripts/audit-origen.js
+        continue-on-error: true
+
+      - name: Armar cuerpo del mail (con fallback si el audit fallo)
+        if: always()
+        run: |
+          {
+            echo "Auditoria ORIGEN - run ${{ github.run_id }}"
+            echo "Capturas y reporte completo (artifact del run):"
+            echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo ""
+            if [ -f "${{ runner.temp }}/audit-output/report.md" ]; then
+              cat "${{ runner.temp }}/audit-output/report.md"
+            else
+              echo "ATENCION: no se genero report.md en esta corrida."
+              echo "El paso de auditoria puede haber fallado - revisar los logs del run arriba."
+            fi
+          } > "${{ runner.temp }}/mail-body.md"
+          echo "REPORT_BODY_PATH=${{ runner.temp }}/mail-body.md" >> "$GITHUB_ENV"
+
+      - name: Subir reporte como artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-origen-${{ github.run_id }}
+          path: ${{ runner.temp }}/audit-output/**
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Enviar reporte por email
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "Auditoria ORIGEN - run ${{ github.run_id }}"
+          to: portelachaindaniela@gmail.com
+          from: "Auditoria ORIGEN <${{ secrets.GMAIL_USERNAME }}>"
+          body: file://${{ env.REPORT_BODY_PATH }}
+
+      - name: Fallar el job si la auditoria encontro hallazgos o no corrio
+        if: always()
+        run: |
+          if [ "${{ steps.audit.outcome }}" != "success" ]; then
+            echo "El script de auditoria termino con hallazgos o con error -- ver el mail/artifact para el detalle."
+            exit 1
+          fi

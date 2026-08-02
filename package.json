@@ -1,0 +1,11 @@
+{
+  "name": "origen-audit",
+  "private": true,
+  "description": "Auditoria automatica de ORIGEN (scripts/audit-origen.js) -- sin subagente ni credenciales de Anthropic.",
+  "scripts": {
+    "audit": "node scripts/audit-origen.js"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
